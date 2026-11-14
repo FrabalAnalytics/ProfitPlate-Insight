@@ -2,6 +2,15 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
+The app uses `@supabase/supabase-js` for Supabase database, authentication, and
+storage access. Set `NEXT_PUBLIC_SUPABASE_URL` and
+`NEXT_PUBLIC_SUPABASE_ANON_KEY` in `.env.local`, then restart the development
+server. Client Components can use the shared browser client:
+
+```js
+import { supabase } from "@/lib/supabase/Client";
+```
+
 First, run the development server:
 
 ```bash

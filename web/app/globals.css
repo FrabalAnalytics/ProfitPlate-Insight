@@ -1,26 +1,48 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Shared ProfitPlate palette, matched to the supplied visual reference. */
+  color-scheme: light;
+  --background: #f8f7f3;
+  --foreground: #243b36;
+  --surface: #ffffff;
+  --surface-muted: #e8f0eb;
+  --brand: #173f35;
+  --brand-deep: #12312b;
+  --brand-foreground: #ffffff;
+  --accent: #d9a44f;
+  --border: #d5e2db;
+  --muted-foreground: #62756e;
+  --success: #24765b;
+  --destructive: #b54747;
+  --warning: #966114;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-brand: var(--brand);
+  --color-brand-deep: var(--brand-deep);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-accent: var(--accent);
+  --color-border: var(--border);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-success: var(--success);
+  --color-destructive: var(--destructive);
+  --color-warning: var(--warning);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+
+::selection {
+  background: var(--brand);
+  color: var(--brand-foreground);
 }
