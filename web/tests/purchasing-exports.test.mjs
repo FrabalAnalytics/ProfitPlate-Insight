@@ -1,0 +1,19 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';import {readFile} from 'node:fs/promises';import {inflateRawSync} from 'node:zlib';import ts from 'typescript';
+const uri=source=>`data:text/javascript;base64,${Buffer.from(ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.ESNext}}).outputText).toString('base64')}`;
+const shared=uri(await readFile(new URL('../lib/operational-reports.ts',import.meta.url),'utf8'));
+const {historicalCsv,purchasingRpc}=await import(shared);
+const workbookSource=(await readFile(new URL('../lib/report-workbook.ts',import.meta.url),'utf8')).replace('"./operational-reports"',JSON.stringify(shared));
+const {purchasingWorkbook}=await import(uri(workbookSource));
+function unzip(buffer){const files={};let n=0;while(buffer.readUInt32LE(n)===0x04034b50){const size=buffer.readUInt32LE(n+18),length=buffer.readUInt16LE(n+26),extra=buffer.readUInt16LE(n+28),name=buffer.subarray(n+30,n+30+length).toString(),data=n+30+length+extra;files[name]=inflateRawSync(buffer.subarray(data,data+size)).toString();n=data+size;}assert.equal(buffer.readUInt32LE(n),0x02014b50);return files;}
+const context={business:'Restaurant & Kitchen',type:'PO',view:'DETAIL',from:'2020-10-01',to:'2020-10-31',outlet:'Main',site:'',status:'ISSUED',receiving:'PARTIAL',supplier:'Supplier',material:'Rice',user:'Buyer',search:''};
+const report={total:2,documents:1,page_size:5000,unpriced:0,export:true,refreshed_at:'2020-11-01T00:00:00Z',totals:[{currency:'NGN',amount:'1234.5'}],rows:[{reference:'PO-1',date:'2020-10-01',state:'ISSUED',item:'=HYPERLINK("bad")',unit:'KG',quantity:'2.123456',amount:'1234.5',currency:'NGN'},{reference:'PO-1',date:'2020-10-01',state:'ISSUED',item:'Rice',quantity:'123456789012345.123456',unit:'KG',amount:'5.00',currency:'NGN'}]};
+test('PO/GRN CSV exports use material-specific columns and repeat document dates without duplicating header totals',()=>{
+ const csv=historicalCsv(report,context);assert.match(csv,/Quoted_Line_Total/);assert.match(csv,/Ordered_Quantity/);assert.equal(csv.split('\r\n').length,3);assert.match(csv,/"'=HYPERLINK/);assert.match(csv,/"2020-10-01"/);assert.match(csv,/Supplier_Filter/);assert.match(csv,/Receiving_Filter/);
+ const grn=historicalCsv(report,{...context,type:'GRN'});assert.match(grn,/Accepted_This_GRN/);assert.match(grn,/Rejected_This_GRN/);assert.doesNotMatch(grn,/Quoted_Line_Total/);
+});
+test('Excel packages are complete, filterable, formula-safe and preserve quantities beyond Excel precision',()=>{
+ const files=unzip(purchasingWorkbook(report,context));assert.equal(Object.keys(files).length,7);assert.match(files['xl/workbook.xml'],/Report context/);assert.match(files['xl/workbook.xml'],/name="Data"/);const data=files['xl/worksheets/sheet2.xml'];assert.match(data,/state="frozen"/);assert.match(data,/<autoFilter/);assert.match(data,/123456789012345\.123456/);assert.match(data,/<v>2\.123456<\/v>/);assert.match(data,/t="inlineStr"[^>]*><is><t[^>]*>=HYPERLINK/);assert.doesNotMatch(data,/<f[ >]/);assert.match(files['xl/worksheets/sheet1.xml'],/Restaurant &amp; Kitchen/);assert.match(files['xl/worksheets/sheet1.xml'],/Quoted line totals/);assert.match(files['xl/styles.xml'],/formatCode="#,##0\.00##########"/);
+});
+test('purchasing screen and export queries preserve supplier, material, user and receiving filters and legacy status links',()=>{
+ const p={type:'PO',view:'DETAIL',supplier:'s',material:'m',user:'u',status:'PARTIAL',q:' Rice ',page:'2'};const query=purchasingRpc('org','PO',p,'2020-01-01','2020-01-31',true);assert.equal(query.p_view,'DETAIL');assert.equal(query.p_status,'ALL');assert.equal(query.p_receiving,'PARTIAL');assert.equal(query.p_supplier_id,'s');assert.equal(query.p_item_id,'m');assert.equal(query.p_user_id,'u');assert.equal(query.p_search,'Rice');assert.equal(query.p_export,true);
+});

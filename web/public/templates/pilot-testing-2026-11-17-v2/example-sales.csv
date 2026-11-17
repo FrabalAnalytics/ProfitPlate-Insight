@@ -1,0 +1,2 @@
+﻿Organisation_Code,Source_System,Location_Code,Sale_Date,Transaction_Ref,Line_Ref,Menu_Code,Quantity,Gross_Sales,Discount,Tax,Net_Sales,Channel_Code,Line_Type,Parent_Line_Ref,Status
+UAT_ORG,UAT_POS,LOCATION_CODE_HERE,TEST_DATE,UAT-SALE-001,1,UATMENU,3,10500,0,0,10500,TAKEAWAY,NORMAL,,PAID

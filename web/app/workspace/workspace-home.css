@@ -1,0 +1,7 @@
+.workspace-home-tasks { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 16px; margin-top: 18px; }
+.workspace-home-tasks article { display: flex; flex-direction: column; align-items: flex-start; }
+.workspace-home-tasks h3 { font-size: 16px; font-weight: 550; }
+.workspace-home-tasks p { line-height: 1.7; margin-bottom: 20px; }
+.workspace-home-tasks a { margin-top: auto; }
+
+.workspace-access-disclosure{font-size:12px;color:var(--muted-foreground);margin:16px 0}.workspace-access-disclosure summary{cursor:pointer}.workspace-access-disclosure h2{font-size:14px;margin-top:14px}

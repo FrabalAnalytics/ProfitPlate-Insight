@@ -1,0 +1,86 @@
+import {clickNavigation} from './navigation';
+import { test, expect, type Page } from "@playwright/test";
+
+async function openRecipes(page: Page, email="catalogue@example.test") {
+ await page.goto("/login");
+ await page.getByLabel("Email address").fill(email);
+ await page.getByLabel("Password",{exact:true}).fill("TestPassword123!");
+ await page.getByRole("button",{name:"Sign in",exact:true}).click();
+ await expect(page).toHaveURL(/\/workspace$/);
+ await clickNavigation(page,'Recipes & scaling');
+}
+
+test("recipe versions, pinned sub-recipes and quantity scaling work together", async ({page},testInfo)=>{
+ await page.setViewportSize({width:1440,height:1000});
+ await openRecipes(page);
+ await page.getByRole("link",{name:"Create recipe",exact:true}).click();
+ await page.getByLabel("Recipe code",{exact:true}).fill("SAUCE-DEMO");
+ await page.getByLabel("Recipe name",{exact:true}).fill("Tomato base");
+ await page.getByLabel("Recipe type",{exact:true}).selectOption("SUB_RECIPE");
+ await page.getByLabel("Effective from",{exact:true}).fill("2026-11-14");
+ await page.getByLabel("Standard batch yield",{exact:true}).fill("10");
+ await page.getByLabel("Yield unit",{exact:true}).selectOption({label:"Kilogram (KG)"});
+ await page.getByLabel("Choose component 1",{exact:true}).selectOption({label:"Ingredient 01 (SAMPLE1)"});
+ await page.getByLabel("Quantity 1",{exact:true}).fill("8");
+ await page.getByRole("button",{name:"Publish recipe version",exact:true}).click();
+ await expect(page.getByText("Your recipe version has been published. Earlier versions remain unchanged.")).toBeVisible();
+ const childUrl=page.url();
+ await expect(page.getByText("Cost readiness: MISSING",{exact:true})).toBeVisible();
+ await page.getByRole("link",{name:"Create recipe",exact:true}).click();
+ await page.getByLabel("Recipe code",{exact:true}).fill("PLATE-DEMO");
+ await page.getByLabel("Recipe name",{exact:true}).fill("Rice plate");
+ await page.getByLabel("Effective from",{exact:true}).fill("2026-11-14");
+ await page.getByLabel("Standard batch yield",{exact:true}).fill("12");
+ await page.getByLabel("Component type 1",{exact:true}).selectOption("RECIPE");
+ await page.getByLabel("Choose component 1",{exact:true}).selectOption({label:"Tomato base · v1 (SAUCE-DEMO)"});
+ await page.getByLabel("Quantity 1",{exact:true}).fill("1");
+ await page.getByRole("button",{name:"Add component",exact:true}).click();
+ await page.getByLabel("Search component 2",{exact:true}).fill("Test packaging");
+ await page.getByLabel("Choose component 2",{exact:true}).selectOption({label:"Test packaging (TEST-BOX)"});
+ await page.getByLabel("Quantity 2",{exact:true}).fill("12");
+ await page.getByRole("button",{name:"Publish recipe version",exact:true}).click();
+ await expect(page.getByRole("rowheader",{name:"Tomato base · v1",exact:true})).toBeVisible();
+ await page.getByLabel("Target output (PCS)",{exact:true}).fill("24");
+ await page.getByRole("button",{name:"Calculate quantities",exact:true}).click();
+ await expect(page).toHaveURL(/scale=24/);
+ await expect(page.getByRole("table",{name:"Scaled material requirements"}).getByRole("row").filter({hasText:"Ingredient 01"})).toContainText(/1\.6\s*KG/);
+ await expect(page.getByRole("table",{name:"Scaled material requirements"}).getByRole("row").filter({hasText:"Test packaging"})).toContainText(/24\s*PCS/);
+ const parentUrl=page.url();
+ await page.goto(childUrl);
+ await page.getByRole("link",{name:"Create new version",exact:true}).click();
+ await expect(page.getByLabel("Recipe code",{exact:true})).toBeDisabled();
+ await page.getByLabel("Quantity 1",{exact:true}).fill("9");
+ await page.getByLabel("Effective from",{exact:true}).fill("2026-11-14");
+ await page.getByRole("button",{name:"Publish recipe version",exact:true}).click();
+ await expect(page.locator(".recipe-version-facts")).toContainText("Version 2");
+ await page.goto(parentUrl);
+ await expect(page.getByRole("rowheader",{name:"Tomato base · v1",exact:true})).toBeVisible();
+ await expect(page.getByRole("table",{name:"Scaled material requirements"}).getByRole("row").filter({hasText:"Ingredient 01"})).toContainText(/1\.6\s*KG/);
+ await page.getByRole("link",{name:"Create new version",exact:true}).click();
+ await page.getByLabel("Choose component 1",{exact:true}).selectOption({label:"Tomato base · v2 (SAUCE-DEMO)"});
+ await page.getByLabel("Effective from",{exact:true}).fill("2026-11-14");
+ await page.getByRole("button",{name:"Publish recipe version",exact:true}).click();
+ await expect(page.getByRole("rowheader",{name:"Tomato base · v2",exact:true})).toBeVisible();
+ await page.getByLabel("Target output (PCS)",{exact:true}).fill("24");
+ await page.getByRole("button",{name:"Calculate quantities",exact:true}).click();
+ await expect(page).toHaveURL(/scale=24/);
+ await expect(page.getByRole("table",{name:"Scaled material requirements"}).getByRole("row").filter({hasText:"Ingredient 01"})).toContainText(/1\.8\s*KG/);
+  await expect(page.getByText("Preparing your workspace…",{exact:true})).toHaveCount(0);
+  await expect(page.locator(".recipe-scaling")).toBeVisible();
+ await page.screenshot({path:testInfo.outputPath("recipes-desktop.png"),fullPage:true});
+ await page.setViewportSize({width:375,height:812});
+  await expect(page.locator(".recipe-scaling")).toBeVisible();
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+ await page.screenshot({path:testInfo.outputPath("recipes-mobile.png"),fullPage:true});
+});
+
+test("read-only users can review recipes without a publish control",async({page})=>{
+ await openRecipes(page,"reader@example.test");
+ await expect(page.getByText(/You have read-only recipe access/)).toBeVisible();
+ await expect(page.getByRole("link",{name:"Create recipe",exact:true})).toHaveCount(0);
+ await page.getByRole("link",{name:"View Rice plate",exact:true}).click();
+ await expect(page.getByText("Cost readiness: MISSING",{exact:true})).toBeVisible();
+ await expect(page.getByRole("link",{name:"Create new version",exact:true})).toHaveCount(0);
+ await page.goto(`${page.url()}&edit=1`);
+ await expect(page.getByRole("button",{name:"Publish recipe version",exact:true})).toHaveCount(0);
+});

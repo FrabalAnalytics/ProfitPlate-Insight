@@ -1,0 +1,3 @@
+Open ProfitPlate-Full-Test-Sheet.xlsx for the editable test record. Open Full-Test-Guide.html in a browser for the readable/printable guide. Run sheets 1-5 first, then access/guardrail/usability checks.
+
+The XLSX, result CSV and accounts are NOT application imports. The three example data CSVs need their date/outlet placeholders replaced before upload; see the guide. All test results start Not run. Never store passwords or tokens here.

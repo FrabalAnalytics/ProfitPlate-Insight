@@ -1,0 +1,7 @@
+﻿material_code,material_name,item_type,category,base_unit_code,stock_tracked,is_active
+RICE001,Rice,RAW,Grains,KG,true,true
+CHICKEN001,Chicken,RAW,Protein,KG,true,true
+TOMATO001,Tomato,RAW,Vegetables,KG,true,true
+ONION001,Onion,RAW,Vegetables,KG,true,true
+OIL001,Cooking oil,RAW,Oils,L,true,true
+BOX001,Meal box,PACKAGING,Packaging,PCS,true,true

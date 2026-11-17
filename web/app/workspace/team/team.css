@@ -1,0 +1,28 @@
+.team-invite-form { margin-top: 18px; }
+.team-invite-form fieldset,.team-list fieldset { border: 0; min-width: 0; display: flex; flex-direction: column; gap: 16px; }
+.team-invite-form fieldset:disabled,.team-list fieldset:disabled { opacity: .65; }
+.team-role-editor { display: flex; flex-direction: column; gap: 12px; }
+.team-assignment { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr) 40px; align-items: end; gap: 12px; }
+.team-assignment .icon-button { height: 44px; }
+.team-role-editor > button { width: fit-content; }
+.team-confirm { display: flex; align-items: flex-start; gap: 10px; font-size: 12px; line-height: 1.7; padding-block: 8px; cursor: pointer; }
+.team-confirm input { width: 18px; height: 18px; flex-shrink: 0; margin-top: 2px; accent-color: var(--brand); }
+.team-scope-warning { padding: 12px; background: #fcfaf6; border: 1px solid #e6d4b2; font-size: 12px; line-height: 1.7; border-radius: 6px; }
+.team-invitation-link { margin-top: 16px; padding: 16px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-muted); }
+.team-invitation-link label { display: block; font-size: 13px; font-weight: 550; }
+.team-invitation-link input { display: block; width: 100%; min-height: 44px; margin-block: 10px; padding: 10px; background: white; border: 1px solid var(--border); border-radius: 6px; font-size: 12px; }
+.team-invitation-link p { margin-top: 10px; color: var(--muted-foreground); font-size: 12px; line-height: 1.7; }
+.team-list article { padding-block: 16px; border-bottom: 1px solid var(--border); }
+.team-list article:last-child { border-bottom: 0; }
+.team-member-heading { display: flex; justify-content: space-between; gap: 12px; align-items: center; }
+.team-member-heading h3 { font-size: 13px; font-weight: 600; overflow-wrap: anywhere; }
+.team-member-heading p,.team-grants { margin-top: 6px; color: var(--muted-foreground); font-size: 12px; line-height: 1.7; overflow-wrap: anywhere; }
+.team-list .workspace-disclosure { margin-top: 6px; }
+.team-list form { margin-top: 10px; }
+.team-list .workspace-disclosure form { padding: 14px; background: var(--background); border-radius: 8px; }
+.join-card { max-width: 640px; margin: 40px auto; padding: 24px; border: 1px solid var(--border); border-radius: 10px; background: white; }
+.join-card h1 { margin-top: 24px; font-size: 26px; font-weight: 600; }
+.join-card p,.join-card li { margin-top: 12px; font-size: 13px; line-height: 1.7; }
+.join-card form,.join-card .join-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 18px; }
+.join-card .auth-button { width: fit-content; }
+@media(max-width:600px) { .team-assignment { grid-template-columns: minmax(0,1fr) 40px; } .team-assignment > .setup-field:first-child { grid-column: 1 / -1; } .team-member-heading { align-items: flex-start; } .join-card { margin: 20px 16px; padding: 20px; } }

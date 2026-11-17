@@ -1,0 +1,67 @@
+/* Shared by every role and loaded with the root layout, including direct visits. */
+.app-content .workspace-main :is(.data-table,.procurement-table) { width: 100%; min-width: 620px; border-collapse: separate; border-spacing: 0; background: var(--surface); color: var(--foreground); text-align: left; font-size: 12px; line-height: 1.45; }
+.app-content .workspace-main :is(.data-table,.procurement-table) thead th { padding: 10px 14px; border-bottom: 1px solid var(--border); background: #f0f5f2; color: #52685c; font-size: 10px; font-weight: 650; letter-spacing: .045em; text-transform: uppercase; text-align: left; white-space: nowrap; }
+.app-content .workspace-main :is(.data-table,.procurement-table) tbody th,
+.app-content .workspace-main :is(.data-table,.procurement-table) tbody td { min-width: 72px; max-width: 300px; padding: 9px 14px; border-bottom: 1px solid #e9eeeb; text-align: left; vertical-align: middle; overflow-wrap: break-word; font-weight: 400; }
+.app-content .workspace-main :is(.data-table,.procurement-table) tbody th { min-width: 165px; font-weight: 600; color: var(--brand); }
+.app-content .workspace-main :is(.data-table,.procurement-table) tbody tr:last-child > * { border-bottom: 0; }
+.app-content .workspace-main :is(.data-table,.procurement-table) tbody tr:hover > * { background: #f7faf8; }
+.app-content .workspace-main :is(.data-table,.procurement-table) .numeric { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.app-content .workspace-main :is(.data-table,.procurement-table) a.inline-link,
+.app-content .workspace-main :is(.data-table,.procurement-table) a.record-edit { text-decoration: none; font-size: 12px; font-weight: 600; line-height: 1.6; }
+.app-content .workspace-main :is(.data-table,.procurement-table) a:hover { text-decoration: underline; text-underline-offset: 4px; }
+.app-content .workspace-main :is(.data-table,.procurement-table) th:first-child a { white-space: nowrap; }
+.app-content .workspace-main :is(.data-table,.procurement-table) td:last-child a { white-space: nowrap; }
+.app-content .workspace-main :is(.data-table,.procurement-table) td small,
+.app-content .workspace-main :is(.data-table,.procurement-table) th small { display: block; margin-top: 4px; color: var(--muted-foreground); font-size: 11px; font-weight: 400; }
+.data-table-shell { min-width: 0; max-width: 100%; margin-block: 20px; }
+.data-table-scroll,
+.app-content .workspace-main .procurement-table-scroll { position: relative; display: block; width: 100%; max-width: 100%; overflow: auto; margin: 0; border: 1px solid var(--border); border-radius: 10px; background: white; scrollbar-width: thin; scrollbar-color: #b9ccbf #f2f6f3; }
+.data-table-scroll:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
+.data-table-scroll-hint { display: none; }
+.app-content .workspace-main .record-status { display: inline-flex; align-items: center; gap: 6px; width: fit-content; padding: 5px 10px; border: 1px solid #dce5df; border-radius: 6px; background: #f4f6f5; color: #586b60; font-size: 11px; font-weight: 550; line-height: 1.5; white-space: nowrap; }
+.record-status::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+.app-content .workspace-main .record-status-success { color: #216342; background: #edf7f0; border-color: #d2e8da; }
+.app-content .workspace-main .record-status-warning { color: #8b651f; background: #fcf6e9; border-color: #eddfba; }
+.app-content .workspace-main .record-status-danger { color: #a64141; background: #fcf0ef; border-color: #efd9d7; }
+.app-content .workspace-main .data-table-empty { padding: 40px 20px; text-align: center; color: var(--muted-foreground); }
+.app-content .workspace-main .procurement-register-filter { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; padding: 18px; margin-block: 20px 16px; border: 1px solid var(--border); border-radius: 9px; background: #f8faf8; }
+.app-content .workspace-main .procurement-register-filter .setup-field { flex: 0 1 260px; min-width: 180px; margin: 0; }
+.app-content .workspace-main .procurement-register-filter .secondary-button { min-height: 44px; margin: 0; background: var(--brand); border-color: var(--brand); color: white; }
+.register-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.register-count { display: inline-flex; align-items: center; padding: 5px 10px; border: 1px solid var(--border); border-radius: 6px; color: var(--muted-foreground); font-size: 11px; }
+.record-status-stack { display: grid; justify-items: start; gap: 5px; }
+.app-content .workspace-main .data-table-scroll .inline-link svg { display: inline; vertical-align: middle; margin-left: 4px; }
+.register-footer { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); font-size: 12px; color: var(--muted-foreground); }
+.register-footer .invoice-nav { margin: 0; }
+.app-content .workspace-main .data-table th:first-child a { white-space: normal; }
+.app-content .workspace-main .data-table .record-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.app-content .workspace-main .data-table .record-status { white-space: normal; }
+.app-content .workspace-main .data-table td:last-child { max-width: 380px; }
+.app-content .workspace-main .transaction-table { min-width: 720px; table-layout: auto; }
+.app-content .workspace-main .data-table details[open].team-access-editor { min-width: 320px; max-width: 460px; }
+.app-content .workspace-main .data-table details > summary { cursor: pointer; color: var(--brand); font-size: 12px; font-weight: 550; }
+.recipe-saved-components > .data-table-shell:last-child { border: 0; background: transparent; overflow: visible; }
+.app-content .workspace-main .po-register-table th,.app-content .workspace-main .po-register-table td { min-width: 0; padding-inline: 14px; }
+.app-content .workspace-main .po-register-table tbody th { min-width: 145px; }
+@media(min-width:701px) {
+ .app-content .transaction-table-wrap { border-radius: 10px; overflow-x: auto; }
+ .app-content .transaction-table { min-width: 720px; }
+ .app-content .transaction-table thead th { padding: 14px 16px; background: #f0f5f2; color: #52685c; font-size: 11px; font-weight: 650; letter-spacing: .045em; text-transform: uppercase; }
+ .app-content .transaction-main > td,.app-content .transaction-main > th { padding: 16px; border-color: #e9eeeb; }
+}
+@media(max-width:760px) {
+ .app-content .workspace-main :is(.data-table,.procurement-table) thead th { padding: 12px 16px; }
+ .app-content .workspace-main :is(.data-table,.procurement-table) tbody th,.app-content .workspace-main :is(.data-table,.procurement-table) tbody td { padding: 14px 16px; }
+ .data-table-scroll-hint { display: block; margin: 9px 2px 0; font-size: 11px !important; color: var(--muted-foreground); }
+ .app-content .workspace-main .procurement-register-filter .setup-field { flex: 1 1 180px; }
+}
+@media print {
+ .data-table-scroll-hint { display: none; }
+ .app-content .workspace-main .data-table-scroll { overflow: visible; border: 0; }
+ .app-content .workspace-main :is(.data-table,.procurement-table) { min-width: 0; border-collapse: collapse; table-layout: fixed; font-size: 9px; }
+ .app-content .workspace-main :is(.data-table,.procurement-table) thead th,.app-content .workspace-main :is(.data-table,.procurement-table) tbody th,.app-content .workspace-main :is(.data-table,.procurement-table) tbody td { min-width: 0; max-width: none; padding: 7px 4px; white-space: normal; font-size: 9px; overflow-wrap: anywhere; }
+ .app-content .workspace-main :is(.data-table,.procurement-table) th:first-child a,.app-content .workspace-main :is(.data-table,.procurement-table) td:last-child a { white-space: normal; }
+ .app-content .workspace-main :is(.data-table,.procurement-table) .numeric { white-space: normal; }
+ .app-content .workspace-main .record-status { white-space: normal; }
+}

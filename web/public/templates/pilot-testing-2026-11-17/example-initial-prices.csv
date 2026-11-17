@@ -1,0 +1,8 @@
+﻿material_code,quantity,unit_code,total_price,price_date,source_note
+UATRICE,1,KG,1800,TEST_DATE,Fictional UAT last-purchase price
+UATCHICK,1,KG,6000,TEST_DATE,Fictional UAT last-purchase price
+UATTOM,1,KG,1000,TEST_DATE,Fictional UAT last-purchase price
+UATONION,1,KG,800,TEST_DATE,Fictional UAT last-purchase price
+UATOIL,1,L,2500,TEST_DATE,Fictional UAT last-purchase price
+UATBOX,1,PCS,100,TEST_DATE,Fictional UAT last-purchase price
+UATWATER,1,PCS,200,TEST_DATE,Fictional UAT last-purchase price

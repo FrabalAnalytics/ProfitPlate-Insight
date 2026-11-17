@@ -1,0 +1,46 @@
+"use client";
+
+import { useActionState, useState, type ChangeEvent } from "react";
+import { Check, Building2, MapPin, ArrowRight, ArrowLeft, Save } from "lucide-react";
+import { saveSetup } from "./actions";
+import { concepts, normaliseSetup, type SetupValues } from "@/lib/onboarding";
+
+export function OnboardingForm({ initial }: { initial: SetupValues }) {
+  const [state, action, pending] = useActionState(saveSetup, {});
+  const [values, setValues] = useState(() => normaliseSetup(initial));
+  const step = state.values?.step ?? normaliseSetup(initial).step;
+  const savedMatches = state.saved && state.values && Object.keys(values)
+    .filter(key => key !== "step").every(key => values[key as keyof SetupValues] === state.values?.[key as keyof SetupValues]);
+  const set = (key: keyof SetupValues, value: string) => setValues(previous => ({ ...previous, [key]: value }));
+  const label = (key: string, text: string) => <><label htmlFor={key}>{text}</label>{state.errors?.[key] && <p className="field-error" id={`${key}-error`}>{state.errors[key]}</p>}</>;
+  const attributes = (key: keyof SetupValues) => ({ id: key, name: key, value: values[key], onChange: (event: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => set(key, event.target.value), "aria-invalid": !!state.errors?.[key], "aria-describedby": state.errors?.[key] ? `${key}-error` : undefined });
+  const visibleKeys = step === 1 ? ["business_name", "concept", "country_code", "currency_code"] : step === 2 ? ["brand_name", "location_name", "timezone", "address"] : [];
+
+  return <div className="setup-layout">
+    <aside className="setup-guide" aria-label="Setup progress"><ol>{["Your business", "Brand & first location", "Review & create"].map((title, index) => <li key={title} aria-current={step === index + 1 ? "step" : undefined} className={step > index + 1 ? "step-done" : ""}><span>{step > index + 1 ? <Check size={15} /> : `0${index + 1}`}</span><div><strong>{title}</strong><small>{["The basics behind your business", "Where your business comes to life", "Make sure everything looks right"][index]}</small></div></li>)}</ol><div className="setup-guide-note"><Building2 size={20} /><h2>Built around your restaurant.</h2><p>Start with one brand and location. Your workspace will keep your business information together as you grow.</p></div></aside>
+    <section className="setup-panel" aria-labelledby="setup-heading">
+      <div className="setup-panel-heading"><span className="eyebrow form-eyebrow">STEP {step} OF 3</span><h2 id="setup-heading">{["First, the essentials.", "Give your brand a home.", "Ready to make it yours?"][step - 1]}</h2><p>{["Use the name your business operates under.", "A brand is the name your customers know. A location is a physical outlet.", "Review your details before creating your restaurant workspace."][step - 1]}</p></div>
+      {state.error && <p className="auth-alert" role="alert">{state.error}</p>}
+      {savedMatches && !state.error && <p className="save-status" role="status"><Check size={15} /> Progress saved to your account.</p>}
+      <form action={action} className="setup-form" aria-busy={pending}>
+        <input type="hidden" name="step" value={step} />
+        {Object.entries(values).filter(([key]) => key !== "step" && !visibleKeys.includes(key)).map(([key, value]) => <input key={key} type="hidden" name={key} value={value} />)}
+        {step === 1 && <>
+          <div className="setup-field">{label("business_name", "Business name")}<input {...attributes("business_name")} placeholder="e.g. Tangibles Restaurant Limited" required maxLength={120} autoComplete="organization" /><small>Your registered or trading business name.</small></div>
+          <div className="setup-field">{label("concept", "Business concept")}<select {...attributes("concept")} required><option value="">Select your concept</option>{concepts.map(([code, name]) => <option key={code} value={code}>{name}</option>)}</select></div>
+          <div className="setup-field-grid"><div className="setup-field">{label("country_code", "Country")}<select {...attributes("country_code")}><option value="NG">Nigeria</option><option value="GH">Ghana</option><option value="KE">Kenya</option><option value="GB">United Kingdom</option><option value="US">United States</option><option value="ZA">South Africa</option></select></div><div className="setup-field">{label("currency_code", "Reporting currency")}<select {...attributes("currency_code")}><option value="NGN">NGN — Nigerian naira</option><option value="GHS">GHS — Ghanaian cedi</option><option value="KES">KES — Kenyan shilling</option><option value="GBP">GBP — Pound sterling</option><option value="USD">USD — US dollar</option><option value="ZAR">ZAR — South African rand</option></select></div></div>
+          <p className="setup-help">All financial amounts in this business will use this currency. Currency conversion is not included.</p>
+        </>}
+        {step === 2 && <>
+          <div className="setup-field">{label("brand_name", "Brand name")}<input {...attributes("brand_name")} placeholder="e.g. Tangibles" required maxLength={120} /><small>You can use the same name as your business.</small></div>
+          <div className="setup-field">{label("location_name", "First location name")}<input {...attributes("location_name")} placeholder="e.g. Lekki Outlet" required maxLength={120} /></div>
+          <div className="setup-field">{label("timezone", "Location timezone")}<select {...attributes("timezone")}><option value="Africa/Lagos">Africa/Lagos</option><option value="Africa/Accra">Africa/Accra</option><option value="Africa/Nairobi">Africa/Nairobi</option><option value="Africa/Johannesburg">Africa/Johannesburg</option><option value="Europe/London">Europe/London</option><option value="America/New_York">America/New_York</option><option value="UTC">UTC</option></select><small>Used to group activity into local business days.</small></div>
+          <div className="setup-field">{label("address", "Address (optional)")}<textarea {...attributes("address")} placeholder="Street address, area and city" maxLength={500} rows={3} autoComplete="street-address" /></div>
+        </>}
+        {step === 3 && <><dl className="setup-review"><div><dt>Business</dt><dd>{values.business_name}<small>{concepts.find(([code]) => code === values.concept)?.[1]}</small></dd></div><div><dt>Country / currency</dt><dd>{values.country_code} · {values.currency_code}</dd></div><div><dt>Brand</dt><dd>{values.brand_name}</dd></div><div><dt>First location</dt><dd>{values.location_name}<small>{values.timezone}</small>{values.address && <small>{values.address}</small>}</dd></div><div><dt>Your access</dt><dd>Business owner<small>CEO and restaurant administrator</small></dd></div></dl><p className="setup-help"><MapPin size={16} /> Your business, brand and location will be created together. Your restaurant data stays separate from other businesses.</p></>}
+        <div className="setup-actions"><button type="submit" formNoValidate name="intent" value="save" className="secondary-button" disabled={pending}><Save size={15} /> Save for later</button><div>{step > 1 && <button type="submit" formNoValidate name="intent" value="back" className="text-button" disabled={pending}><ArrowLeft size={15} /> Back</button>}<button type="submit" name="intent" value={step === 3 ? "complete" : "continue"} className="auth-button" disabled={pending}>{pending ? "Saving…" : step === 3 ? "Create workspace" : "Save & continue"}<ArrowRight size={16} /></button></div></div>
+        <p className="sr-only" role="status">{pending ? "Saving your setup" : ""}</p>
+      </form>
+    </section>
+  </div>;
+}

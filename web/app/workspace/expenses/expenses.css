@@ -1,0 +1,41 @@
+.expense-fields { display: flex; flex-direction: column; min-width: 0; gap: 16px; border: 0; margin-top: 16px; }
+.expense-fields:disabled,.expense-coverage-form fieldset:disabled { opacity: .65; }
+.expense-input-tabs { display: flex; gap: 8px; margin-top: 16px; }
+.expense-input-tabs [aria-pressed=true] { background: var(--surface-muted); border-color: #a6bfb1; }
+.expense-fields .auth-button { width: fit-content; }
+.expense-confirm { display: flex; gap: 10px; align-items: flex-start; font-size: 12px; line-height: 1.7; cursor: pointer; padding-block: 8px; }
+.expense-confirm input { flex-shrink: 0; width: 18px; height: 18px; margin-top: 2px; accent-color: var(--brand); }
+.expense-approval { margin-top: 18px; border-top: 1px solid var(--border); }
+.expense-report-context { margin-top: 20px; padding: 14px 16px; border: 1px solid var(--border); border-radius: 8px; background: white; }
+.expense-report-context strong { display: block; font-size: 13px; font-weight: 550; }
+.expense-report-context small { display: block; margin-top: 4px; font-size: 12px; color: var(--muted-foreground); }
+.expense-report-context summary { min-height: 44px; align-content: center; cursor: pointer; color: var(--brand); font-size: 12px; }
+.expense-report-context form { display: grid; grid-template-columns: 1fr 1fr 1.4fr auto; gap: 12px; align-items: end; }
+.expense-kpis { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 12px; margin-top: 18px; }
+.expense-kpis article { display: flex; flex-direction: column; min-width: 0; gap: 8px; padding: 18px; border: 1px solid var(--border); border-radius: 8px; background: white; }
+.expense-kpis article:last-child { background: var(--surface-muted); }
+.expense-kpis span,.expense-kpis small { font-size: 11px; line-height: 1.7; color: var(--muted-foreground); }
+.expense-kpis strong { font-size: 24px; font-weight: 600; color: var(--brand); overflow-wrap: anywhere; }
+.expense-warning { margin-top: 16px; padding: 14px; background: #fcfaf6; border: 1px solid #e6d4b2; border-radius: 7px; font-size: 12px; line-height: 1.7; }
+.expense-warning a { text-decoration: underline; text-underline-offset: 3px; }
+.expense-coverage-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 16px; }
+.expense-coverage-grid h3,.expense-category-totals h3 { font-size: 13px; font-weight: 550; }
+.expense-coverage-state { font-size: 12px; color: var(--muted-foreground); margin-top: 6px; }
+.expense-coverage-form fieldset { border: 0; min-width: 0; }
+.expense-category-totals article { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 12px; border-bottom: 1px solid var(--border); }
+.expense-category-totals small { display: block; font-size: 11px; color: var(--muted-foreground); margin-top: 4px; }
+.expense-category-totals strong { font-size: 13px; font-weight: 550; }
+.expense-category-codes { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 16px; }
+@media(max-width:700px) {
+ .expense-report-context form { grid-template-columns: 1fr 1fr; }
+ .expense-report-context .setup-field:nth-of-type(3),.expense-report-context form>button { grid-column: 1 / -1; }
+ .expense-kpis { grid-template-columns: 1fr 1fr; gap: 8px; }
+ .expense-kpis article { padding: 12px; }
+ .expense-kpis article:last-child { grid-column: 1 / -1; }
+ .expense-kpis strong { font-size: 21px; }
+ .expense-coverage-grid,.expense-category-codes { grid-template-columns: 1fr; }
+ .expense-fields .auth-button { width: 100%; }
+}
+
+.expense-review-panel > summary { cursor: pointer; min-height: 44px; align-content: center; font-size: 17px; font-weight: 550; color: var(--brand); }
+.expense-review-panel > summary small { float: right; font-size: 12px; font-weight: 400; color: var(--muted-foreground); }

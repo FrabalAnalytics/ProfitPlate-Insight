@@ -1,0 +1,36 @@
+"use client";
+
+import { useActionState, useState, type ReactNode } from "react";
+import Link from "next/link";
+import { ArrowRight, Info, X } from "lucide-react";
+import { saveCatalogue } from "./actions";
+import { itemTypes, type CatalogueKind, type Unit } from "@/lib/catalogue";
+
+export function CatalogueEditor({ kind, organisationId, initial, units, materialName }: {
+  kind: CatalogueKind; organisationId: string; initial: Record<string, string>; units: Unit[]; materialName?: string;
+}) {
+  const [state, action, pending] = useActionState(saveCatalogue, {});
+  const [values, setValues] = useState(initial);
+  const edit = !!values.id;
+  const tab = kind === "supplier" ? "suppliers" : kind === "conversion" ? "conversions" : "materials";
+  const back = `/workspace/materials?organisation=${organisationId}&tab=${tab}${values.item_id ? `&item=${values.item_id}` : ""}`;
+  const update = (key: string, value: string) => setValues(previous => ({ ...previous, [key]: value }));
+  const field = (key: string, title: string, children: ReactNode, hint?: string) => <div className="setup-field"><label htmlFor={key}>{title}</label>{children}{state.errors?.[key] && <p id={`${key}-error`} className="field-error">{state.errors[key]}</p>}{hint && <small>{hint}</small>}</div>;
+  const input = (key: string, maximum = 120, required = false, type = "text") => <input id={key} name={key} type={type} maxLength={maximum} required={required} value={values[key] ?? ""} onChange={event => update(key, key === "code" ? event.target.value.toUpperCase() : event.target.value)} aria-invalid={!!state.errors?.[key]} aria-describedby={state.errors?.[key] ? `${key}-error` : undefined} />;
+  const baseUnit = units.find(unit => unit.id === values.base_uom_id);
+  const fromUnit = units.find(unit => unit.id === values.from_uom_id);
+  const compatible = units.filter(unit => unit.dimension === "PACKAGE" || unit.dimension === baseUnit?.dimension);
+
+  return <section className="catalogue-editor" aria-labelledby="catalogue-editor-heading"><div className="catalogue-editor-heading"><div><span className="eyebrow form-eyebrow">{kind === "conversion" ? "ITEM-SPECIFIC, EFFECTIVE-DATED" : edit ? "UPDATE YOUR RECORD" : "GROW YOUR CATALOGUE"}</span><h2 id="catalogue-editor-heading">{kind === "conversion" ? `Add a conversion for ${materialName}` : `${edit ? "Edit" : "Add"} ${kind}`}</h2></div><Link href={back} className="icon-button" aria-label="Close editor"><X size={18} /></Link></div>
+    {state.error && <p className="auth-alert" role="alert">{state.error}</p>}
+    <form action={action} aria-busy={pending} className="setup-form"><input type="hidden" name="kind" value={kind} /><input type="hidden" name="organisation_id" value={organisationId} /><input type="hidden" name="id" value={values.id ?? ""} />
+      {kind !== "conversion" && <><div className="setup-field-grid">{field("code", `${kind === "material" ? "Material" : "Supplier"} code`, edit ? <><input id="code" value={values.code} disabled /><input type="hidden" name="code" value={values.code} /></> : input("code", 40, true), edit ? "Codes stay fixed to protect future source mappings." : "Use a short code such as RICE001 or SUP001.")}{field("name", `${kind === "material" ? "Material" : "Supplier"} name`, input("name", 120, true))}</div></>}
+      {kind === "material" && <><div className="setup-field-grid">{field("item_type", "Material type", <select id="item_type" name="item_type" value={values.item_type} onChange={event => update("item_type", event.target.value)}>{itemTypes.map(([code, title]) => <option key={code} value={code}>{title}</option>)}</select>)}{field("category", "Category (optional)", input("category", 60), "For example: Grains, Protein or Packaging.")}</div>{field("base_uom_id", "Base unit", <><select id="base_uom_id" name={edit ? undefined : "base_uom_id"} disabled={edit} value={values.base_uom_id} onChange={event => update("base_uom_id", event.target.value)} required>{units.filter(unit => unit.dimension !== "PACKAGE").map(unit => <option key={unit.id} value={unit.id}>{unit.name} ({unit.code})</option>)}</select>{edit && <input type="hidden" name="base_uom_id" value={values.base_uom_id} />}</>, "Choose the unit used to measure this material. It stays fixed after creation; bags and cartons are configured separately.")}
+      <label className="catalogue-checkbox"><input type="checkbox" checked={values.stock_tracked === "true"} onChange={event => update("stock_tracked", String(event.target.checked))} /> Track quantities for this material</label><input type="hidden" name="stock_tracked" value={values.stock_tracked} /><p className="setup-help"><Info size={16} /> Add a reference price when available to estimate recipe costs. Unpriced materials remain missing; saving a material does not establish its cost.</p></>}
+      {kind === "supplier" && <><div className="setup-field-grid">{field("email", "Email (optional)", input("email", 254, false, "email"))}{field("phone", "Phone (optional)", input("phone", 40, false, "tel"))}</div>{field("address", "Address (optional)", <textarea id="address" name="address" rows={3} maxLength={500} value={values.address ?? ""} onChange={event => update("address", event.target.value)} />)}</>}
+      {kind !== "conversion" && <><label className="catalogue-checkbox"><input type="checkbox" checked={values.is_active === "true"} onChange={event => update("is_active", String(event.target.checked))} /> Active {kind}</label><input type="hidden" name="is_active" value={values.is_active} /><p className="catalogue-form-note">Inactive records remain available for history. You can reactivate them later.</p></>}
+      {kind === "conversion" && <><input type="hidden" name="item_id" value={values.item_id} /><div className="setup-field-grid">{field("from_uom_id", "Source unit", <select id="from_uom_id" name="from_uom_id" value={values.from_uom_id} onChange={event => update("from_uom_id", event.target.value)}>{compatible.map(unit => <option key={unit.id} value={unit.id}>{unit.name} ({unit.code})</option>)}</select>)}{field("factor", `Quantity in ${baseUnit?.code ?? "base units"}`, <input id="factor" name="factor" inputMode="decimal" value={values.factor ?? ""} onChange={event => update("factor", event.target.value)} required placeholder="e.g. 50" aria-invalid={!!state.errors?.factor} />, "Up to six decimal places. Do not use commas.")}</div>{field("effective_from", "Effective from", <input id="effective_from" name="effective_from" type="date" value={values.effective_from ?? ""} onChange={event => update("effective_from", event.target.value)} required />)}<p className="conversion-equation">1 {fromUnit?.code ?? "source unit"} <ArrowRight size={17} /> {values.factor || "…"} {baseUnit?.code}</p><p className="setup-help"><Info size={16} /> This conversion applies only to {materialName}. New dates create new versions; saved conversion records cannot be overwritten.</p></>}
+      <div className="catalogue-editor-actions"><Link className="secondary-button" href={back}>Cancel</Link><button className="auth-button" type="submit" disabled={pending}>{pending ? "Saving…" : kind === "conversion" ? "Save conversion" : `Save ${kind}`}<ArrowRight size={16} /></button></div>
+    </form>
+  </section>;
+}

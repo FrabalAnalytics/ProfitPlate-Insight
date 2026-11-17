@@ -1,0 +1,3 @@
+﻿Organisation_Code,Source_System,Expense_Ref,Line_Ref,Category_Code,Scope,Location_Code,Expense_From,Expense_To,Recognition_Method,Payment_Date,Amount,Currency,Description
+UAT_ORG,UAT_EXP,UAT-WAGES-001,1,WAGES,LOCATION,LOCATION_CODE_HERE,TEST_DATE,TEST_DATE,ON_DATE,TEST_DATE,1000,NGN,Fictional UAT labour
+UAT_ORG,UAT_EXP,UAT-RENT-001,1,RENT,LOCATION,LOCATION_CODE_HERE,TEST_DATE,TEST_DATE,ON_DATE,TEST_DATE,500,NGN,Fictional UAT operating expense

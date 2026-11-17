@@ -1,0 +1,1050 @@
+{
+  "source_file": "ProfitPlate_Master_Transaction_Import_Templates_v1.1.xlsx",
+  "sha256": "d8241d00a6f008c291fc7b08784d7db3d95b681df37087cc100a16e7493d8a33",
+  "status": "Proposed external contract; not an implemented importer",
+  "sheets": [
+    {
+      "name": "START_HERE",
+      "kind": "documentation",
+      "headers": [
+        "PROFITPLATE | UNIVERSAL DATA CONTRACT v1.1",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "data_row_count": 12,
+      "formula_count": 0,
+      "validation_rule_count": 0
+    },
+    {
+      "name": "Organisations",
+      "kind": "template",
+      "headers": [
+        "Organisation_Code",
+        "Organisation_Name",
+        "Country",
+        "Currency",
+        "Status"
+      ],
+      "data_row_count": 3,
+      "formula_count": 0,
+      "validation_rule_count": 0,
+      "fictional_sample_rows": [
+        {
+          "Organisation_Code": "ORG001",
+          "Organisation_Name": "Sample Restaurant Group",
+          "Country": "NG",
+          "Currency": "NGN",
+          "Status": "ACTIVE"
+        },
+        {
+          "Organisation_Code": "ORG002",
+          "Organisation_Name": "Example Catering Co",
+          "Country": "NG",
+          "Currency": "NGN",
+          "Status": "ACTIVE"
+        },
+        {
+          "Organisation_Code": "ORG003",
+          "Organisation_Name": "Demo Café Group",
+          "Country": "NG",
+          "Currency": "NGN",
+          "Status": "ACTIVE"
+        }
+      ]
+    },
+    {
+      "name": "Brands",
+      "kind": "template",
+      "headers": [
+        "Organisation_Code",
+        "Brand_Code",
+        "Brand_Name",
+        "Concept",
+        "Status"
+      ],
+      "data_row_count": 3,
+      "formula_count": 0,
+      "validation_rule_count": 0,
+      "fictional_sample_rows": [
+        {
+          "Organisation_Code": "ORG001",
+          "Brand_Code": "BR001",
+          "Brand_Name": "Sample Grill",
+          "Concept": "QSR",
+          "Status": "ACTIVE"
+        },
+        {
+          "Organisation_Code": "ORG001",
+          "Brand_Code": "BR002",
+          "Brand_Name": "Sample Lounge",
+          "Concept": "BAR",
+          "Status": "ACTIVE"
+        },
+        {
+          "Organisation_Code": "ORG002",
+          "Brand_Code": "BR003",
+          "Brand_Name": "Sample Events",
+          "Concept": "CATERING",
+          "Status": "ACTIVE"
+        }
+      ]
+    },
+    {
+      "name": "Locations",
+      "kind": "template",
+      "headers": [
+        "Organisation_Code",
+        "Location_Code",
+        "Location_Name",
+        "Location_Type",
+        "Brand_Code",
+        "Region",
+        "Status"
+      ],
+      "data_row_count": 3,
+      "formula_count": 0,
+      "validation_rule_count": 0,
+      "fictional_sample_rows": [
+        {
+          "Organisation_Code": "ORG001",
+          "Location_Code": "LOC001",
+          "Location_Name": "Island Outlet",
+          "Location_Type": "OUTLET",
+          "Brand_Code": "BR001",
+          "Region": "Lagos Island",
+          "Status": "ACTIVE"
+        },
+        {
+          "Organisation_Code": "ORG001",
+          "Location_Code": "LOC002",
+          "Location_Name": "Central Kitchen",
+          "Location_Type": "CENTRAL_KITCHEN",
+          "Brand_Code": "BR001",
+          "Region": "Lagos Mainland",
+          "Status": "ACTIVE"
+        },
+        {
+          "Organisation_Code": "ORG002",
+          "Location_Code": "LOC003",
+          "Location_Name": "Event Store",
+          "Location_Type": "WAREHOUSE",
+          "Brand_Code": "BR003",
+          "Region": "Lagos",
+          "Status": "ACTIVE"
+        }
+      ]
+    },
+    {
+      "name": "Departments",
+      "kind": "template",
+      "headers": [
+        "Organisation_Code",
+        "Department_Code",
+        "Department_Name",
+        "Location_Code",
+        "Status"
+      ],
+      "data_row_count": 3,
+      "formula_count": 0,
+      "validation_rule_count": 0,
+      "fictional_sample_rows": [
+        {
+          "Organisation_Code": "ORG001",
+          "Department_Code": "DEP001",
+          "Department_Name": "Kitchen",
+          "Location_Code": "LOC001",
+          "Status": "ACTIVE"
+        },
+        {
+          "Organisation_Code": "ORG001",
+          "Department_Code": "DEP002",
+          "Department_Name": "Bar",
+          "Location_Code": "LOC001",
+          "Status": "ACTIVE"
+        },
+        {
+          "Organisation_Code": "ORG001",
+          "Department_Code": "DEP003",
+          "Department_Name": "Production",
+          "Location_Code": "LOC002",
+          "Status": "ACTIVE"
+        }
+      ]
+    },
+    {
+      "name": "Suppliers",
+      "kind": "template",
+      "headers": [
+        "Organisation_Code",
+        "Supplier_Code",
+        "Supplier_Name",
+        "Phone",
+        "Status"
+      ],
+      "data_row_count": 3,
+      "formula_count": 0,
+      "validation_rule_count": 0,
+      "fictional_sample_rows": [
+        {
+          "Organisation_Code": "ORG001",
+          "Supplier_Code": "SUP001",
+          "Supplier_Name": "Sample Foods",
+          "Phone": "08000000001",
+          "Status": "ACTIVE"
+        },
+        {
+          "Organisation_Code": "ORG001",
+          "Supplier_Code": "SUP002",
+          "Supplier_Name": "Sample Packaging",
+          "Phone": "08000000002",
+          "Status": "ACTIVE"
+        },
+        {
+          "Organisation_Code": "ORG002",
+          "Supplier_Code": "SUP003",
+          "Supplier_Name": "Sample Produce",
+          "Phone": "08000000003",
+          "Status": "ACTIVE"
+        }
+      ]
+    },
+    {
+      "name": "UOM",
+      "kind": "template",
+      "headers": [
+        "UOM_Code",
+        "UOM_Name",
+        "Dimension",
+        "Decimal_Allowed"
+      ],
+      "data_row_count": 3,
+      "formula_count": 0,
+      "validation_rule_count": 0,
+      "fictional_sample_rows": [
+        {
+          "UOM_Code": "KG",
+          "UOM_Name": "Kilogram",
+          "Dimension": "MASS",
+          "Decimal_Allowed": "YES"
+        },
+        {
+          "UOM_Code": "L",
+          "UOM_Name": "Litre",
+          "Dimension": "VOLUME",
+          "Decimal_Allowed": "YES"
+        },
+        {
+          "UOM_Code": "PCS",
+          "UOM_Name": "Piece",
+          "Dimension": "COUNT",
+          "Decimal_Allowed": "YES"
+        }
+      ]
+    },
+    {
+      "name": "Items",
+      "kind": "template",
+      "headers": [
+        "Organisation_Code",
+        "Item_Code",
+        "Item_Name",
+        "Item_Type",
+        "Category",
+        "Base_UOM",
+        "Stock_Tracked",
+        "Status"
+      ],
+      "data_row_count": 3,
+      "formula_count": 0,
+      "validation_rule_count": 0,
+      "fictional_sample_rows": [
+        {
+          "Organisation_Code": "ORG001",
+          "Item_Code": "IT001",
+          "Item_Name": "Rice",
+          "Item_Type": "RAW",
+          "Category": "GRAINS",
+          "Base_UOM": "KG",
+          "Stock_Tracked": "YES",
+          "Status": "ACTIVE"
+        },
+        {
+          "Organisation_Code": "ORG001",
+          "Item_Code": "IT002",
+          "Item_Name": "Chicken",
+          "Item_Type": "RAW",
+          "Category": "PROTEIN",
+          "Base_UOM": "KG",
+          "Stock_Tracked": "YES",
+          "Status": "ACTIVE"
+        },
+        {
+          "Organisation_Code": "ORG001",
+          "Item_Code": "IT003",
+          "Item_Name": "Takeaway Box",
+          "Item_Type": "PACKAGING",
+          "Category": "PACKAGING",
+          "Base_UOM": "PCS",
+          "Stock_Tracked": "YES",
+          "Status": "ACTIVE"
+        }
+      ]
+    },
+    {
+      "name": "UOM_Conversions",
+      "kind": "template",
+      "headers": [
+        "Organisation_Code",
+        "Item_Code",
+        "From_UOM",
+        "To_UOM",
+        "Factor",
+        "Effective_From"
+      ],
+      "data_row_count": 3,
+      "formula_count": 0,
+      "validation_rule_count": 0,
+      "fictional_sample_rows": [
+        {
+          "Organisation_Code": "ORG001",
+          "Item_Code": "IT001",
+          "From_UOM": "BAG",
+          "To_UOM": "KG",
+          "Factor": "50",
+          "Effective_From": "2026-11-01"
+        },
+        {
+          "Organisation_Code": "ORG001",
+          "Item_Code": "IT002",
+          "From_UOM": "KG",
+          "To_UOM": "KG",
+          "Factor": "1",
+          "Effective_From": "2026-11-01"
+        },
+        {
+          "Organisation_Code": "ORG001",
+          "Item_Code": "IT003",
+          "From_UOM": "CARTON",
+          "To_UOM": "PCS",
+          "Factor": "100",
+          "Effective_From": "2026-11-01"
+        }
+      ]
+    },
+    {
+      "name": "Recipes",
+      "kind": "template",
+      "headers": [
+        "Organisation_Code",
+        "Recipe_Code",
+        "Recipe_Name",
+        "Recipe_Type",
+        "Yield_Qty",
+        "Yield_UOM",
+        "Version",
+        "Effective_From",
+        "Status"
+      ],
+      "data_row_count": 3,
+      "formula_count": 0,
+      "validation_rule_count": 0,
+      "fictional_sample_rows": [
+        {
+          "Organisation_Code": "ORG001",
+          "Recipe_Code": "REC001",
+          "Recipe_Name": "Rice Base",
+          "Recipe_Type": "SUB_RECIPE",
+          "Yield_Qty": "10",
+          "Yield_UOM": "KG",
+          "Version": "1",
+          "Effective_From": "2026-11-01",
+          "Status": "ACTIVE"
+        },
+        {
+          "Organisation_Code": "ORG001",
+          "Recipe_Code": "REC002",
+          "Recipe_Name": "Chicken Rice Plate",
+          "Recipe_Type": "FINAL",
+          "Yield_Qty": "1",
+          "Yield_UOM": "PCS",
+          "Version": "1",
+          "Effective_From": "2026-11-01",
+          "Status": "ACTIVE"
+        },
+        {
+          "Organisation_Code": "ORG001",
+          "Recipe_Code": "REC003",
+          "Recipe_Name": "Grilled Chicken",
+          "Recipe_Type": "SUB_RECIPE",
+          "Yield_Qty": "10",
+          "Yield_UOM": "PCS",
+          "Version": "1",
+          "Effective_From": "2026-11-01",
+          "Status": "ACTIVE"
+        }
+      ]
+    },
+    {
+      "name": "Recipe_Lines",
+      "kind": "template",
+      "headers": [
+        "Organisation_Code",
+        "Recipe_Code",
+        "Version",
+        "Line_No",
+        "Component_Type",
+        "Component_Code",
+        "Quantity",
+        "UOM",
+        "Loss_Percent"
+      ],
+      "data_row_count": 3,
+      "formula_count": 0,
+      "validation_rule_count": 0,
+      "fictional_sample_rows": [
+        {
+          "Organisation_Code": "ORG001",
+          "Recipe_Code": "REC001",
+          "Version": "1",
+          "Line_No": "1",
+          "Component_Type": "ITEM",
+          "Component_Code": "IT001",
+          "Quantity": "8",
+          "UOM": "KG",
+          "Loss_Percent": "0"
+        },
+        {
+          "Organisation_Code": "ORG001",
+          "Recipe_Code": "REC002",
+          "Version": "1",
+          "Line_No": "1",
+          "Component_Type": "RECIPE",
+          "Component_Code": "REC001",
+          "Quantity": "0.25",
+          "UOM": "KG",
+          "Loss_Percent": "0"
+        },
+        {
+          "Organisation_Code": "ORG001",
+          "Recipe_Code": "REC002",
+          "Version": "1",
+          "Line_No": "2",
+          "Component_Type": "ITEM",
+          "Component_Code": "IT003",
+          "Quantity": "1",
+          "UOM": "PCS",
+          "Loss_Percent": "0"
+        }
+      ]
+    },
+    {
+      "name": "Menu_Items",
+      "kind": "template",
+      "headers": [
+        "Organisation_Code",
+        "Menu_Code",
+        "Menu_Name",
+        "Menu_Type",
+        "Category",
+        "Brand_Code",
+        "Status"
+      ],
+      "data_row_count": 3,
+      "formula_count": 0,
+      "validation_rule_count": 0,
+      "fictional_sample_rows": [
+        {
+          "Organisation_Code": "ORG001",
+          "Menu_Code": "MENU001",
+          "Menu_Name": "Chicken Rice Plate",
+          "Menu_Type": "STANDARD",
+          "Category": "MAINS",
+          "Brand_Code": "BR001",
+          "Status": "ACTIVE"
+        },
+        {
+          "Organisation_Code": "ORG001",
+          "Menu_Code": "MENU002",
+          "Menu_Name": "Rice Combo",
+          "Menu_Type": "COMBO",
+          "Category": "COMBOS",
+          "Brand_Code": "BR001",
+          "Status": "ACTIVE"
+        },
+        {
+          "Organisation_Code": "ORG001",
+          "Menu_Code": "MENU003",
+          "Menu_Name": "Grilled Chicken",
+          "Menu_Type": "STANDARD",
+          "Category": "MAINS",
+          "Brand_Code": "BR001",
+          "Status": "ACTIVE"
+        }
+      ]
+    },
+    {
+      "name": "Menu_Components",
+      "kind": "template",
+      "headers": [
+        "Organisation_Code",
+        "Parent_Menu_Code",
+        "Line_No",
+        "Component_Type",
+        "Component_Code",
+        "Quantity",
+        "UOM",
+        "Selection_Group"
+      ],
+      "data_row_count": 3,
+      "formula_count": 0,
+      "validation_rule_count": 0,
+      "fictional_sample_rows": [
+        {
+          "Organisation_Code": "ORG001",
+          "Parent_Menu_Code": "MENU001",
+          "Line_No": "1",
+          "Component_Type": "RECIPE",
+          "Component_Code": "REC002",
+          "Quantity": "1",
+          "UOM": "PCS",
+          "Selection_Group": ""
+        },
+        {
+          "Organisation_Code": "ORG001",
+          "Parent_Menu_Code": "MENU002",
+          "Line_No": "1",
+          "Component_Type": "MENU",
+          "Component_Code": "MENU001",
+          "Quantity": "1",
+          "UOM": "PCS",
+          "Selection_Group": "MAIN"
+        },
+        {
+          "Organisation_Code": "ORG001",
+          "Parent_Menu_Code": "MENU003",
+          "Line_No": "1",
+          "Component_Type": "RECIPE",
+          "Component_Code": "REC003",
+          "Quantity": "1",
+          "UOM": "PCS",
+          "Selection_Group": ""
+        }
+      ]
+    },
+    {
+      "name": "Menu_Prices",
+      "kind": "template",
+      "headers": [
+        "Organisation_Code",
+        "Menu_Code",
+        "Location_Code",
+        "Channel_Code",
+        "Currency",
+        "Price",
+        "Effective_From",
+        "Effective_To"
+      ],
+      "data_row_count": 3,
+      "formula_count": 0,
+      "validation_rule_count": 0,
+      "fictional_sample_rows": [
+        {
+          "Organisation_Code": "ORG001",
+          "Menu_Code": "MENU001",
+          "Location_Code": "LOC001",
+          "Channel_Code": "DINE_IN",
+          "Currency": "NGN",
+          "Price": "6500",
+          "Effective_From": "2026-11-01",
+          "Effective_To": ""
+        },
+        {
+          "Organisation_Code": "ORG001",
+          "Menu_Code": "MENU002",
+          "Location_Code": "LOC001",
+          "Channel_Code": "TAKEAWAY",
+          "Currency": "NGN",
+          "Price": "8500",
+          "Effective_From": "2026-11-01",
+          "Effective_To": ""
+        },
+        {
+          "Organisation_Code": "ORG001",
+          "Menu_Code": "MENU003",
+          "Location_Code": "LOC001",
+          "Channel_Code": "DELIVERY",
+          "Currency": "NGN",
+          "Price": "5200",
+          "Effective_From": "2026-11-01",
+          "Effective_To": ""
+        }
+      ]
+    },
+    {
+      "name": "Sales_Import",
+      "kind": "template",
+      "headers": [
+        "Organisation_Code",
+        "Source_System",
+        "Location_Code",
+        "Sale_Date",
+        "Transaction_Ref",
+        "Line_Ref",
+        "Menu_Code",
+        "Quantity",
+        "Gross_Sales",
+        "Discount",
+        "Tax",
+        "Net_Sales",
+        "Channel_Code",
+        "Line_Type",
+        "Parent_Line_Ref",
+        "Status"
+      ],
+      "data_row_count": 3,
+      "formula_count": 0,
+      "validation_rule_count": 0,
+      "fictional_sample_rows": [
+        {
+          "Organisation_Code": "ORG001",
+          "Source_System": "POS_A",
+          "Location_Code": "LOC001",
+          "Sale_Date": "2026-11-14",
+          "Transaction_Ref": "TX1001",
+          "Line_Ref": "L1",
+          "Menu_Code": "MENU001",
+          "Quantity": "2",
+          "Gross_Sales": "13000",
+          "Discount": "0",
+          "Tax": "0",
+          "Net_Sales": "13000",
+          "Channel_Code": "DINE_IN",
+          "Line_Type": "NORMAL",
+          "Parent_Line_Ref": "",
+          "Status": "PAID"
+        },
+        {
+          "Organisation_Code": "ORG001",
+          "Source_System": "POS_A",
+          "Location_Code": "LOC001",
+          "Sale_Date": "2026-11-14",
+          "Transaction_Ref": "TX1002",
+          "Line_Ref": "L1",
+          "Menu_Code": "MENU002",
+          "Quantity": "1",
+          "Gross_Sales": "8500",
+          "Discount": "500",
+          "Tax": "0",
+          "Net_Sales": "8000",
+          "Channel_Code": "TAKEAWAY",
+          "Line_Type": "COMBO_PARENT",
+          "Parent_Line_Ref": "",
+          "Status": "PAID"
+        },
+        {
+          "Organisation_Code": "ORG001",
+          "Source_System": "POS_A",
+          "Location_Code": "LOC001",
+          "Sale_Date": "2026-11-14",
+          "Transaction_Ref": "TX1002",
+          "Line_Ref": "L2",
+          "Menu_Code": "MENU001",
+          "Quantity": "1",
+          "Gross_Sales": "0",
+          "Discount": "0",
+          "Tax": "0",
+          "Net_Sales": "0",
+          "Channel_Code": "TAKEAWAY",
+          "Line_Type": "COMBO_CHILD",
+          "Parent_Line_Ref": "L1",
+          "Status": "PAID"
+        }
+      ]
+    },
+    {
+      "name": "Purchases_Import",
+      "kind": "template",
+      "headers": [
+        "Organisation_Code",
+        "Source_System",
+        "Purchase_Date",
+        "Purchase_Ref",
+        "Line_Ref",
+        "Supplier_Code",
+        "Item_Code",
+        "Quantity",
+        "Purchase_UOM",
+        "Unit_Price",
+        "Line_Discount",
+        "Tax",
+        "Location_Code",
+        "Currency",
+        "Status"
+      ],
+      "data_row_count": 3,
+      "formula_count": 0,
+      "validation_rule_count": 0,
+      "fictional_sample_rows": [
+        {
+          "Organisation_Code": "ORG001",
+          "Source_System": "ERP_A",
+          "Purchase_Date": "2026-11-14",
+          "Purchase_Ref": "INV001",
+          "Line_Ref": "1",
+          "Supplier_Code": "SUP001",
+          "Item_Code": "IT001",
+          "Quantity": "2",
+          "Purchase_UOM": "BAG",
+          "Unit_Price": "45000",
+          "Line_Discount": "0",
+          "Tax": "0",
+          "Location_Code": "LOC002",
+          "Currency": "NGN",
+          "Status": "RECEIVED"
+        },
+        {
+          "Organisation_Code": "ORG001",
+          "Source_System": "ERP_A",
+          "Purchase_Date": "2026-11-14",
+          "Purchase_Ref": "INV001",
+          "Line_Ref": "2",
+          "Supplier_Code": "SUP001",
+          "Item_Code": "IT002",
+          "Quantity": "15",
+          "Purchase_UOM": "KG",
+          "Unit_Price": "5000",
+          "Line_Discount": "0",
+          "Tax": "0",
+          "Location_Code": "LOC002",
+          "Currency": "NGN",
+          "Status": "RECEIVED"
+        },
+        {
+          "Organisation_Code": "ORG001",
+          "Source_System": "ERP_A",
+          "Purchase_Date": "2026-11-14",
+          "Purchase_Ref": "INV002",
+          "Line_Ref": "1",
+          "Supplier_Code": "SUP002",
+          "Item_Code": "IT003",
+          "Quantity": "1",
+          "Purchase_UOM": "CARTON",
+          "Unit_Price": "12000",
+          "Line_Discount": "0",
+          "Tax": "0",
+          "Location_Code": "LOC001",
+          "Currency": "NGN",
+          "Status": "RECEIVED"
+        }
+      ]
+    },
+    {
+      "name": "Inventory_Movements",
+      "kind": "template",
+      "headers": [
+        "Organisation_Code",
+        "Source_System",
+        "Movement_Ref",
+        "Line_Ref",
+        "Movement_Date",
+        "Item_Code",
+        "From_Location",
+        "To_Location",
+        "Movement_Type",
+        "Quantity",
+        "UOM",
+        "Reason"
+      ],
+      "data_row_count": 3,
+      "formula_count": 0,
+      "validation_rule_count": 0,
+      "fictional_sample_rows": [
+        {
+          "Organisation_Code": "ORG001",
+          "Source_System": "ERP_A",
+          "Movement_Ref": "MOV001",
+          "Line_Ref": "1",
+          "Movement_Date": "2026-11-14",
+          "Item_Code": "IT001",
+          "From_Location": "LOC002",
+          "To_Location": "LOC001",
+          "Movement_Type": "TRANSFER",
+          "Quantity": "10",
+          "UOM": "KG",
+          "Reason": "Outlet supply"
+        },
+        {
+          "Organisation_Code": "ORG001",
+          "Source_System": "ERP_A",
+          "Movement_Ref": "MOV002",
+          "Line_Ref": "1",
+          "Movement_Date": "2026-11-14",
+          "Item_Code": "IT002",
+          "From_Location": "LOC002",
+          "To_Location": "",
+          "Movement_Type": "WASTE",
+          "Quantity": "1",
+          "UOM": "KG",
+          "Reason": "Trim loss"
+        },
+        {
+          "Organisation_Code": "ORG001",
+          "Source_System": "ERP_A",
+          "Movement_Ref": "MOV003",
+          "Line_Ref": "1",
+          "Movement_Date": "2026-11-14",
+          "Item_Code": "IT003",
+          "From_Location": "",
+          "To_Location": "LOC001",
+          "Movement_Type": "RECEIPT",
+          "Quantity": "100",
+          "UOM": "PCS",
+          "Reason": "Supplier receipt"
+        }
+      ]
+    },
+    {
+      "name": "Production_Results",
+      "kind": "template",
+      "headers": [
+        "Organisation_Code",
+        "Location_Code",
+        "Batch_Ref",
+        "Production_Date",
+        "Recipe_Code",
+        "Recipe_Version",
+        "Planned_Qty",
+        "Actual_Qty",
+        "Output_UOM",
+        "Waste_Qty",
+        "Waste_UOM"
+      ],
+      "data_row_count": 3,
+      "formula_count": 0,
+      "validation_rule_count": 0,
+      "fictional_sample_rows": [
+        {
+          "Organisation_Code": "ORG001",
+          "Location_Code": "LOC002",
+          "Batch_Ref": "BAT001",
+          "Production_Date": "2026-11-14",
+          "Recipe_Code": "REC001",
+          "Recipe_Version": "1",
+          "Planned_Qty": "20",
+          "Actual_Qty": "19",
+          "Output_UOM": "KG",
+          "Waste_Qty": "1",
+          "Waste_UOM": "KG"
+        },
+        {
+          "Organisation_Code": "ORG001",
+          "Location_Code": "LOC002",
+          "Batch_Ref": "BAT002",
+          "Production_Date": "2026-11-14",
+          "Recipe_Code": "REC003",
+          "Recipe_Version": "1",
+          "Planned_Qty": "30",
+          "Actual_Qty": "28",
+          "Output_UOM": "PCS",
+          "Waste_Qty": "2",
+          "Waste_UOM": "PCS"
+        },
+        {
+          "Organisation_Code": "ORG001",
+          "Location_Code": "LOC001",
+          "Batch_Ref": "BAT003",
+          "Production_Date": "2026-11-14",
+          "Recipe_Code": "REC002",
+          "Recipe_Version": "1",
+          "Planned_Qty": "12",
+          "Actual_Qty": "12",
+          "Output_UOM": "PCS",
+          "Waste_Qty": "0",
+          "Waste_UOM": "PCS"
+        }
+      ]
+    },
+    {
+      "name": "Waste_Import",
+      "kind": "template",
+      "headers": [
+        "Organisation_Code",
+        "Location_Code",
+        "Waste_Ref",
+        "Line_Ref",
+        "Waste_Date",
+        "Item_Type",
+        "Item_Code",
+        "Quantity",
+        "UOM",
+        "Reason_Code"
+      ],
+      "data_row_count": 3,
+      "formula_count": 0,
+      "validation_rule_count": 0,
+      "fictional_sample_rows": [
+        {
+          "Organisation_Code": "ORG001",
+          "Location_Code": "LOC001",
+          "Waste_Ref": "W001",
+          "Line_Ref": "1",
+          "Waste_Date": "2026-11-14",
+          "Item_Type": "ITEM",
+          "Item_Code": "IT002",
+          "Quantity": "1",
+          "UOM": "KG",
+          "Reason_Code": "SPOILAGE"
+        },
+        {
+          "Organisation_Code": "ORG001",
+          "Location_Code": "LOC002",
+          "Waste_Ref": "W002",
+          "Line_Ref": "1",
+          "Waste_Date": "2026-11-14",
+          "Item_Type": "RECIPE",
+          "Item_Code": "REC001",
+          "Quantity": "0.5",
+          "UOM": "KG",
+          "Reason_Code": "OVERPRODUCTION"
+        },
+        {
+          "Organisation_Code": "ORG001",
+          "Location_Code": "LOC001",
+          "Waste_Ref": "W003",
+          "Line_Ref": "1",
+          "Waste_Date": "2026-11-14",
+          "Item_Type": "ITEM",
+          "Item_Code": "IT003",
+          "Quantity": "3",
+          "UOM": "PCS",
+          "Reason_Code": "DAMAGE"
+        }
+      ]
+    },
+    {
+      "name": "Operating_Costs",
+      "kind": "template",
+      "headers": [
+        "Organisation_Code",
+        "Cost_Code",
+        "Cost_Name",
+        "Cost_Behaviour",
+        "Cost_Category",
+        "Allocation_Basis",
+        "Monthly_Amount",
+        "Currency",
+        "Effective_From"
+      ],
+      "data_row_count": 3,
+      "formula_count": 0,
+      "validation_rule_count": 0,
+      "fictional_sample_rows": [
+        {
+          "Organisation_Code": "ORG001",
+          "Cost_Code": "C001",
+          "Cost_Name": "Delivery Commission",
+          "Cost_Behaviour": "VARIABLE",
+          "Cost_Category": "CHANNEL",
+          "Allocation_Basis": "SALES_VALUE",
+          "Monthly_Amount": "0",
+          "Currency": "NGN",
+          "Effective_From": "2026-11-01"
+        },
+        {
+          "Organisation_Code": "ORG001",
+          "Cost_Code": "C002",
+          "Cost_Name": "Kitchen Rent",
+          "Cost_Behaviour": "FIXED",
+          "Cost_Category": "OCCUPANCY",
+          "Allocation_Basis": "FLOOR_AREA",
+          "Monthly_Amount": "650000",
+          "Currency": "NGN",
+          "Effective_From": "2026-11-01"
+        },
+        {
+          "Organisation_Code": "ORG001",
+          "Cost_Code": "C003",
+          "Cost_Name": "Kitchen Labour",
+          "Cost_Behaviour": "MIXED",
+          "Cost_Category": "LABOUR",
+          "Allocation_Basis": "LABOUR_HOURS",
+          "Monthly_Amount": "950000",
+          "Currency": "NGN",
+          "Effective_From": "2026-11-01"
+        }
+      ]
+    },
+    {
+      "name": "Promotions",
+      "kind": "template",
+      "headers": [
+        "Organisation_Code",
+        "Promotion_Code",
+        "Promotion_Name",
+        "Promotion_Type",
+        "Discount_Value",
+        "Start_Date",
+        "End_Date",
+        "Menu_Code",
+        "Status"
+      ],
+      "data_row_count": 3,
+      "formula_count": 0,
+      "validation_rule_count": 0,
+      "fictional_sample_rows": [
+        {
+          "Organisation_Code": "ORG001",
+          "Promotion_Code": "PR001",
+          "Promotion_Name": "Lunch Offer",
+          "Promotion_Type": "PERCENT",
+          "Discount_Value": "10",
+          "Start_Date": "2026-11-01",
+          "End_Date": "2026-11-30",
+          "Menu_Code": "MENU001",
+          "Status": "ACTIVE"
+        },
+        {
+          "Organisation_Code": "ORG001",
+          "Promotion_Code": "PR002",
+          "Promotion_Name": "Combo Offer",
+          "Promotion_Type": "AMOUNT",
+          "Discount_Value": "500",
+          "Start_Date": "2026-11-14",
+          "End_Date": "2026-11-20",
+          "Menu_Code": "MENU002",
+          "Status": "ACTIVE"
+        },
+        {
+          "Organisation_Code": "ORG001",
+          "Promotion_Code": "PR003",
+          "Promotion_Name": "Weekend Special",
+          "Promotion_Type": "PERCENT",
+          "Discount_Value": "5",
+          "Start_Date": "2026-11-21",
+          "End_Date": "2026-11-22",
+          "Menu_Code": "MENU003",
+          "Status": "DRAFT"
+        }
+      ]
+    },
+    {
+      "name": "FIELD_DICTIONARY",
+      "kind": "documentation",
+      "headers": [
+        "Template",
+        "Field",
+        "Type",
+        "Required",
+        "Validation / Notes"
+      ],
+      "data_row_count": 168,
+      "formula_count": 0,
+      "validation_rule_count": 0
+    }
+  ],
+  "sheet_count": 22,
+  "template_count": 20
+}

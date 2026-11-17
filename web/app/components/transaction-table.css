@@ -1,0 +1,35 @@
+.transaction-table-wrap { margin-top: 18px; border: 1px solid var(--border); border-radius: 8px; overflow: clip; }
+.transaction-table { width: 100%; border-collapse: collapse; table-layout: fixed; text-align: left; font-size: 12px; font-variant-numeric: tabular-nums; }
+.transaction-table thead th { padding: 10px 12px; background: var(--surface-muted); color: var(--muted-foreground); font-size: 11px; font-weight: 500; }
+.transaction-table thead th:nth-child(1) { width: 19%; }
+.transaction-table thead th:nth-child(2) { width: 28%; }
+.transaction-table thead th:nth-child(3) { width: 10%; }
+.transaction-table thead th:nth-child(4) { width: 21%; }
+.transaction-table thead th:nth-child(5) { width: 16%; }
+.transaction-table thead th:last-child { width: 6%; padding: 0; }
+.transaction-main > td, .transaction-main > th { padding: 9px 12px; border-top: 1px solid var(--border); vertical-align: middle; overflow-wrap: anywhere; }
+.transaction-main:hover { background: #f6f8f6; }
+.transaction-main.transaction-attention { background: #fcfaf6; }
+.transaction-table strong { font-size: 12px; font-weight: 600; }
+.transaction-table small { display: block; margin-top: 3px; font-size: 11px; line-height: 1.5; color: var(--muted-foreground); font-weight: 400; }
+.transaction-number { text-align: right; }
+.transaction-amount { font-weight: 600; }
+.transaction-toggle { padding: 0 !important; }
+.transaction-toggle button { display: flex; align-items: center; justify-content: center; gap: 5px; min-height: 44px; width: 100%; cursor: pointer; color: var(--brand); border-radius: 5px; }
+.transaction-toggle button[aria-expanded=true] svg { transform: rotate(180deg); }
+.transaction-toggle button:focus-visible { outline: 2px solid var(--brand); outline-offset: -3px; }
+.transaction-detail[hidden] { display: none; }
+.transaction-detail > td { padding: 0; }
+.transaction-detail-content { padding: 14px 16px; background: #f6f8f6; border-top: 1px solid var(--border); font-size: 12px; line-height: 1.7; }
+.transaction-detail-content p + p { margin-top: 6px; }
+.transaction-detail-content dl { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 16px; margin-top: 10px; }
+.transaction-detail-content dt { font-size: 11px; color: var(--muted-foreground); }
+.transaction-detail-content dd { margin-top: 4px; font-weight: 550; overflow-wrap: anywhere; }
+.transaction-notices td { padding: 8px 12px; background: #fcfaf6; font-size: 12px; line-height: 1.6; overflow-wrap: anywhere; }
+.transaction-notices p + p { margin-top: 4px; }
+.transaction-table .attention-badge { color: #805616; border-color: #e6d4b2; background: #fcfaf6; }
+.transaction-table .transaction-mobile-meta { display: none; }
+@media(max-width:700px) {
+ .transaction-table { min-width: 720px; }
+ .transaction-detail-content dl { grid-template-columns: 1fr 1fr; gap: 12px; }
+}

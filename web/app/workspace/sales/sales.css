@@ -1,0 +1,50 @@
+.sales-summary-filters { display: flex; align-items: flex-end; flex-wrap: wrap; gap: 12px; margin-top: 16px; }
+.sales-summary-filters > .setup-field { flex: 1; min-width: 150px; }
+.sales-summary-filters > button { min-height: 44px; }
+.sales-summary-cards { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 12px; margin-top: 16px; }
+.sales-summary-cards article { display: flex; flex-direction: column; gap: 8px; padding: 16px; border-radius: 9px; background: var(--surface-muted); }
+.sales-summary-cards span, .sales-summary-cards small { font-size: 11px; line-height: 1.9; color: var(--muted-foreground); }
+.sales-summary-cards strong { font-size: 22px; font-weight: 550; color: var(--brand); overflow-wrap: anywhere; }
+.sales-summary-cards .sales-negative { background: #fff4ef; }
+.sales-summary-cards .sales-negative strong { color: #9f4325; }
+.sales-period-facts { margin-top: 22px; font-size: 12px; line-height: 1.9; color: var(--muted-foreground); }
+.sales-missing { display: flex; flex-direction: column; gap: 12px; margin-top: 24px; border: 1px solid #e6d4b2; background: #fcfaf6; padding: 20px; border-radius: 8px; font-size: 12px; line-height: 1.9; }
+.sales-warning { color: #94651f; }
+.sales-menu-breakdown { margin-top: 28px; }
+.sales-menu-breakdown h3 { font-size: 18px; font-weight: 550; }
+.sales-menu-breakdown article { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px; padding-block: 14px; border-bottom: 1px solid var(--border); }
+.sales-menu-breakdown h4 { font-size: 14px; font-weight: 550; }
+.sales-menu-breakdown p { margin-top: 5px; color: var(--muted-foreground); font-size: 11px; line-height: 1.9; }
+.sales-menu-breakdown dl { display: flex; flex-wrap: wrap; gap: 25px; }
+.sales-menu-breakdown dt { font-size: 10px; color: var(--muted-foreground); }
+.sales-menu-breakdown dd { margin-top: 8px; font-size: 13px; overflow-wrap: anywhere; }
+
+
+
+.sales-period-shortcuts { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+.sales-period-shortcuts a { display: inline-flex; align-items: center; min-height: 36px; padding: 6px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 12px; color: var(--brand); }
+.sales-period-shortcuts a[aria-current] { background: var(--surface-muted); border-color: #a6bfb1; font-weight: 600; }
+.sales-menu-breakdown dl { justify-content: flex-end; text-align: right; }
+@media(max-width:700px) {
+ .sales-summary-filters { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+ .sales-summary-filters > .setup-field { min-width: 0; }
+ .sales-summary-filters > .setup-field:nth-of-type(3), .sales-summary-filters > button { grid-column: 1 / -1; }
+ .sales-summary-cards { grid-template-columns: 1fr 1fr; gap: 8px; }
+ .sales-summary-cards article { padding: 12px; gap: 6px; }
+ .sales-summary-cards article:first-child { grid-column: 1 / -1; }
+ .sales-summary-cards strong { font-size: 19px; }
+ .sales-summary-cards small { font-size: 11px; line-height: 1.6; }
+ .sales-period-shortcuts a { min-height: 44px; flex: 1; justify-content: center; padding-inline: 8px; }
+ .sales-menu-breakdown article { display: block; }
+ .sales-menu-breakdown dl { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; margin-top: 12px; text-align: left; }
+ .sales-menu-breakdown dd { font-size: 12px; }
+}
+
+.sales-filter-panel { margin-top: 12px; border: 1px solid var(--border); border-radius: 7px; }
+.sales-filter-panel > summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 52px; padding: 10px 12px; cursor: pointer; list-style: none; font-size: 12px; }
+.sales-filter-panel > summary::-webkit-details-marker { display: none; }
+.sales-filter-panel > summary strong { font-weight: 550; }
+.sales-filter-panel > summary small { display: block; margin-top: 3px; color: var(--muted-foreground); }
+.sales-filter-action { color: var(--brand); white-space: nowrap; text-decoration: underline; text-underline-offset: 3px; }
+.sales-filter-panel[open] .sales-filter-action { font-weight: 600; }
+.sales-filter-panel .sales-summary-filters { margin: 0; padding: 12px; border-top: 1px solid var(--border); }

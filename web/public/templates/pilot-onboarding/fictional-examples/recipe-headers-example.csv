@@ -1,0 +1,3 @@
+﻿recipe_code,recipe_name,recipe_type,yield_quantity,yield_unit_code,effective_from,notes
+BASE001,Tomato base,SUB_RECIPE,8,KG,2026-11-14,Fictional recipe: measured usable batch yield
+PLATE001,Chicken rice plate,FINAL,20,PCS,2026-11-14,Fictional recipe: batch yields 20 complete servings

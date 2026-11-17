@@ -1,0 +1,140 @@
+.management-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-block: 14px; }
+.management-action-short { display: none; }
+.management-actions .auth-button { width: auto; min-height: 42px; padding: 10px 16px; margin: 0; font-size: 12px; gap: 10px; }
+.management-table-wrap { min-width: 0; margin-top: 12px; }
+.management-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.management-table th,.management-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; text-align: left; overflow-wrap: anywhere; }
+.management-table thead th { background: var(--surface-muted); font-weight: 550; }
+.management-table tbody th { width: 30%; font-weight: 500; }
+.management-table td:nth-child(2) { width: 24%; font-variant-numeric: tabular-nums; font-weight: 550; }
+.management-table small { display: block; margin-top: 4px; font-size: 11px; color: var(--muted-foreground); line-height: 1.7; }
+.management-state { color: var(--brand); text-transform: capitalize; font-size: 11px; }
+.management-caution { color: #94651f; }
+.management-warning { margin-top: 14px; padding: 12px 16px; border: 1px solid #e6d4b2; background: #fcfaf6; border-radius: 7px; font-size: 12px; line-height: 1.7; }
+.management-method p { font-size: 12px; line-height: 1.8; color: var(--muted-foreground); margin-top: 12px; overflow-wrap: anywhere; }
+.management-menu { margin-top: 18px; }
+.management-jump-nav { display: flex; flex-wrap: wrap; gap: 6px; margin-block: 14px 12px; }
+.management-jump-nav a { min-height: 38px; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px; background: white; color: var(--brand); font-size: 12px; }
+.management-jump-nav a:hover { background: var(--surface-muted); }
+.management-summary,.management-disclosure { scroll-margin-top: 95px; }
+.management-summary h2 { font-size: 18px; font-weight: 600; letter-spacing: -.3px; }
+.management-metrics { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 12px; }
+.management-metrics article { display: flex; flex-direction: column; gap: 12px; min-width: 0; padding: 18px; border: 1px solid var(--border); border-radius: 9px; background: white; }
+.management-metrics article > div { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 10px; align-items: center; }
+.management-metrics article > div > span:first-child { font-size: 12px; color: var(--muted-foreground); }
+.management-metrics .management-state { border-radius: 4px; padding: 3px 6px; background: #eef4ef; font-size: 10px; }
+.management-metrics .management-caution { background: #fcf4e6; }
+.management-metrics article > strong { color: var(--brand); font-size: clamp(23px,2.3vw,30px); font-weight: 600; letter-spacing: -.6px; overflow-wrap: anywhere; }
+.management-metrics article > small { margin-top: auto; color: var(--muted-foreground); font-size: 11px; line-height: 1.6; }
+.management-metrics .management-prime { background: var(--surface-muted); border-color: #bcd2c5; }
+.management-metric-label { display: inline-flex; align-items: flex-start; gap: 6px; }
+.management-metric-label svg { flex-shrink: 0; color: var(--brand); margin-top: 1px; }
+.management-metrics article > .management-ratio { border-top: 1px solid var(--border); padding-top: 10px; gap: 6px 12px; }
+.management-ratio > span { display: inline-flex; align-items: center; gap: 5px; }
+.management-ratio b { font-size: 22px; color: var(--brand); font-weight: 600; font-variant-numeric: tabular-nums; }
+.management-review-strip { display: flex; align-items: flex-start; gap: 12px; padding: 16px; margin-block: 16px; border: 1px solid #cbded0; border-radius: 8px; background: #eff5ef; }
+.management-review-strip > svg { flex-shrink: 0; color: var(--brand); margin-top: 1px; }
+.management-review-strip > div { flex: 1; }
+.management-review-strip strong { font-size: 12px; font-weight: 600; }
+.management-review-strip p { margin-top: 4px; font-size: 11px; line-height: 1.7; color: var(--muted-foreground); }
+.management-review-attention { border-color: #e6d4b2; background: #fcfaf6; }
+.management-review-attention > svg { color: #94651f; }
+.management-disclosure { margin-top: 12px; border: 1px solid var(--border); background: white; border-radius: 8px; }
+.management-disclosure > summary { list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 17px 20px; cursor: pointer; }
+.management-disclosure > summary::-webkit-details-marker { display: none; }
+.management-disclosure > summary strong { display: block; font-size: 14px; font-weight: 600; }
+.management-disclosure > summary small { display: block; margin-top: 5px; font-size: 11px; color: var(--muted-foreground); line-height: 1.6; }
+.management-disclosure > summary > svg { flex-shrink: 0; color: var(--muted-foreground); }
+.management-disclosure[open] > summary > svg { transform: rotate(180deg); }
+.management-disclosure[open] > summary { border-bottom: 1px solid var(--border); }
+.management-disclosure-body { padding: 0 20px 18px; }
+.management-disclosure-body h3 { margin-top: 20px; font-size: 13px; font-weight: 600; }
+.management-menu-table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 12px; }
+.management-menu-table th,.management-menu-table td { text-align: right; padding: 12px 8px; border-bottom: 1px solid var(--border); font-variant-numeric: tabular-nums; }
+.management-menu-table th:first-child { text-align: left; }
+.management-menu-table thead th { background: var(--surface-muted); font-size: 11px; font-weight: 500; }
+.management-menu-table tbody th { font-weight: 550; }
+.management-menu-table small { display: block; margin-top: 5px; font-size: 10px; color: var(--muted-foreground); font-weight: 400; }
+@media(max-width:1050px) { .management-metrics { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+@media(max-width:650px) {
+ .management-metrics { gap: 8px; }
+ .management-metrics article { padding: 13px; gap: 10px; }
+ .management-metrics article > strong { font-size: 21px; }
+ .management-review-strip { flex-wrap: wrap; }
+ .management-review-strip .record-edit { margin-left: 31px; min-height: 30px; }
+ .management-disclosure > summary { padding: 15px; }
+ .management-disclosure-body { padding: 0 15px 15px; }
+ .management-jump-nav { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 6px; }
+ .management-jump-nav a { white-space: nowrap; flex-shrink: 0; min-height: 44px; }
+ .management-menu-table thead { position: absolute; width: 1px; height: 1px; clip-path: inset(50%); overflow: hidden; }
+ .management-menu-table tr { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 12px; border-bottom: 1px solid var(--border); padding-block: 14px; }
+ .management-menu-table tbody th { grid-column: 1 / -1; }
+ .management-menu-table th,.management-menu-table td { text-align: left; padding: 0; border: 0; overflow-wrap: anywhere; }
+ .management-menu-table td::before { content: attr(data-label); display: block; font-size: 10px; color: var(--muted-foreground); margin-bottom: 4px; }
+ .management-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+ .management-table tr { display: block; padding-block: 10px; border-bottom: 1px solid var(--border); }
+ .management-table tbody th,.management-table td,.management-table td:nth-child(2) { display: block; width: 100%; border: 0; padding: 3px 0; }
+ .management-table tbody th { font-weight: 600; }
+ .management-table td[data-label="Value"] { font-size: 15px; color: var(--brand); }
+ .management-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+ .management-actions button { flex: 1; min-height: 44px; justify-content: center; padding: 9px 8px; font-size: 11px; gap: 5px; }
+ .management-actions .auth-button { padding: 9px 8px; font-size: 11px; gap: 5px; }
+ .management-action-full { display: none; }
+ .management-report .management-actions button .management-action-short { display: inline; font-size: 11px; font-weight: 550; line-height: 1.4; letter-spacing: 0; white-space: nowrap; }
+}
+@media print {
+ @page { size: A4; margin: 14mm; }
+ body,.app-frame,.app-content,.workspace-main { display: block !important; width: auto !important; min-width: 0 !important; margin: 0 !important; padding: 0 !important; background: white !important; color: black; }
+ .app-sidebar,.app-topbar,.workspace-footer,.sidebar-overlay,.management-actions,.management-no-print,.management-context nav { display: none !important; }
+ .management-report .overview-panel { padding: 0; border: 0; margin-top: 20px; }
+ .management-report .overview-context { padding: 12px; }
+ .management-report .page-heading-row { margin: 0; }
+ .management-report h1 { font-size: 22pt; }
+ .management-report h2 { break-after: avoid; font-size: 14pt; }
+ .management-report h3 { break-after: avoid; }
+ .management-report table { font-size: 9pt; }
+ .management-report thead { display: table-header-group; position: static; width: auto; height: auto; clip-path: none; }
+ .management-report tr { display: table-row; break-inside: avoid; }
+ .management-report .management-table tbody th,.management-report .management-table td,.management-report .management-table td:nth-child(2) { display: table-cell; width: auto; padding: 7px; border-bottom: 1px solid #ddd; font-size: 9pt; color: black; }
+ .management-report p,.management-report small { color: #333; }
+ .management-metrics { grid-template-columns: repeat(3,minmax(0,1fr)); }
+ .management-metrics article { break-inside: avoid; padding: 12px; }
+ .management-metrics article > strong { font-size: 18pt; }
+ .management-review-strip { break-inside: avoid; }
+ .management-disclosure { border: 0; margin-top: 20px; }
+ .management-disclosure > summary { padding: 0 0 8px; border-bottom: 1px solid #ddd; break-after: avoid; }
+ .management-disclosure > summary > svg { display: none; }
+ .management-disclosure-body { padding: 0; }
+ .management-disclosure::details-content { content-visibility: visible; display: block; }
+ .management-menu-table thead { position: static; width: auto; height: auto; clip-path: none; }
+ .management-menu-table tr { display: table-row; }
+ .management-menu-table td::before { display: none; }
+ .management-menu-table th,.management-menu-table td { padding: 7px; }
+ a { color: inherit; text-decoration: none; }
+}
+ .management-save { margin-block: 16px; padding: 16px; border: 1px solid var(--border); border-radius: 12px; background: white; }
+ .management-save summary { cursor: pointer; font-weight: 600; color: var(--brand); }
+ .management-save form { margin-top: 16px; display: grid; gap: 12px; max-width: 620px; }
+ .management-save input { width: 100%; min-width: 0; }
+ .management-history-list { display: grid; gap: 12px; }
+ .management-history-list article { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+ .management-history-list h2 { overflow-wrap: anywhere; font-size: 17px; }
+ .management-history-list article > div { min-width: 0; }
+ .management-history-list article > a { flex-shrink: 0; }
+ .management-history-pages { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 20px; }
+ @media (max-width: 600px) { .management-history-list article { align-items: flex-start; flex-direction: column; } }
+ .management-review-panel { margin-top: 20px; padding: 18px; background: white; border: 1px solid var(--border); border-radius: 9px; }
+ .management-review-panel h2 { font-size: 18px; }
+ .management-review-status { padding: 6px 10px; border-radius: 6px; background: #fcfaf6; color: #94651f; font-size: 12px; }
+ .management-review-approved { color: var(--brand); background: #edf5ef; }
+ .management-review-form { display: grid; gap: 12px; max-width: 650px; margin-top: 16px; }
+ .management-review-form textarea { width: 100%; resize: vertical; min-height: 90px; }
+ .management-review-confirm { display: flex; gap: 10px; align-items: flex-start; font-size: 12px; line-height: 1.7; }
+ .management-review-confirm input { flex-shrink: 0; margin-top: 4px; }
+ .management-review-decision { margin-top: 12px; font-size: 12px; line-height: 1.8; overflow-wrap: anywhere; }
+ .management-review-decision span { display: block; white-space: pre-wrap; }
+ .management-review-events { padding-left: 20px; font-size: 12px; }
+ .management-review-events li { padding: 12px 0; border-bottom: 1px solid var(--border); overflow-wrap: anywhere; }
+ .management-review-events small { display: block; margin-top: 5px; color: var(--muted-foreground); }
+ .management-review-events p { white-space: pre-wrap; margin-top: 6px; }
+ @media print { .management-review-panel { padding: 0; border: 0; } .management-review-panel .overview-section-heading { break-inside: avoid; } }

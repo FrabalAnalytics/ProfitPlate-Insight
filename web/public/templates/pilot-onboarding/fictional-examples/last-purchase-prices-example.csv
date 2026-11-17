@@ -1,0 +1,7 @@
+﻿material_code,quantity,unit_code,total_price,price_date,source_note
+RICE001,50,KG,90000,2026-11-14,Fictional last supplier invoice: 50 kg rice
+CHICKEN001,1,KG,6000,2026-11-14,Fictional last supplier invoice
+TOMATO001,1,KG,1000,2026-11-14,Fictional last supplier invoice
+ONION001,1,KG,800,2026-11-14,Fictional last supplier invoice
+OIL001,1,L,2500,2026-11-14,Fictional last supplier invoice
+BOX001,12,PCS,1200,2026-11-14,Fictional last supplier invoice: 12 boxes
