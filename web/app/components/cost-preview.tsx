@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowDownRight, ChefHat, SlidersHorizontal, Utensils } from "lucide-react";
+import { ChefHat, SlidersHorizontal, Utensils } from "lucide-react";
 
 const money = (value: number) => `₦${value.toLocaleString("en-NG", { maximumFractionDigits: 0 })}`;
 
@@ -17,8 +17,7 @@ export function CostPreview() {
       <div className="preview-cost-bar" aria-hidden="true"><span style={{ width: `${ingredientCost / price * 100}%` }} /><span style={{ width: `${packaging / price * 100}%` }} /><span style={{ width: `${margin}%` }} /></div>
       <div className="preview-legend"><span><i />Ingredients</span><span><i />Packaging</span><span><i />Food gross profit</span></div>
       <div className="preview-slider-panel"><div><label htmlFor="ingredient-cost"><SlidersHorizontal size={15} /> Ingredient cost per portion</label><output htmlFor="ingredient-cost">{money(ingredientCost)}</output></div><input id="ingredient-cost" type="range" min="2500" max="5000" step="100" value={ingredientCost} onChange={event => setIngredientCost(Number(event.target.value))} aria-valuetext={`${money(ingredientCost)} per portion`} /><div className="preview-range-labels"><span>{money(2500)}</span><span>Drag to explore the difference</span><span>{money(5000)}</span></div></div>
-      <p className="preview-insight"><ArrowDownRight size={16} /><span>A cost change affects every portion. See it before it becomes a surprise.</span></p>
-      <p className="preview-disclaimer">Fictional example. Packaging: {money(packaging)} per portion. Excludes labour, commissions and other operating costs. This is an illustration, not a live report.</p>
+      <p className="preview-disclaimer">Fictional example. Packaging: {money(packaging)} per portion. Excludes labour, commissions and other operating costs.</p>
     </div>
   </section>;
 }

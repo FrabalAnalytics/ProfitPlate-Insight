@@ -27,8 +27,8 @@ export default async function ProductionSetup({searchParams}:{searchParams:Promi
  const costsResult=permission?.data?.read&&visible.length?await client.rpc('material_cost_estimates',{p_organisation_id:org.id,p_ids:visible.map(i=>i.id),p_as_of:today}):null,costs=(costsResult?.data??{}) as Record<string,MaterialCost>;
  return <WorkspaceShell email={user.email} restaurantName={org.name} organisationId={org.id} sectionLabel="Processed materials">
   <Link className="catalogue-back" href={`/workspace/setup?organisation=${org.id}`}>Back to setup</Link>
-  <h1 className="workspace-title">Set your material processing baselines.</h1>
-  <p className="workspace-description">Define the input, expected output and processing unit. Produced materials get their estimated unit cost from the saved baseline.</p>
+  <h1 className="workspace-title">Processing baselines</h1>
+  <p className="workspace-description">Set expected input and output quantities before recording batches.</p>
   <nav className="processing-steps"><Link href={`/workspace/setup/centres?organisation=${org.id}`}>1. Stock centres</Link><strong>2. Output SKU & processing baseline</strong><Link href={`/workspace/inventory/processing?organisation=${org.id}`}>3. Production & waste history</Link></nav>
   {result.error||!packet?<p role="alert">Inventory setup access is required.</p>:<>
    {setup?.processing_centre_id&&admin.data===true?<section className="stock-panel"><GuidedBaselineForm org={org.id} request={crypto.randomUUID()} materials={materials.data??[]} units={units.data??[]} today={today} centre={setup.sites.find(s=>s.id===setup.processing_centre_id)?.name??'your processing unit'}/></section>:<p className="stock-help">To use guided baseline setup, assign the stock centre owners and <Link className="inline-link" href={`/workspace/setup/centres?organisation=${org.id}`}>choose the business processing unit</Link> first. Your existing recipes and output links remain available below.</p>}

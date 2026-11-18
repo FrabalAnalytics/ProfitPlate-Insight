@@ -1,0 +1,3 @@
+﻿Organisation_Code,Source_System,Purchase_Date,Purchase_Ref,Line_Ref,Supplier_Code,Item_Code,Quantity,Purchase_UOM,Unit_Price,Line_Discount,Tax,Location_Code,Currency,Status
+TRAINING,TRAINING_CSV,2026-11-18,TRAIN-INV-FISH,1,FISH_SUP,WHOLE_SNAPPER,10,KG,3000,0,0,PRIMARY,NGN,RECEIVED
+TRAINING,TRAINING_CSV,2026-11-18,TRAIN-INV-RICE,1,DRY_SUP,RICE,5,KG,1800,0,0,PRIMARY,NGN,RECEIVED

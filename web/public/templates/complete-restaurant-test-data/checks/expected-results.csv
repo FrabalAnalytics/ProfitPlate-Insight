@@ -1,0 +1,23 @@
+﻿checkpoint,expected_value,unit_or_basis
+Whole snapper starting estimate,3000,NGN per KG
+Snapper Cut standard estimate,1000,NGN per PCS
+Stew base batch estimate,11000,NGN per 10 L
+Final recipe batch estimate,16800,NGN per 10 servings
+Final recipe serving estimate,1680,NGN
+Selling price and example net revenue per plate,6000,NGN; fictional NONE tax setting
+Menu food cost,28.00,percent
+Menu estimated food margin per plate,4320,NGN; excludes other costs
+Menu estimated food gross margin,72.00,percent
+Main Store whole fish after accepted transfer,0,KG
+Kitchen whole fish after processing,0,KG
+Kitchen cuts after processing,110,PCS
+Processing baseline achievement,91.67,percent
+Usable weight yield,90.00,percent
+Recorded processing waste,10.00,percent
+Kitchen cuts after separate spoilage,108,PCS
+CSV invoice total,39000,NGN; 2 separate invoices
+CSV sales total,18000,NGN; 3 sold servings
+CSV estimated food cost,5040,"NGN; recipe estimate, not stock depletion"
+CSV estimated food margin,12960,NGN; before labour and operating expenses
+CSV labour,600,NGN
+CSV operating expense,500,NGN

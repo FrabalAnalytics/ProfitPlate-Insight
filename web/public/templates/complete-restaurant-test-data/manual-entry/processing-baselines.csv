@@ -1,0 +1,2 @@
+﻿process_code,process_name,input_material,input_quantity,input_unit,output_material,expected_output,output_unit,centre,tolerance_percent,output_spec,effective_from
+SNAPPER_CUTTING,Snapper cutting,WHOLE_SNAPPER,40,KG,SNAPPER_CUT,120,PCS,KITCHEN,0,Approved uniform snapper cuts,2026-11-18

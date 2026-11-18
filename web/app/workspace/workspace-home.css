@@ -1,7 +1,7 @@
-.workspace-home-tasks { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 16px; margin-top: 18px; }
-.workspace-home-tasks article { display: flex; flex-direction: column; align-items: flex-start; }
-.workspace-home-tasks h3 { font-size: 16px; font-weight: 550; }
-.workspace-home-tasks p { line-height: 1.7; margin-bottom: 20px; }
-.workspace-home-tasks a { margin-top: auto; }
+.workspace-home-tasks { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr)); gap:10px; margin-top:16px; }
+.workspace-home-tasks a { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:16px 18px; min-height:52px; background:var(--card,#fff); border:1px solid var(--border); border-radius:10px; color:var(--foreground); font-size:14px; font-weight:550; text-decoration:none; }
+.workspace-home-tasks a:hover { background:var(--accent,#e7f0eb); border-color:var(--primary,#194f40); }
+.workspace-home-tasks a:focus-visible { outline:2px solid var(--primary,#194f40); outline-offset:3px; }
+.workspace-home-tasks svg { flex-shrink:0; }
 
 .workspace-access-disclosure{font-size:12px;color:var(--muted-foreground);margin:16px 0}.workspace-access-disclosure summary{cursor:pointer}.workspace-access-disclosure h2{font-size:14px;margin-top:14px}

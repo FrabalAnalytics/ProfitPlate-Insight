@@ -1,0 +1,3 @@
+﻿recipe_code,recipe_name,recipe_type,yield_quantity,yield_unit,effective_from,notes
+STEW_BASE,Training Stew Base,SUB_RECIPE,10,L,2026-11-18,Fictional preparation; estimated cost 11000 per batch
+SNAPPER_RICE_RECIPE,Training Snapper Rice Plate,FINAL,10,PCS,2026-11-18,Fictional boxed meal; estimated cost 16800 per batch

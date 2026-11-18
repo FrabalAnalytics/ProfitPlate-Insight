@@ -4,7 +4,7 @@ test("homepage explains availability and its cost example responds to keyboard i
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toContainText("restaurant margins");
-  await expect(page.getByText("Built for owners, Finance, Procurement, Inventory and department teams.")).toBeVisible();
+  await expect(page.getByText("For owners and restaurant teams.")).toBeVisible();
   await expect(page.getByTestId("preview-profit")).toHaveText("₦2,750");
   const slider = page.getByRole("slider", { name: "Ingredient cost per portion" });
   await slider.focus();
@@ -14,15 +14,15 @@ test("homepage explains availability and its cost example responds to keyboard i
   await expect(page.getByText(/Fictional example. Packaging/)).toBeVisible();
   await page.screenshot({ path: testInfo.outputPath("homepage-desktop.png") });
   await page.getByText("What can I use today?", { exact: true }).click();
-  await expect(page.getByText(/Available now: business setup, team invitations/)).toBeVisible();
+  await expect(page.getByText(/Recipes, menu profitability, purchasing/)).toBeVisible();
   await expect(page.locator(".marketing-capabilities article")).toHaveCount(6);
-  const onboardingPack = page.getByRole("link", { name: "Download onboarding pack" });
+  const onboardingPack = page.getByRole("link", { name: "Download test data pack" });
   await expect(onboardingPack).toHaveAttribute("download", "");
   const templateResponse = await page.request.get(await onboardingPack.getAttribute("href") as string);
   expect(templateResponse.ok()).toBe(true);
   expect((await templateResponse.body()).subarray(0, 2).toString()).toBe("PK");
-  await page.getByText("What is still coming?", {exact:true}).click();
-  await expect(page.getByText(/Pricing and promotion simulators, combos/)).toBeVisible();
+  await page.getByText("Which data can I upload?", {exact:true}).click();
+  await expect(page.getByText(/Other master data currently needs manual entry/)).toBeVisible();
   await expect(page.getByLabel("Illustrative management report")).toContainText("Fictional sample");
   await page.getByRole("link", { name: "Create your workspace", exact: true }).first().click();
   await expect(page).toHaveURL(/\/signup$/);

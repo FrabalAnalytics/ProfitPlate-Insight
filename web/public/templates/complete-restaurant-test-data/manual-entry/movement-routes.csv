@@ -1,0 +1,5 @@
+﻿source_centre,destination_centre,movement_type,source_approval_role
+MAIN_STORE,KITCHEN,TRANSFER,inventory_manager
+KITCHEN,MAIN_STORE,TRANSFER,inventory_manager
+MAIN_STORE,BAR,TRANSFER,inventory_manager
+BAR,MAIN_STORE,TRANSFER,inventory_manager

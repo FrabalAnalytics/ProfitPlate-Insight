@@ -1,0 +1,8 @@
+﻿display_name,email_to_replace,role_code,outlet_scope,stock_centre_scope
+Francis,owner@example.test,restaurant_admin,ALL,ALL
+Francis,owner@example.test,ceo,ALL,ALL
+Emeka,inventory@example.test,inventory_manager,ALL,ALL
+Ada,kitchen@example.test,kitchen_manager,ALL,KITCHEN
+Bola,bar@example.test,bar_lead,ALL,BAR
+Tomi,procurement@example.test,procurement,ALL,
+Chioma,finance@example.test,finance,ALL,

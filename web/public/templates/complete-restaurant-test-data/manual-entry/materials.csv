@@ -1,0 +1,8 @@
+﻿material_code,material_name,item_type,category,base_unit,stock_tracked,supply_class,requires_processing,weekly_count_required,outlet_scope
+WHOLE_SNAPPER,Whole Snapper Fish,RAW,Fish,KG,true,PURCHASED,true,true,ALL
+SNAPPER_CUT,Snapper Cut,SEMI_FINISHED,Fish,PCS,true,PROCESSED,false,true,ALL
+RICE,Rice,RAW,Grains,KG,true,PURCHASED,false,true,ALL
+TOMATO,Tomato,RAW,Vegetables,KG,true,PURCHASED,false,true,ALL
+ONION,Onion,RAW,Vegetables,KG,true,PURCHASED,false,true,ALL
+OIL,Cooking Oil,RAW,Oils,L,true,PURCHASED,false,true,ALL
+BOX,Takeaway Box,PACKAGING,Packaging,PCS,true,PURCHASED,false,true,ALL

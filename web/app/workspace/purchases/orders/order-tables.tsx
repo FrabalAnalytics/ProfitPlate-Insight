@@ -7,7 +7,7 @@ import { TableScroll, StatusBadge } from "@/app/components/data-table";
 
 type OrderLink = (params: Record<string,string>) => string;
 export function OrderRegister({list,organisation,status,page,href,preview}:{list:OrderList;organisation:string;status:string;page:number;href:OrderLink;preview?:PurchaseOrderDetail|null}) {
- return <section className="purchase-panel"><div className="register-heading"><h2>Purchase Orders</h2><span className="register-count">{list.total} {list.total===1?"order":"orders"}</span></div>
+ return <section className="purchase-panel"><div className="register-heading"><span className="register-count">{list.total} {list.total===1?"order":"orders"}</span></div>
   <form method="get" className="procurement-register-filter"><input type="hidden" name="organisation" value={organisation}/><div className="setup-field"><label htmlFor="po-status">PO status</label><select id="po-status" name="status" defaultValue={status}>{Object.entries(orderStatusLabels).map(([value,label])=><option key={value} value={value}>{label}</option>)}</select></div><button className="secondary-button">Filter POs</button></form>
   <p className="purchase-help">Completed means every ordered line has been fully received through active GRNs. Orders are issued directly by Procurement.</p>
   <div className={`po-browse-layout ${preview?"has-selection":""}`}>
