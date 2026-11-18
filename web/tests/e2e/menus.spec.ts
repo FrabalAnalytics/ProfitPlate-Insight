@@ -23,7 +23,7 @@ async function createMenu(page: Page, code: string, name: string, recipe: string
  await page.getByRole("link", { name: "Create menu item", exact: true }).click();
  await page.getByLabel("Menu code", { exact: true }).fill(code);
  await page.getByLabel("Menu item name", { exact: true }).fill(name);
- await page.getByLabel("Category (optional)", { exact: true }).fill("Mains");
+ await page.getByLabel("Subcategory (optional)", { exact: true }).fill("Mains");
  await page.getByLabel("Search saved final recipes", { exact: true }).fill(recipe);
  await page.getByLabel("Saved recipe version", { exact: true }).selectOption({ label: recipe === "Menu cost recipe" ? "Menu cost recipe · v1 (MENU-RECIPE)" : "Menu unpriced recipe · v1 (MENU-MISSING-RECIPE)" });
  await page.getByLabel("Menu version effective from", { exact: true }).fill("2020-01-01");

@@ -31,9 +31,11 @@ export async function saveSetup(_state: SetupState, form: FormData): Promise<Set
       ? "Restaurant setup is not available yet. Please ask the platform administrator to finish the setup update."
       : "We couldn’t save your details. Please try again. Your entries are still here." };
   }
+  const calendar = await supabase.rpc("save_setup_calendar", {p_week_start: values.reporting_week_start === "" ? null : Number(values.reporting_week_start), p_count_day: values.count_day === "" ? null : Number(values.count_day), p_cutoff: values.count_cutoff || null});
+  if (calendar.error) return {values, error: "We could not save the reporting calendar. Check the setup update and try again."};
   if (!finishing) return { saved: true, values: { ...values, step: nextStep } };
 
-  const { data: organisationId, error: completeError } = await supabase.rpc("complete_restaurant_setup");
+  const { data: organisationId, error: completeError } = await supabase.rpc("complete_restaurant_setup_with_calendar");
   if (completeError || typeof organisationId !== "string") {
     return { values, error: "Your details are saved, but we couldn’t finish setup. Please try again." };
   }

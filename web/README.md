@@ -254,3 +254,9 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 ## Workspace attention and simpler navigation
 
 Apply migration `202611170031_workspace_attention_and_platform.sql` after 030 and deploy the corresponding app version. PO approval remains out of scope. See [role workspace changes and pilot checks](docs/product/WORKSPACE_SIMPLICITY.md).
+
+## Setup standards (Phase 1)
+
+Apply migration `202611180032_setup_standards.sql` after 031 and deploy this app version. See [setup standards and pilot checks](docs/product/SETUP_STANDARDS_PHASE_1.md) for targets, location availability, incomplete records and opening readiness. Later phases remain separate.
+
+Restaurant access, reporting calendars and monthly weighted material costs are described in [the release guide](docs/product/RESTAURANT_CONTROLS_RELEASE.md). Apply migrations 033 then 034 before deploying this application version. No restaurant is disabled automatically.

@@ -1,0 +1,3 @@
+"use client";
+import {useState} from 'react';import type {SetupLocation} from '@/lib/setup';
+export function ScopeField({locations,value,disabled=false}:{locations:SetupLocation[];value?:string|null;disabled?:boolean}){const [scope,setScope]=useState(value??'');return <div className="setup-field"><label htmlFor="setup-location">Availability</label><select id="setup-location" name={disabled?undefined:'location_id'} value={scope} onChange={e=>setScope(e.target.value)} disabled={disabled}><option value="">Business-wide</option>{locations.map(l=><option key={l.id} value={l.id}>{l.name}</option>)}</select>{disabled&&<input type="hidden" name="location_id" value={scope}/>}<small>One location, or shared across the business. Existing role permissions still apply.</small></div>}

@@ -43,14 +43,12 @@ export async function publishRecipe(_state: RecipeState, form: FormData): Promis
  } catch { errors.components = "Add between 1 and 100 valid component lines."; }
  if (Object.keys(errors).length) return { error: "Please check the recipe details.", errors };
  const supabase = await createClient();
- const { data: id, error } = await supabase.rpc("publish_recipe_version", {
-  p_organisation_id: org, p_recipe_id: get("recipe_id") || null, p_request_id: get("request_id"),
-  p_code: code, p_name: name, p_recipe_type: get("recipe_type"), p_effective_from: get("effective_from"),
-  p_yield_quantity: get("yield_quantity"), p_yield_uom_id: get("yield_uom_id"), p_notes: get("notes"), p_components: components,
- });
+ const values=Object.fromEntries([...form.entries()].map(([key,value])=>[key,String(value).trim()]));values.code=code;
+ const {data:id,error}=await supabase.rpc("publish_recipe_setup",{p_organisation_id:org,p_request_id:get("request_id"),p_value:values,p_components:components});
  if (error || typeof id !== "string") return { error: error?.code === "23505" ? "This recipe code already exists. Open that recipe and create a new version."
   : error?.code === "22023" ? error.message
   : "We couldn’t publish this version. Check your access and that all source materials are active, then try again. Your entries are still here." };
+ revalidatePath("/workspace/setup");revalidatePath("/workspace/setup/standards");revalidatePath("/admin");
  revalidatePath("/workspace/recipes");
  redirect(`/workspace/recipes?organisation=${org}&version=${id}&saved=1`);
 }

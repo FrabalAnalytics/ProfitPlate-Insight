@@ -1,3 +1,5 @@
+import {displayQuantity} from "@/lib/recipes";
+import type {SetupProfile} from "@/lib/setup";
 import {DataTable,StatusBadge} from "@/app/components/data-table";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -32,20 +34,21 @@ export default async function MaterialsPage({ searchParams }: { searchParams: Pr
     const entries = { organisation: orgId, tab, ...extra };
     return `/workspace/materials?${new URLSearchParams(entries).toString()}`;
   };
-  const [unitsResult, categoriesResult, permission] = await Promise.all([
+  const [unitsResult, categoriesResult, permission, locationsResult] = await Promise.all([
     supabase.from("units_of_measure").select("id,code,name,dimension").eq("organisation_id", orgId).order("code"),
     supabase.from("item_categories").select("id,name").eq("organisation_id", orgId).order("name"),
     supabase.rpc("can_manage_catalogue", { p_organisation_id: orgId }),
+    supabase.from("locations").select("id,name").eq("organisation_id",orgId).eq("is_active",true).order("name"),
   ]);
   const canEdit = permission.data === true && !permission.error;
   if (unitsResult.error || categoriesResult.error || permission.error) return <WorkspaceShell email={user.email} restaurantName={organisation.name} organisationId={orgId} sectionLabel="Materials & suppliers"><p className="eyebrow form-eyebrow">DATA & SETUP</p><h1 className="workspace-title">Catalogue setup is temporarily unavailable.</h1><p className="workspace-description">Please try again shortly. The platform administrator may need to finish the catalogue update.</p><a href={query()} className="auth-back">Try again</a></WorkspaceShell>;
   const units = (unitsResult.data ?? []) as Unit[];
   const categories = categoriesResult.data ?? [];
-  const unit = (id: string) => units.find(entry => entry.id === id);
+  const unit = (id: string|null) => units.find(entry => entry.id === id);
   const q = (params.q ?? "").trim().slice(0, 80);
   const page = Math.min(100000, Math.max(1, Number.parseInt(params.page ?? "1", 10) || 1));
   const filter = q ? `%${q.replace(/[\\%_]/g, "\\$&")}%` : "";
-  const materialFields = "id,code,name,item_type,category_id,base_uom_id,stock_tracked,is_active";
+  const materialFields = "id,code,name,item_type,category_id,base_uom_id,stock_tracked,is_active,location_id,weekly_count_required,supply_class";
   const supplierFields = "id,code,name,email,phone,address,is_active";
   let materials: Material[] = [], suppliers: Supplier[] = [];
   let conversions: { id: string; item_id: string; from_uom_id: string; to_uom_id: string; factor: string | number; effective_from: string }[] = [];
@@ -76,6 +79,8 @@ export default async function MaterialsPage({ searchParams }: { searchParams: Pr
       conversions = result.data ?? []; total = result.count ?? 0; loadError = !!result.error;
     }
   }
+  const profilesResult=tab==="materials"&&materials.length?await supabase.rpc("setup_profiles",{p_organisation_id:orgId,p_kind:"MATERIAL",p_ids:materials.map(i=>i.id)}):null;
+  const profiles=(profilesResult?.data??{}) as Record<string,SetupProfile>;
   let priceCoverage: Record<string, boolean> | null = null;
   let priceAccess = false;
   let priceAccessUnavailable = false;
@@ -98,7 +103,8 @@ export default async function MaterialsPage({ searchParams }: { searchParams: Pr
   } : tab === "materials" ? {
     id: editing?.id ?? "", code: editing?.code ?? "", name: editing?.name ?? "", item_type: (editing as Material)?.item_type ?? "RAW",
     category: categories.find(category => category.id === (editing as Material)?.category_id)?.name ?? "",
-    base_uom_id: (editing as Material)?.base_uom_id ?? units.find(entry => entry.code === "KG")?.id ?? "",
+    base_uom_id: editing?((editing as Material).base_uom_id??""):(units.find(entry => entry.code === "KG")?.id??""),
+    location_id:(editing as Material)?.location_id??"",weekly_count_required:String((editing as Material)?.weekly_count_required??false),supply_class:(editing as Material)?.supply_class??"PURCHASED",
     stock_tracked: String((editing as Material)?.stock_tracked ?? true), is_active: String(editing?.is_active ?? true),
   } : {
     id: editing?.id ?? "", code: editing?.code ?? "", name: editing?.name ?? "", email: (editing as Supplier)?.email ?? "", phone: (editing as Supplier)?.phone ?? "", address: (editing as Supplier)?.address ?? "", is_active: String(editing?.is_active ?? true),
@@ -112,11 +118,11 @@ export default async function MaterialsPage({ searchParams }: { searchParams: Pr
     <nav className="catalogue-tabs" aria-label="Catalogue sections">{[["materials", "Materials", Boxes], ["suppliers", "Suppliers", Truck], ["conversions", "Units & conversions", Scale]].map(([key, title, Icon]) => <Link key={String(key)} href={query({ tab: String(key) })} aria-current={tab === key ? "page" : undefined}>{typeof Icon !== "string" && <Icon size={16} />}{String(title)}</Link>)}</nav>
     <p className="catalogue-readonly"><Info size={16} /><span>Ready to add the prices you know? <Link className="record-edit" href={`/workspace/materials/prices?organisation=${orgId}`}>Initial material prices <ArrowRight size={14} /></Link> This step is optional; unpriced materials stay visible as missing.</span></p>
     {params.saved && ["material", "supplier", "conversion"].includes(params.saved) && <p className="welcome-message" role="status">Your {params.saved} has been saved.</p>}
-    {showEditor && <CatalogueEditor key={`${tab}-${editing?.id ?? chosenItem?.id ?? "new"}`} kind={tab === "materials" ? "material" : tab === "suppliers" ? "supplier" : "conversion"} organisationId={orgId} initial={initial} units={units} materialName={chosenItem?.name} />}
+    {showEditor && <CatalogueEditor key={`${tab}-${editing?.id ?? chosenItem?.id ?? "new"}`} kind={tab === "materials" ? "material" : tab === "suppliers" ? "supplier" : "conversion"} organisationId={orgId} initial={initial} units={units} locations={locationsResult.data??[]} materialName={chosenItem?.name} />}
     {params.edit && !editing && <p className="auth-alert" role="alert">This record isn’t available in this business.</p>}
     {tab !== "conversions" && <form method="get" className="catalogue-filter"><input type="hidden" name="organisation" value={orgId} /><input type="hidden" name="tab" value={tab} /><div><Search size={16} /><label className="sr-only" htmlFor="catalogue-search">Search {tab}</label><input id="catalogue-search" name="q" type="search" placeholder={`Search ${tab} by name…`} defaultValue={q} maxLength={80} /></div><label className="sr-only" htmlFor="catalogue-status">Record status</label><select id="catalogue-status" name="status" defaultValue={params.status ?? "all"}><option value="all">All statuses</option><option value="active">Active</option><option value="inactive">Inactive</option></select><button type="submit" className="secondary-button">Search</button></form>}
     {loadError ? <p className="auth-alert" role="alert">We couldn’t load these records. Please refresh and try again.</p> : tab === "materials" ? <>
-      {materials.length ? <DataTable label={`Materials in ${organisation.name}`} columns={[{label:"Material"},{label:"Type / category"},{label:"Base unit"},{label:"Reference price"},{label:"Status"},{label:"Actions"}]} rows={materials.map(material=>({id:material.id,cells:[<span key="name">{material.name}<small>{material.code}</small></span>,<span key="type">{itemTypes.find(([code])=>code===material.item_type)?.[1]}<small>{categories.find(category=>category.id===material.category_id)?.name??"Uncategorised"}</small></span>,unit(material.base_uom_id)?.code,priceCell(material.id),<StatusBadge key="status" tone={material.is_active?"success":"neutral"}>{material.is_active?"Active":"Inactive"}</StatusBadge>,<div key="actions" className="record-actions">{canEdit&&<Link className="inline-link" href={query({edit:material.id})} aria-label={`Edit ${material.name}`}>Edit</Link>}<Link className="inline-link" href={query({tab:"conversions",item:material.id})} aria-label={`Manage units for ${material.name}`}>Units <ArrowRight size={13}/></Link></div>]}))}/> : <Empty icon="material" title={q ? "No matching materials" : "Your material catalogue starts here"} text={q ? "Try another name or clear the search filter." : "Add ingredients, packaging and other materials. Reference prices can be added afterwards; this step is optional."} />}
+      {materials.length ? <DataTable label={`Materials in ${organisation.name}`} columns={[{label:"Material"},{label:"Setup readiness"},{label:"Type / category"},{label:"Base unit"},{label:"Price history / estimated cost"},{label:"Status"},{label:"Actions"}]} rows={materials.map(material=>({id:material.id,cells:[<span key="name">{material.name}<small>{material.code}</small></span>,<span key="readiness"><StatusBadge tone={profiles[material.id]?.missing?.length?"warning":"neutral"}>{profiles[material.id]?profiles[material.id].missing?.length?"Incomplete Data":"Ready":"Unavailable"}</StatusBadge><small>{profiles[material.id]?.missing?.join(", ")}</small></span>,<span key="type">{itemTypes.find(([code])=>code===material.item_type)?.[1]}<small>{categories.find(category=>category.id===material.category_id)?.name??"Uncategorised"} / {material.location_id?locationsResult.data?.find(l=>l.id===material.location_id)?.name:"Business-wide"}{material.weekly_count_required?" / Weekly count":""}</small></span>,unit(material.base_uom_id)?.code??"Not supplied",<span key="price">{priceCell(material.id)}{profiles[material.id]?.last_price&&<small>{displayQuantity(profiles[material.id].last_price!)} / {unit(material.base_uom_id)?.code} / {profiles[material.id].price_date}</small>}</span>,<StatusBadge key="status" tone={material.is_active?"success":"neutral"}>{material.is_active?"Active":"Inactive"}</StatusBadge>,<div key="actions" className="record-actions">{canEdit&&<Link className="inline-link" href={query({edit:material.id})} aria-label={`Edit ${material.name}`}>Edit</Link>}<Link className="inline-link" href={query({tab:"conversions",item:material.id})} aria-label={`Manage units for ${material.name}`}>Units <ArrowRight size={13}/></Link></div>]}))}/> : <Empty icon="material" title={q ? "No matching materials" : "Your material catalogue starts here"} text={q ? "Try another name or clear the search filter." : "Add ingredients, packaging and other materials. Reference prices can be added afterwards; this step is optional."} />}
       {pagination}<p className="catalogue-bottom-note"><Info size={15} /> A saved material is not a costed material. Missing cost information will stay visible.</p>
     </> : tab === "suppliers" ? <>
       {suppliers.length ? <DataTable label={`Suppliers in ${organisation.name}`} columns={[{label:"Supplier"},{label:"Email / phone"},{label:"Address"},{label:"Status"},{label:"Action"}]} rows={suppliers.map(supplier=>({id:supplier.id,cells:[<span key="name">{supplier.name}<small>{supplier.code}</small></span>,<span key="contact">{supplier.email||"No email"}<small>{supplier.phone||"No phone"}</small></span>,supplier.address||"Not provided",<StatusBadge key="status" tone={supplier.is_active?"success":"neutral"}>{supplier.is_active?"Active":"Inactive"}</StatusBadge>,canEdit?<Link key="edit" className="inline-link" href={query({edit:supplier.id})} aria-label={`Edit ${supplier.name}`}>Edit</Link>:"Read-only"]}))}/> : <Empty icon="supplier" title={q ? "No matching suppliers" : "Keep your supplier details together"} text="Add the businesses you purchase from so future procurement records have a clear source." />}{pagination}

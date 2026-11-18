@@ -27,11 +27,7 @@ export function StockConfiguration({organisation,packet}:{organisation:string;pa
   <Field label="Source approval role">{id=><select id={id} name="approval_role"><option value="inventory_manager">Inventory Manager</option><option value="inventory">Inventory / source approver</option><option value="operations">Operations</option><option value="restaurant_admin">Restaurant Administrator</option></select>}</Field>
   <p className="stock-help">A different colleague approves the request. Source Inventory dispatches; a different destination Inventory colleague receives. Saving an existing route updates its approval role and reactivates it.</p>
  </ConfigForm>
- <ConfigForm organisation={organisation} kind="BINDING" title="Link recipe stock output">
-  <Field label="Published recipe version">{id=><select id={id} name="recipe_version_id" required><option value="">Choose recipe version</option>{packet.recipes.map(r=><option key={r.id} value={r.id}>{r.code} - {r.name} v{r.version} ({r.yield} {r.unit})</option>)}</select>}</Field>
-  <Field label="Produced stock material">{id=><select id={id} name="item_id" required><option value="">Choose output material</option>{packet.items.filter(i=>["SEMI_FINISHED","FINISHED"].includes(i.item_type)).map(i=><option key={i.id} value={i.id}>{i.code} - {i.name} ({i.unit})</option>)}</select>}</Field>
-  <p className="stock-help">Create a tracked semi-finished or finished material in Materials & suppliers first. Its base unit must match the recipe output dimension. Produce child recipes first; a parent consumes their stocked output rather than their raw ingredients again.</p>
- </ConfigForm>
+ <StockOutputBinding organisation={organisation} packet={packet}/>
  </div>;
 }
 export function StockToggle({organisation,id,kind,active}:{organisation:string;id:string;kind:"LOCATION_STATE"|"ROUTE_STATE";active:boolean}){
@@ -74,3 +70,9 @@ export function StockDecision({organisation,document}:{organisation:string;docum
   <Field label="Decision note">{id=><textarea id={id} name="note" required rows={2} maxLength={1000}/>}</Field><label className="stock-confirm"><input type="checkbox" name="confirmed" required/>I reviewed this record and confirm this stock decision.</label><Feedback state={state}/><button className="secondary-button">{pending?"Saving...":labels[choice]}</button>
  </fieldset></form>;
 }
+
+export function StockOutputBinding({organisation,packet}:{organisation:string;packet:StockPacket}){return (<ConfigForm organisation={organisation} kind="BINDING" title="Link recipe stock output">
+  <Field label="Published recipe version">{id=><select id={id} name="recipe_version_id" required><option value="">Choose recipe version</option>{packet.recipes.map(r=><option key={r.id} value={r.id}>{r.code} - {r.name} v{r.version} ({r.yield} {r.unit})</option>)}</select>}</Field>
+  <Field label="Produced stock material">{id=><select id={id} name="item_id" required><option value="">Choose output material</option>{packet.items.filter(i=>["SEMI_FINISHED","FINISHED"].includes(i.item_type)).map(i=><option key={i.id} value={i.id}>{i.code} - {i.name} ({i.unit})</option>)}</select>}</Field>
+  <p className="stock-help">Create a tracked semi-finished or finished material in Materials & suppliers first. Its base unit must match the recipe output dimension. Produce child recipes first; a parent consumes their stocked output rather than their raw ingredients again.</p>
+ </ConfigForm>);}

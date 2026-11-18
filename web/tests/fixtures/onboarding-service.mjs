@@ -75,6 +75,11 @@ await asUser(catalogueOwner, async tx => {
   await tx.query("select public.publish_menu_item_version($1,null,$2,'SALES-NOCOST','Sales uncosted dish',$3,'Mains',$4,1,'2020-01-01','Fictional missing-cost sales')",[org,crypto.randomUUID(),salesBrand,missingRecipe]);
 
 });
+await asUser(catalogueOwner,async tx=>{
+ const org=(await tx.query('select id from public.organisations where owner_id=$1',[catalogueOwner.id])).rows[0].id;
+ await tx.query('select public.save_cost_targets($1,null,40,25)',[org]);
+ for(const menu of(await tx.query('select id from public.menu_items where organisation_id=$1',[org])).rows)await tx.query("select public.save_setup_profile($1,'MENU',$2,null,'FOOD','Mains',false,'PURCHASED')",[org,menu.id]);
+});
 const catalogueOrg = (await db.query("select id from public.organisations where owner_id=$1", [catalogueOwner.id])).rows[0].id;
 const readerId = users.find(user => user.email === "reader@example.test").id;
 const readerMember = (await db.query("insert into public.organisation_memberships(organisation_id,user_id) values ($1,$2) returning id", [catalogueOrg, readerId])).rows[0].id;
@@ -126,7 +131,12 @@ createServer(async (request, response) => {
     if (url.pathname.startsWith("/rest/v1/rpc/")) {
       const functionName = url.pathname.split("/").at(-1);
       const definitions = {
-        is_platform_admin: [], complete_restaurant_setup: [],
+        is_platform_admin: [], complete_restaurant_setup: [], complete_restaurant_setup_with_calendar: [], account_restaurant_access: [],
+        save_setup_calendar: ['p_week_start','p_count_day','p_cutoff'],
+        save_reporting_calendar: ['p_organisation_id','p_timezone','p_week_start','p_count_day','p_cutoff'],
+        reporting_calendar: ['p_organisation_id'],
+        set_restaurant_access: ['p_organisation_id','p_expected_state','p_state','p_reason','p_confirmed'],
+        material_monthly_prices: ['p_organisation_id','p_month','p_search','p_page'],
         save_management_report: ["p_organisation_id","p_from","p_to","p_location_id","p_request_id","p_title"],
         stage_manual_purchase: ["p_organisation_id","p_request_id","p_invoice","p_lines"],
         purchase_order_access: ["p_organisation_id","p_order_id"],
@@ -155,6 +165,15 @@ createServer(async (request, response) => {
         workspace_navigation_access: ["p_organisation_id"],
         stock_workspace: ["p_organisation_id", "p_location_id", "p_page"],
         stock_workspace_v2: ["p_organisation_id","p_location_id","p_page","p_status","p_search","p_document_id"],
+        opening_readiness: ["p_organisation_id","p_page"],
+        setup_workspace: ["p_organisation_id"],
+        setup_profiles: ["p_organisation_id","p_kind","p_ids"],
+        save_cost_targets: ["p_organisation_id","p_location_id","p_food","p_beverage"],
+        confirm_zero_opening: ["p_organisation_id","p_item_id","p_site_id","p_date","p_note"],
+        save_setup_profile: ["p_organisation_id","p_kind","p_id","p_location_id","p_primary","p_subcategory","p_weekly","p_supply"],
+        save_material_setup: ["p_organisation_id","p_value"],
+        save_menu_setup: ["p_organisation_id","p_request_id","p_value"],
+        publish_recipe_setup: ["p_organisation_id","p_request_id","p_value","p_components"],
         workspace_attention: ["p_organisation_id","p_queue","p_page"],
         mark_workspace_grns_reviewed: ["p_organisation_id","p_receipts"],
         platform_workspace: ["p_search","p_state","p_page","p_organisation_id"],
@@ -228,15 +247,15 @@ createServer(async (request, response) => {
       membership_roles: ["id", "organisation_id", "membership_id", "role_code", "location_id"],
       brands: ["id", "name", "organisation_id"],
       locations: ["id", "name", "code", "timezone", "address", "is_active", "brand_id", "organisation_id"],
-      restaurant_setup_drafts: ["user_id", "business_name", "concept", "country_code", "currency_code", "brand_name", "location_name", "timezone", "address", "step", "completed_organisation_id"],
+      restaurant_setup_drafts: ["user_id", "business_name", "concept", "country_code", "currency_code", "brand_name", "location_name", "timezone", "address", "reporting_week_start", "count_day", "count_cutoff", "step", "completed_organisation_id"],
       units_of_measure: ["id", "organisation_id", "code", "name", "dimension"],
       item_categories: ["id", "organisation_id", "name"],
-      items: ["id", "organisation_id", "code", "name", "item_type", "category_id", "base_uom_id", "stock_tracked", "is_active"],
+      items: ["id", "organisation_id", "code", "name", "item_type", "category_id", "base_uom_id", "stock_tracked", "is_active", "location_id", "weekly_count_required", "supply_class"],
       suppliers: ["id", "organisation_id", "code", "name", "email", "phone", "address", "is_active"],
       item_uom_conversions: ["id", "organisation_id", "item_id", "from_uom_id", "to_uom_id", "factor", "effective_from"],
-      menu_items: ["id", "organisation_id", "code", "name", "brand_id", "is_active"],
+      menu_items: ["id", "organisation_id", "code", "name", "brand_id", "is_active", "location_id", "primary_category", "subcategory"],
       menu_item_versions: ["id", "organisation_id", "menu_item_id"],
-      recipes: ["id", "organisation_id", "code", "name", "recipe_type"],
+      recipes: ["id", "organisation_id", "code", "name", "recipe_type", "location_id"],
       recipe_versions: ["id", "organisation_id", "recipe_id", "version", "name", "effective_from"],
     }[table];
     if (!columns) return send(404, { code: "42P01", message: "Unknown table" });

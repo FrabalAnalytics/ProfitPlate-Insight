@@ -25,7 +25,11 @@ export const getPlatformAccess = cache(async () => {
   // Never infer administrator access from an email or editable user metadata.
   if (error?.code === "PGRST202") return "setup-required" as const;
   if (error || typeof data !== "boolean") return "unavailable" as const;
-  return data ? "admin" as const : "member" as const;
+  if (data) return "admin" as const;
+  const restaurants = await supabase.rpc("account_restaurant_access");
+  if (restaurants.error || !Array.isArray(restaurants.data)) return "unavailable" as const;
+  if (restaurants.data.some((r: {state: string}) => r.state === "INACTIVE") && !restaurants.data.some((r: {state: string}) => r.state === "ACTIVE")) return "inactive" as const;
+  return "member" as const;
 });
 
 export function workspacePath(access: Awaited<ReturnType<typeof getPlatformAccess>>) {

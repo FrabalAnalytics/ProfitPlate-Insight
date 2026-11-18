@@ -39,7 +39,7 @@ test('menu profitability compares tax-aware serving estimates, retains missing s
  await expect(row.getByRole('cell').nth(0)).toHaveText('NGN 900.00');
  await expect(row.getByRole('cell').nth(1)).toContainText('NGN 1,500.00');await expect(row.getByRole('cell').nth(1)).toContainText('Incl. tax: NGN 1,650.00');
  await expect(row.getByRole('cell').nth(2)).toHaveText('60%');await expect(row.getByRole('cell').nth(3)).toHaveText('NGN 600.00');await expect(row.getByRole('cell').nth(4)).toHaveText('40%');
- await expect(row.getByRole('cell').nth(5)).toContainText('Unavailable');await expect(row.getByRole('cell').nth(6)).toHaveText('Estimated');
+ await expect(row.getByRole('cell').nth(6)).toContainText('Unavailable');await expect(row.getByRole('cell').nth(7)).toHaveText('Estimated');
  await page.screenshot({path:testInfo.outputPath('menu-profitability-desktop.png'),fullPage:true});
  await page.getByLabel('Profitability channel',{exact:true}).selectOption('TAKEAWAY');await page.getByRole('button',{name:'Update profitability',exact:true}).click();
  await expect(row.getByRole('cell').nth(0)).toHaveText('NGN 900.00');await expect(row.getByRole('cell').nth(1)).toHaveText('Unavailable');await expect(row).toContainText('Missing selling price');

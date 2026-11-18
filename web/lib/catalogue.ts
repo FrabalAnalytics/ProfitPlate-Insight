@@ -1,9 +1,9 @@
 export type CatalogueKind = "material" | "supplier" | "conversion";
 export type Unit = { id: string; code: string; name: string; dimension: string };
-export type Material = { id: string; code: string; name: string; item_type: string; category_id: string | null; base_uom_id: string; stock_tracked: boolean; is_active: boolean };
+export type Material = { id: string; code: string; name: string; item_type: string; category_id: string | null; base_uom_id: string | null; location_id?:string|null; weekly_count_required?:boolean; supply_class?:string; stock_tracked: boolean; is_active: boolean };
 export type Supplier = { id: string; code: string; name: string; email: string | null; phone: string | null; address: string | null; is_active: boolean };
 export const itemTypes = [
-  ["RAW", "Raw ingredient"], ["PACKAGING", "Packaging"], ["RESALE", "Resale item"],
+  ["GENERAL", "General"], ["RAW", "Raw ingredient"], ["PACKAGING", "Packaging"], ["RESALE", "Resale item"],
   ["CONSUMABLE", "Consumable"], ["SEMI_FINISHED", "Semi-finished item"], ["FINISHED", "Finished item"],
 ] as const;
 export const isUuid = (value: string) => /^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$/i.test(value);
@@ -19,7 +19,7 @@ export function validateCatalogue(kind: string, values: Record<string, string>) 
   }
   if (kind === "material") {
     if (!itemTypes.some(([code]) => code === values.item_type)) errors.item_type = "Choose a material type.";
-    if (!isUuid(values.base_uom_id ?? "")) errors.base_uom_id = "Choose a base unit.";
+    if (values.base_uom_id && !isUuid(values.base_uom_id)) errors.base_uom_id = "Choose a base unit.";
     if ((values.category ?? "").length > 60) errors.category = "Use 60 characters or fewer.";
   }
   if (kind === "supplier") {

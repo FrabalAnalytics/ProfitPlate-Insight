@@ -21,6 +21,9 @@ test("owner saves, resumes and completes restaurant setup", async ({ page }, tes
   await expect(page.getByRole("heading", { name: "Give your brand a home." })).toBeVisible();
   await page.getByLabel("Brand name", { exact: true }).fill("Tangibles");
   await page.getByLabel("First location name").fill("Lekki Outlet");
+  await page.getByLabel("Reporting week starts").selectOption("3");
+  await page.getByLabel("Physical count day").selectOption("2");
+  await page.getByLabel("Physical count cutoff time").fill("23:30");
   await page.getByLabel("Address (optional)").fill("12 Example Street, Lekki");
   await page.getByRole("button", { name: "Save for later" }).click();
   await expect(page.getByText("Progress saved to your account.")).toBeVisible();
@@ -35,7 +38,7 @@ test("owner saves, resumes and completes restaurant setup", async ({ page }, tes
   await expect(page.getByText("Your restaurant workspace is ready. Welcome to ProfitPlate.")).toBeVisible();
   await expect(page.getByRole("heading", { name: "Tangibles Test Restaurant", exact: true })).toBeVisible();
   await expect(page.getByRole("table", { name: "Business locations" }).getByRole("rowheader", { name: "Lekki Outlet", exact: true })).toBeVisible();
-  await expect(page.getByText("2 OF 7 STAGES READY")).toBeVisible();
+  await expect(page.getByText("3 OF 8 STAGES READY")).toBeVisible();
   await page.screenshot({ path: testInfo.outputPath("workspace-desktop.png"), fullPage: true });
   await page.getByRole("button", { name: "Collapse sidebar" }).click();
   await expect(page.getByRole("button", { name: "Expand sidebar" })).toBeVisible();

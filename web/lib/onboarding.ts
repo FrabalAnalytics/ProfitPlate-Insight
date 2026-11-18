@@ -7,12 +7,12 @@ export const concepts = [
 
 export type SetupValues = {
   business_name: string; concept: string; country_code: string; currency_code: string;
-  brand_name: string; location_name: string; timezone: string; address: string; step: number;
+  brand_name: string; location_name: string; timezone: string; address: string; reporting_week_start: string; count_day: string; count_cutoff: string; step: number;
 };
 
 export const emptySetup: SetupValues = {
   business_name: "", concept: "", country_code: "NG", currency_code: "NGN",
-  brand_name: "", location_name: "", timezone: "Africa/Lagos", address: "", step: 1,
+  brand_name: "", location_name: "", timezone: "Africa/Lagos", address: "", reporting_week_start: "", count_day: "", count_cutoff: "", step: 1,
 };
 
 // Database rows include nullable completion metadata. Keep only editable fields
@@ -28,7 +28,7 @@ export function normaliseSetup(raw: unknown): SetupValues {
     business_name: text("business_name"), concept: text("concept"),
     country_code: text("country_code"), currency_code: text("currency_code"),
     brand_name: text("brand_name"), location_name: text("location_name"),
-    timezone: text("timezone"), address: text("address"), step,
+    timezone: text("timezone"), address: text("address"), reporting_week_start: text("reporting_week_start"), count_day: text("count_day"), count_cutoff: text("count_cutoff").slice(0,5), step,
   };
 }
 
@@ -37,7 +37,7 @@ export function setupValues(form: FormData): SetupValues {
   return {
     business_name: text("business_name"), concept: text("concept"), country_code: text("country_code"),
     currency_code: text("currency_code"), brand_name: text("brand_name"), location_name: text("location_name"),
-    timezone: text("timezone"), address: text("address"), step: Number(form.get("step")),
+    timezone: text("timezone"), address: text("address"), reporting_week_start: text("reporting_week_start"), count_day: text("count_day"), count_cutoff: text("count_cutoff"), step: Number(form.get("step")),
   };
 }
 
@@ -58,5 +58,9 @@ export function validateSetup(values: SetupValues, full = false, draft = false):
     if (!values.brand_name) errors.brand_name = "Enter your brand name.";
     if (!values.location_name) errors.location_name = "Enter your first location’s name.";
   }
+  for (const key of ["reporting_week_start", "count_day"] as const) {
+    if ((values[key] || (!draft && (full || values.step > 1))) && !/^[0-6]$/.test(values[key])) errors[key] = "Choose a day.";
+  }
+  if ((values.count_cutoff || (!draft && (full || values.step > 1))) && !/^([01][0-9]|2[0-3]):[0-5][0-9]$/.test(values.count_cutoff)) errors.count_cutoff = "Choose a physical count cutoff time.";
   return errors;
 }

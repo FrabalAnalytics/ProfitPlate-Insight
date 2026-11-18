@@ -31,7 +31,7 @@ export function PriceEditor({ organisationId, material, units, businessDate, cur
  return <section className="catalogue-editor reference-editor" aria-labelledby="price-editor-title">
   <p className="eyebrow form-eyebrow">OPTIONAL / ESTIMATED PRICES</p>
   <h2 id="price-editor-title">{material ? `Reference price for ${material.name}` : "Import initial material prices"}</h2>
-  <p className="reference-intro">{material ? "Enter the total price for a known quantity. Include when the price was obtained and where it came from." : "Use existing material codes. Upload a CSV, review the converted prices, then save the whole batch together."} All amounts are in {currency}.</p>
+  <p className="reference-intro">{material ? "Enter the total price for a known quantity. Include when the price was obtained and where it came from." : "Use existing material codes. Upload a CSV, review the converted prices, then save the whole batch together."} All amounts are in {currency}. Enter net material cost excluding tax for comparison with invoice-based recipe estimates.</p>
   <form action={reviewAction} aria-busy={busy} className="setup-form" onReset={event => event.preventDefault()} onChange={() => setRevision(value => value + 1)}>
    <input type="hidden" name="organisation_id" value={organisationId}/><input type="hidden" name="source" value={source}/><input type="hidden" name="revision" value={revision}/>
    <fieldset disabled={busy} className="price-fieldset">

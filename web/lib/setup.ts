@@ -1,0 +1,5 @@
+export type SetupLocation={id:string;name:string;brand_id?:string;food?:string|null;beverage?:string|null};
+export type SetupProfile={location_id:string|null;primary_category?:string|null;subcategory?:string;weekly_count_required?:boolean;supply_class?:string;last_price?:string|null;price_date?:string|null;missing?:string[]};
+export type SetupProgress={completed:number;total:number;stages:{name:string;ready:boolean;path:string;detail:string}[];missing_materials:number;missing_menus:number};
+export type SetupPacket={progress:SetupProgress;can_edit:boolean;can_open:boolean;locations:SetupLocation[];targets:{location_id:string|null;food:string|null;beverage:string|null}[];sites:{id:string;name:string;outlet_id:string|null}[];materials:{id:string;name:string;location_id:string|null}[]};
+export function thresholdStatus(category:string|null|undefined,target:string|null|undefined,cost:string|null|undefined){if(category==='PACKAGING')return 'Not applicable';if(!category)return 'Category needed';if(target==null)return 'Target not set';if(cost==null)return 'Cost / price incomplete';return Number(cost)>Number(target)?'Exceeds threshold':'Within threshold';}
