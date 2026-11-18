@@ -262,3 +262,5 @@ Apply migration `202611180032_setup_standards.sql` after 031 and deploy this app
 Restaurant access, reporting calendars and monthly weighted material costs are described in [the release guide](docs/product/RESTAURANT_CONTROLS_RELEASE.md). Apply migrations 033 then 034 before deploying this application version. No restaurant is disabled automatically.
 
 [Processed material costing and the Snapper setup guide](docs/product/PROCESSED_MATERIAL_COSTS.md) explains migration 035, linking the output SKU, derived recipe costs and two-decimal money display. Apply 035 before deploying its matching application update.
+
+[Stock centres, yield baselines and the full processing test guide](docs/product/PROCESSING_CENTRES_AND_YIELD_TEST_GUIDE.md) covers migration 036, named storage centres, processing eligibility, measured inputs/outputs, centre waste logs and role checks. Apply 036 before deploying its matching app; new production requests require an approved processing standard.
