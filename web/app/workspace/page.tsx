@@ -6,6 +6,7 @@ import { requireUser, getPlatformAccess, workspacePath } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { WorkspaceShell } from "@/app/components/workspace-shell";
 import { Button } from "@/app/components/ui/button";
+import {MemberNameForm} from "./team/team-forms";
 import { roleName } from "@/lib/team";
 import type { NavigationAccess } from "@/lib/overview";
 import { workspaceHome } from "@/lib/workspace-home";
@@ -28,7 +29,7 @@ export default async function WorkspacePage({ searchParams }: { searchParams: Pr
   if (!organisations.data?.length) redirect("/onboarding");
   const org = params.organisation ? organisations.data.find(item => item.id === params.organisation) : organisations.data[0];
   if (!org) return <WorkspaceShell email={user.email}><h1 className="workspace-title">This business isn’t available to your account.</h1><Link href="/workspace">Return to your workspace</Link></WorkspaceShell>;
-  const membership = await client.from("organisation_memberships").select("id").eq("organisation_id", org.id).eq("user_id", user.id).eq("status", "active").maybeSingle();
+  const membership = await client.from("organisation_memberships").select("id,display_name").eq("organisation_id", org.id).eq("user_id", user.id).eq("status", "active").maybeSingle();
   const [roles, navigation, locations] = await Promise.all([
     membership.data ? client.from("membership_roles").select("role_code,location_id").eq("organisation_id", org.id).eq("membership_id", membership.data.id) : Promise.resolve({data: null, error: new Error("Membership unavailable")}),
     client.rpc("workspace_navigation_access", {p_organisation_id: org.id}),
@@ -42,7 +43,8 @@ export default async function WorkspacePage({ searchParams }: { searchParams: Pr
   const today=["year","month","day"].map(key=>parts.find(p=>p.type===key)?.value).join("-");
   const attention=!executive?await client.rpc("workspace_attention",{p_organisation_id:org.id,p_queue:null,p_page:1}):null;
   return <WorkspaceShell {...shell}>
-    <div className="page-heading-row"><div><p className="eyebrow form-eyebrow">YOUR WORKSPACE</p><h1 className="workspace-title">{home.title}</h1><p className="workspace-description">{home.description}</p></div>{organisations.data.length > 1 && <form method="get" className="business-switcher"><label htmlFor="organisation">Business</label><select id="organisation" name="organisation" defaultValue={org.id}>{organisations.data.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}</select><Button variant="outline" type="submit">Switch</Button></form>}</div>
+    <div className="page-heading-row"><div><p className="workspace-description">{(()=>{const hour=Number(new Intl.DateTimeFormat("en-GB",{timeZone:org.time_zone,hour:"numeric",hourCycle:"h23"}).format(new Date()));return `${hour<12?"Good morning":hour<18?"Good afternoon":"Good evening"}${membership.data?.display_name?", "+membership.data.display_name:""}.`;})()} {executive?"Here is your restaurant performance overview.":"Here is what needs your attention."}</p><p className="eyebrow form-eyebrow">YOUR WORKSPACE</p><h1 className="workspace-title">{home.title}</h1><p className="workspace-description">{home.description}</p></div>{organisations.data.length > 1 && <form method="get" className="business-switcher"><label htmlFor="organisation">Business</label><select id="organisation" name="organisation" defaultValue={org.id}>{organisations.data.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}</select><Button variant="outline" type="submit">Switch</Button></form>}</div>
+    {!membership.data?.display_name&&<details className="workspace-access-disclosure"><summary>Set the name shown in your workspace</summary><MemberNameForm organisation={org.id} member={{id:membership.data!.id,display_name:""}}/></details>}
     {params.message === "signout-failed" && <p className="auth-alert" role="alert">We couldn’t sign you out. Please check your connection and try again.</p>}
     {!executive&&<NeedsAttention organisation={org.id} packet={attention?.data as AttentionPacket|null} error={!!attention?.error}/>}
     {executive?<>

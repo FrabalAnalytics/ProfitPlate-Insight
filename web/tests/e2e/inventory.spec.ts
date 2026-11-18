@@ -10,11 +10,12 @@ test('inventory configures a warehouse route and completes approved stock openin
  try{
   await login(page,'catalogue@example.test');await clickNavigation(page,'Inventory & movements');
   await page.getByRole('link',{name:'Locations & routes',exact:true}).click();
-  const config=page.getByRole('group',{name:'Add stock location',exact:true});
-  await config.getByLabel('Stock location code',{exact:true}).fill('E2E_WH');await config.getByLabel('Stock location name',{exact:true}).fill('Pilot warehouse');await config.getByRole('button',{name:'Add stock location',exact:true}).click();
-  await expect(page.getByRole('table',{name:'Stock locations',exact:true})).toContainText('Pilot warehouse');
-  await config.getByLabel('Stock location code',{exact:true}).fill('E2E_KIT');await config.getByLabel('Stock location name',{exact:true}).fill('Pilot kitchen');await config.getByLabel('Storage type',{exact:true}).selectOption('KITCHEN');await config.getByLabel('Outlet assignment',{exact:true}).selectOption({label:'Main outlet'});await config.getByLabel('Department (optional)',{exact:true}).fill('Kitchen');await config.getByRole('button',{name:'Add stock location',exact:true}).click();
-  await expect(page.getByRole('table',{name:'Stock locations',exact:true})).toContainText('Pilot kitchen');
+  const configuration=new URL(page.url());configuration.searchParams.set("view","setup");const configurationUrl=configuration.href;await page.getByRole('link',{name:'Manage stock centres',exact:true}).click();
+  const config=page.getByRole('group',{name:'Add a named stock centre',exact:true});
+  for(const [code,name,kind] of [['E2E_WH','Pilot warehouse','WAREHOUSE'],['E2E_KIT','Pilot kitchen','KITCHEN']]){
+   await config.getByLabel('Centre code',{exact:true}).fill(code);await config.getByLabel('Centre name',{exact:true}).fill(name);await config.getByLabel('Storage type',{exact:true}).selectOption(kind);if(kind==='KITCHEN')await config.getByLabel('Outlet assignment',{exact:true}).selectOption({label:'Main outlet'});await config.getByLabel('Responsible member',{exact:true}).selectOption((await config.getByLabel('Responsible member',{exact:true}).locator('option').filter({hasText:'catalogue@example.test'}).getAttribute('value'))!);await config.getByRole('button',{name:'Save stock centre',exact:true}).click();await expect(page.getByRole('table',{name:'Stock centres'})).toContainText(name);
+  }
+  await page.goto(configurationUrl);
   const route=page.getByRole('group',{name:'Save movement route',exact:true});await route.getByLabel('From stock location',{exact:true}).selectOption({label:'Pilot warehouse'});await route.getByLabel('To stock location',{exact:true}).selectOption({label:'Pilot kitchen'});await route.getByLabel('Route movement type',{exact:true}).selectOption('ISSUE');await route.getByRole('button',{name:'Save movement route',exact:true}).click();await expect(page.getByRole('table',{name:'Stock movement routes',exact:true})).toContainText('Pilot kitchen');
   const inventoryUrl=page.url().replace('view=setup','view=movements');
   await login(inventory,'inventory@example.test');await inventory.goto(inventoryUrl);

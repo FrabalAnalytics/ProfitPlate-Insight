@@ -22,7 +22,9 @@ export function WorkspaceNavigation({organisation,email,roles,access,pathname,co
   </>,!minimal)}
   {(access.sales||access.inventory||access.expenses)&&group("Daily operations",pathname.startsWith("/workspace/sales")||pathname.startsWith("/workspace/inventory")||pathname.startsWith("/workspace/expenses"),<>
    {access.sales&&<Link href={`/workspace/sales?${contextQuery(organisation,context)}`} title="Sales & summary" aria-current={pathname.startsWith("/workspace/sales")?"page":undefined} onClick={onNavigate}><ChartNoAxesCombined size={18}/><span>Sales & summary</span></Link>}
-   {access.inventory&&item("Inventory & movements","/workspace/inventory",Boxes,pathname.startsWith("/workspace/inventory"))}
+   {access.inventory&&item("Inventory & movements","/workspace/inventory",Boxes,pathname==="/workspace/inventory")}
+   {access.inventory&&item("Material Processing Log","/workspace/inventory/processing",Boxes,pathname.startsWith("/workspace/inventory/processing"))}
+   {access.inventory&&item("Waste Log","/workspace/inventory/waste",Boxes,pathname.startsWith("/workspace/inventory/waste"))}
    {access.expenses&&<Link href={`/workspace/expenses?${contextQuery(organisation,context)}`} title="Labour & expenses" aria-current={pathname.startsWith("/workspace/expenses")?"page":undefined} onClick={onNavigate}><FileSpreadsheet size={18}/><span>Labour & expenses</span></Link>}
   </>,!ceo)}
   {(access.recipes||access.menus)&&group("Profitability",pathname.startsWith("/workspace/recipes")||pathname.startsWith("/workspace/menus"),<>{access.recipes&&item("Recipes & scaling","/workspace/recipes",BookOpen,pathname.startsWith("/workspace/recipes"))}{access.menus&&item("Menu & prices","/workspace/menus",FileSpreadsheet,pathname.startsWith("/workspace/menus"))}</>)}

@@ -8,7 +8,7 @@ async function team(page:Page) {
  await login(page);await clickNavigation(page,'Users & roles');await expect(page.getByRole('heading',{name:'Users & roles',exact:true})).toBeVisible();
 }
 async function invite(page:Page,email:string) {
- await page.getByRole('link',{name:'Invite colleague',exact:true}).click();await page.getByLabel('Staff email address',{exact:true}).fill(email);
+ await page.getByRole('link',{name:'Invite colleague',exact:true}).click();await page.getByLabel('Colleague name',{exact:true}).fill('Test Colleague');await page.getByLabel('Staff email address',{exact:true}).fill(email);
  await page.getByRole('checkbox',{name:'I reviewed these permissions. Create an invitation for this email.',exact:true}).check();
  await page.getByRole('button',{name:'Create invitation',exact:true}).click();
  await expect(page.getByLabel('Invitation link — copy before leaving this page',{exact:true})).toBeVisible();
@@ -28,8 +28,8 @@ test('administrator invitation survives sign-in, grants exact finance access and
  await clickNavigation(staff,'Sales & summary');await expect(staff.getByText(/You have read-only sales access/)).toBeVisible();
  await expect(staff.getByRole('link',{name:'Users & roles',exact:true})).toHaveCount(0);await staff.goto(page.url().replace('&invite=1',''));await expect(staff.getByRole('heading',{name:'Team administration is restricted.',exact:true})).toBeVisible();
  await page.getByRole('link',{name:'Close',exact:true}).click();
- const members=page.getByRole('heading',{name:'Team members',exact:true}).locator('..').locator('..');const row=members.getByRole('row').filter({has:page.getByRole('rowheader',{name:'staff@example.test Team member',exact:true})});
- await row.locator('summary').click();await row.getByRole('checkbox',{name:'Active member',exact:true}).uncheck();await row.getByRole('checkbox',{name:'I reviewed this change to access.',exact:true}).check();await row.getByRole('button',{name:'Save team access',exact:true}).click();
+ const members=page.getByRole('heading',{name:'Team members',exact:true}).locator('..').locator('..');const row=members.getByRole('row').filter({has:page.getByRole('rowheader',{name:'Test Colleague staff@example.test / Team member',exact:true})});
+ await row.locator('summary').filter({hasText:'Manage access'}).click();await row.getByRole('checkbox',{name:'Active member',exact:true}).uncheck();await row.getByRole('checkbox',{name:'I reviewed this change to access.',exact:true}).check();await row.getByRole('button',{name:'Save team access',exact:true}).click();
  await expect(row.getByText('Inactive',{exact:true})).toBeVisible();
  await staff.goto('/workspace');await expect(staff).toHaveURL(/\/onboarding$/);
  }finally{await context.close();}
@@ -50,7 +50,7 @@ test('mobile team editor supports multiple scoped roles without horizontal overf
  await page.screenshot({path:testInfo.outputPath('team-mobile.png'),fullPage:true});
 });
 test('administrator can invite a location-scoped Inventory receiver to a dedicated home',async({page,browser})=>{
- await team(page);await page.getByRole('link',{name:'Invite colleague',exact:true}).click();await page.getByLabel('Staff email address',{exact:true}).fill('receiving-invite@example.test');
+ await team(page);await page.getByRole('link',{name:'Invite colleague',exact:true}).click();await page.getByLabel('Colleague name',{exact:true}).fill('Receiving Colleague');await page.getByLabel('Staff email address',{exact:true}).fill('receiving-invite@example.test');
  await page.getByRole('combobox',{name:'Role 1',exact:true}).selectOption('stock_receiver');
  const scope=page.getByRole('combobox',{name:'Scope 1',exact:true});const location=await scope.locator('option').nth(1).getAttribute('value');await scope.selectOption(location!);
  await page.getByRole('checkbox',{name:'I reviewed these permissions. Create an invitation for this email.',exact:true}).check();await page.getByRole('button',{name:'Create invitation',exact:true}).click();

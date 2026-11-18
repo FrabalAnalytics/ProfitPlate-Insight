@@ -1,0 +1,8 @@
+"use client";
+import {useActionState} from 'react';
+import {selectProcessingUnit} from '../production/actions';
+import type {ProcessingSetup} from '@/lib/processing';
+export function ProcessingUnitForm({org,setup}:{org:string;setup:ProcessingSetup}){
+ const[state,action,pending]=useActionState(selectProcessingUnit,{});
+ return <form action={action} onReset={e=>e.preventDefault()} className="stock-form"><input type="hidden" name="organisation" value={org}/><fieldset disabled={pending}><legend>Choose the business processing unit</legend><p className="stock-help">Select one of your named centres. Posted processing deducts the measured inputs and adds the produced SKU at this same centre. Move stock between centres using a transfer.</p><div className="setup-field"><label htmlFor="processing-unit">Processing unit</label><select id="processing-unit" name="centre" defaultValue={setup.processing_centre_id??''} required><option value="">Choose a stock centre</option>{setup.sites.filter(s=>s.is_active&&s.responsible_active!==false&&s.responsible_membership_id).map(s=><option key={s.id} value={s.id}>{s.name} / {s.responsible_name}</option>)}</select></div><p className="stock-help">Complete or cancel pending batches before changing this choice. Historical records keep their original centre and baseline. Review baselines for the new centre after a change.</p>{state.error&&<p className="auth-alert" role="alert">{state.error}</p>}{state.success&&<p role="status">{state.success}</p>}<button className="secondary-button">{pending?'Saving...':'Save processing unit'}</button></fieldset></form>;
+}

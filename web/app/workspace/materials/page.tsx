@@ -48,7 +48,7 @@ export default async function MaterialsPage({ searchParams }: { searchParams: Pr
   const q = (params.q ?? "").trim().slice(0, 80);
   const page = Math.min(100000, Math.max(1, Number.parseInt(params.page ?? "1", 10) || 1));
   const filter = q ? `%${q.replace(/[\\%_]/g, "\\$&")}%` : "";
-  const materialFields = "id,code,name,item_type,category_id,base_uom_id,stock_tracked,is_active,location_id,weekly_count_required,supply_class";
+  const materialFields = "id,code,name,item_type,category_id,base_uom_id,stock_tracked,is_active,location_id,weekly_count_required,supply_class,requires_processing";
   const supplierFields = "id,code,name,email,phone,address,is_active";
   let materials: Material[] = [], suppliers: Supplier[] = [];
   let conversions: { id: string; item_id: string; from_uom_id: string; to_uom_id: string; factor: string | number; effective_from: string }[] = [];
@@ -104,7 +104,7 @@ export default async function MaterialsPage({ searchParams }: { searchParams: Pr
     id: editing?.id ?? "", code: editing?.code ?? "", name: editing?.name ?? "", item_type: (editing as Material)?.item_type ?? "RAW",
     category: categories.find(category => category.id === (editing as Material)?.category_id)?.name ?? "",
     base_uom_id: editing?((editing as Material).base_uom_id??""):(units.find(entry => entry.code === "KG")?.id??""),
-    location_id:(editing as Material)?.location_id??"",weekly_count_required:String((editing as Material)?.weekly_count_required??false),supply_class:(editing as Material)?.supply_class??"PURCHASED",
+    requires_processing:String((editing as Material)?.requires_processing??false),location_id:(editing as Material)?.location_id??"",weekly_count_required:String((editing as Material)?.weekly_count_required??false),supply_class:(editing as Material)?.supply_class??"PURCHASED",
     stock_tracked: String((editing as Material)?.stock_tracked ?? true), is_active: String(editing?.is_active ?? true),
   } : {
     id: editing?.id ?? "", code: editing?.code ?? "", name: editing?.name ?? "", email: (editing as Supplier)?.email ?? "", phone: (editing as Supplier)?.phone ?? "", address: (editing as Supplier)?.address ?? "", is_active: String(editing?.is_active ?? true),

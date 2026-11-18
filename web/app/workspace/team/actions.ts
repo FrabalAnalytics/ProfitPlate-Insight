@@ -30,7 +30,7 @@ export async function inviteTeam(_state:TeamState,form:FormData):Promise<TeamSta
   const {client,org}=await teamClient(form), request=String(form.get("request")??"");
   if(!isUuid(request)) throw new Error("Refresh and try again.");
   const email=String(form.get("email")??"").trim();
-  const result=await client.rpc("create_team_invitation",{p_organisation_id:org,p_request_id:request,p_email:email,p_assignments:assignments(form)});
+  const result=await client.rpc("invite_named_team_member",{p_organisation_id:org,p_request_id:request,p_email:email,p_name:String(form.get("display_name")??"").trim(),p_assignments:assignments(form)});
   if(result.error) return {error:result.error.code==="22023"?result.error.message:"We could not create this invitation. Check your access and try again."};
   revalidatePath("/workspace/team");
   return result.data.token ? {token:result.data.token,expires:result.data.expires_at,success:"Invitation created. Copy the link now and share it with the intended person."}
@@ -56,4 +56,15 @@ export async function revokeInvite(_state:TeamState,form:FormData):Promise<TeamS
   if(result.error) return {error:result.error.code==="22023"?result.error.message:"Invitation could not be revoked. Refresh and try again."};
   revalidatePath("/workspace/team");return {success:"Invitation revoked."};
  } catch(error) {return failure(error);}
+}
+
+export async function saveMemberName(_state:TeamState,form:FormData):Promise<TeamState> {
+ try {
+  await requireUser();const org=String(form.get("organisation")??""),member=String(form.get("member")??"");
+  if(!isUuid(org)||!isUuid(member))throw new Error("Choose an available business and member.");
+  const client=await createClient(),result=await client.rpc("save_member_name",{p_organisation_id:org,p_membership_id:member,p_name:String(form.get("display_name")??"").trim()});
+  if(result.error)return {error:["22023","42501"].includes(result.error.code)?result.error.message:"The name could not be saved."};
+  for(const path of ["/workspace","/workspace/team","/workspace/setup/centres"])revalidatePath(path);
+  return {success:"Name saved."};
+ }catch(error){return failure(error);}
 }

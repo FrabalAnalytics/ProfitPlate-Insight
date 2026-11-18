@@ -13,6 +13,9 @@ grant usage on schema public,auth to authenticated,anon; grant execute on functi
 for (const migration of (await readdir(new URL("../../supabase/migrations/", import.meta.url))).filter(name => name.endsWith(".sql")).sort())
   await db.exec(await readFile(new URL(`../../supabase/migrations/${migration}`, import.meta.url), "utf8"));
 const users = [
+  {id:"00000000-0000-0000-0000-000000000017",email:"training-owner@example.test"},
+  {id:"00000000-0000-0000-0000-000000000018",email:"training-chef@example.test"},
+  {id:"00000000-0000-0000-0000-000000000019",email:"training-manager@example.test"},
   { id: "00000000-0000-0000-0000-000000000015", email: "kitchen-process@example.test" },
   { id: "00000000-0000-0000-0000-000000000016", email: "bar-process@example.test" },
   { id: "00000000-0000-0000-0000-000000000014", email: "inventory-manager@example.test" },
@@ -196,6 +199,10 @@ createServer(async (request, response) => {
         operational_report: ["p_organisation_id","p_type","p_from","p_to","p_outlet_id","p_stock_location_id","p_status","p_search","p_page","p_export"],
         purchasing_report_options: ["p_organisation_id","p_type"],
         purchasing_history_report: ["p_organisation_id","p_type","p_view","p_from","p_to","p_outlet_id","p_supplier_id","p_item_id","p_user_id","p_status","p_receiving","p_search","p_page","p_export"],
+        save_member_name: ["p_organisation_id","p_membership_id","p_name"],
+        invite_named_team_member: ["p_organisation_id","p_request_id","p_email","p_name","p_assignments"],
+        set_processing_unit: ["p_organisation_id","p_centre_id"],
+        save_material_processing_baseline: ["p_organisation_id","p_request_id","p_value"],
         team_access: ["p_organisation_id"],
         team_directory: ["p_organisation_id","p_search","p_page","p_invite_page"],
         create_team_invitation: ["p_organisation_id","p_request_id","p_email","p_assignments"],
@@ -250,14 +257,14 @@ createServer(async (request, response) => {
     const table = url.pathname.replace("/rest/v1/", "");
     const columns = {
       organisations: ["id", "name", "currency_code", "country_code", "concept", "time_zone"],
-      organisation_memberships: ["id", "organisation_id", "user_id", "status"],
+      organisation_memberships: ["id", "organisation_id", "user_id", "status", "display_name"],
       membership_roles: ["id", "organisation_id", "membership_id", "role_code", "location_id"],
       brands: ["id", "name", "organisation_id"],
       locations: ["id", "name", "code", "timezone", "address", "is_active", "brand_id", "organisation_id"],
       restaurant_setup_drafts: ["user_id", "business_name", "concept", "country_code", "currency_code", "brand_name", "location_name", "timezone", "address", "reporting_week_start", "count_day", "count_cutoff", "step", "completed_organisation_id"],
       units_of_measure: ["id", "organisation_id", "code", "name", "dimension"],
       item_categories: ["id", "organisation_id", "name"],
-      items: ["id", "organisation_id", "code", "name", "item_type", "category_id", "base_uom_id", "stock_tracked", "is_active", "location_id", "weekly_count_required", "supply_class"],
+      items: ["id", "organisation_id", "code", "name", "item_type", "category_id", "base_uom_id", "stock_tracked", "is_active", "location_id", "weekly_count_required", "supply_class", "requires_processing"],
       suppliers: ["id", "organisation_id", "code", "name", "email", "phone", "address", "is_active"],
       item_uom_conversions: ["id", "organisation_id", "item_id", "from_uom_id", "to_uom_id", "factor", "effective_from"],
       menu_items: ["id", "organisation_id", "code", "name", "brand_id", "is_active", "location_id", "primary_category", "subcategory"],

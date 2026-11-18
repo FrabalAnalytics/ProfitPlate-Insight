@@ -5,7 +5,7 @@ type Task = { title: string; description: string; action: string; path: string }
 export function workspaceNavigation(roles: Role[], access: NavigationAccess): NavigationAccess {
   const procurement = roles.some(role => role.role_code === "procurement");
   const otherModuleRole = roles.some(role => ["ceo", "finance", "restaurant_admin", "operations"].includes(role.role_code));
-  const stockRole=roles.some(role=>["ceo","finance","restaurant_admin","operations","inventory_manager","inventory","stock_department","stock_receiver","stock_dispatcher"].includes(role.role_code));
+  const stockRole=roles.some(role=>["ceo","finance","restaurant_admin","operations","inventory_manager","inventory","stock_department","kitchen_manager","bar_lead","stock_receiver","stock_dispatcher"].includes(role.role_code));
   return procurement ? {...access,...(!otherModuleRole?{recipes:false,menus:false}:{}),...(!stockRole?{inventory:false}:{})} : access;
 }
 
@@ -14,7 +14,7 @@ export function workspaceHome(roles: Role[], access: NavigationAccess) {
   access = workspaceNavigation(roles, access);
   const has = (code: string) => roles.some(role => role.role_code === code);
   const businessRole = (code: string) => roles.some(role => role.role_code === code && role.location_id === null);
-  const title = has("ceo") ? "Executive workspace" : businessRole("inventory_manager") ? "Inventory Manager workspace" : has("finance") ? "Finance workspace" : has("procurement") ? "Procurement workspace" : has("stock_department") ? "Department stock workspace" : has("stock_receiver") ? "Stock receiving workspace" : has("stock_dispatcher") ? "Stock dispatch workspace" : has("inventory") ? "Inventory / Receiving workspace" : has("restaurant_admin") ? "Administration workspace" : "Operations workspace";
+  const title = has("ceo") ? "Executive workspace" : businessRole("inventory_manager") ? "Inventory Manager workspace" : has("finance") ? "Finance workspace" : has("procurement") ? "Procurement workspace" : has("kitchen_manager") ? "Kitchen Manager workspace" : has("bar_lead") ? "Bar Lead workspace" : has("stock_department") ? "Department stock workspace" : has("stock_receiver") ? "Stock receiving workspace" : has("stock_dispatcher") ? "Stock dispatch workspace" : has("inventory") ? "Inventory / Receiving workspace" : has("restaurant_admin") ? "Administration workspace" : "Operations workspace";
   const tasks: Task[] = [];
   if(access.history)tasks.push({title:"Historical reports",description:"Filter earlier records by date, location and status; trace the source or export the permitted history.",action:"Open historical reports",path:"/workspace/records"});
   if (access.inventory) tasks.push({title:"Inventory & movements",description:has("stock_department")?"Request materials, accept or reject incoming stock, and return excess to Main Store.":"Review stock balances, reservations, requisitions and confirmed movements.",action:"Open inventory & movements",path:"/workspace/inventory"});

@@ -1,6 +1,6 @@
 export type CatalogueKind = "material" | "supplier" | "conversion";
 export type Unit = { id: string; code: string; name: string; dimension: string };
-export type Material = { id: string; code: string; name: string; item_type: string; category_id: string | null; base_uom_id: string | null; location_id?:string|null; weekly_count_required?:boolean; supply_class?:string; stock_tracked: boolean; is_active: boolean };
+export type Material = { id: string; code: string; name: string; item_type: string; category_id: string | null; base_uom_id: string | null; location_id?:string|null; weekly_count_required?:boolean; requires_processing?:boolean;supply_class?:string; stock_tracked: boolean; is_active: boolean };
 export type Supplier = { id: string; code: string; name: string; email: string | null; phone: string | null; address: string | null; is_active: boolean };
 export const itemTypes = [
   ["GENERAL", "General"], ["RAW", "Raw ingredient"], ["PACKAGING", "Packaging"], ["RESALE", "Resale item"],

@@ -32,8 +32,13 @@ export async function requestStock(_state:StockActionState,form:FormData):Promis
   const auth=await access(form);org=auth.org;
   const request=String(form.get("request")??"");if(!isUuid(request)||form.get("confirmed")!=="on")throw new Error("Review and confirm the stock request.");
   const document=Object.fromEntries(["kind","date","note","source_id","destination_id","route_id","receipt_id","recipe_version_id","planned_output","actual_output","supplier_id","delivery_reference","processing_standard_id","variance_reason","usable_weight_kg"].map(key=>[key,String(form.get(key)??"").trim()]));
+  if(document.kind==="WASTE"){
+   const category=String(form.get("waste_category")??"");
+   if(!['Spoilage','Expiry','Damage','Bad production','Other loss'].includes(category))throw new Error("Choose a waste category.");
+   document.note=`${category}: ${document.note}`;
+  }
   const result=await auth.client.rpc("request_stock_document",{p_organisation_id:org,p_request_id:request,p_document:{...document,...(document.kind==="PRODUCTION"?{processing_waste:parsed(form,"processing_waste"),waste_confirmed:form.get("waste_confirmed")==="on"}:{})},p_lines:parsed(form,"lines")});checked(result.error);id=result.data;
-  revalidatePath("/workspace/inventory");revalidatePath("/workspace/inventory/processing");revalidatePath("/workspace/setup/centres");revalidatePath("/workspace");
+  revalidatePath("/workspace/inventory");revalidatePath("/workspace/inventory/processing");revalidatePath("/workspace/inventory/waste");revalidatePath("/workspace/setup/centres");revalidatePath("/workspace");
  }catch(error){return failure(error);}
  redirect(`/workspace/inventory?${new URLSearchParams({organisation:org,view:"movements",document:id})}`);
 }
@@ -42,7 +47,7 @@ export async function actOnStock(_state:StockActionState,form:FormData):Promise<
   const {org,client}=await access(form),document=String(form.get("document")??"");
   if(!isUuid(document)||form.get("confirmed")!=="on")throw new Error("Confirm the stock decision before saving.");
   const result=await client.rpc("stock_document_action",{p_organisation_id:org,p_document_id:document,p_action:String(form.get("decision")??""),p_note:String(form.get("note")??"").trim(),p_received:parsed(form,"received")});checked(result.error);
-  revalidatePath("/workspace/inventory");revalidatePath("/workspace/inventory/processing");revalidatePath("/workspace/setup/centres");revalidatePath("/workspace");return {success:"Stock decision saved. Balances and movement history are updated."};
+  revalidatePath("/workspace/inventory");revalidatePath("/workspace/inventory/processing");revalidatePath("/workspace/inventory/waste");revalidatePath("/workspace/setup/centres");revalidatePath("/workspace");return {success:"Stock decision saved. Balances and movement history are updated."};
  }catch(error){return failure(error);}
 }
 export async function saveDepartmentAccess(_state:StockActionState,form:FormData):Promise<StockActionState>{
@@ -53,7 +58,7 @@ export async function saveDepartmentAccess(_state:StockActionState,form:FormData
   const revision=Number(form.get("revision"));if(!Number.isInteger(revision)||revision<0)throw new Error("Refresh and review the latest permissions.");
   const result=await auth.client.rpc("save_stock_member_access",{p_organisation_id:org,p_membership_id:member,p_revision:revision,p_mode:String(form.get("mode")??""),p_assignments:parsed(form,"assignments")});
   if(result.error?.code==="PGRST202")return {error:"Department access needs migration 024. Ask your administrator to apply it after 023."};
-  checked(result.error);revalidatePath("/workspace/inventory");revalidatePath("/workspace/inventory/processing");revalidatePath("/workspace/setup/centres");revalidatePath("/workspace");
+  checked(result.error);revalidatePath("/workspace/inventory");revalidatePath("/workspace/inventory/processing");revalidatePath("/workspace/inventory/waste");revalidatePath("/workspace/setup/centres");revalidatePath("/workspace");
  }catch(error){return failure(error);}
  redirect(`/workspace/inventory?${new URLSearchParams({organisation:org,view:"access",member,result:"access-saved"})}`);
 }
