@@ -19,7 +19,7 @@ export function AuthForm({ mode = "login", notice, joining = false }: { mode?: M
   const [password, setPassword] = useState("");
   const [confirmation, setConfirmation] = useState("");
   const copy = {
-    login: { title: "Welcome back.", description: joining ? "Sign in with your invited email to review your team invitation." : "Sign in with your assigned account to open your restaurant workspace.", button: "Sign in", busy: "Signing you in…" },
+    login: { title: "Welcome back.", description: joining ? "Sign in with your invited email to review your team invitation." : "Sign in to your restaurant workspace.", button: "Sign in", busy: "Signing you in…" },
     signup: { title: "Start with a clearer picture.", description: joining ? "Create and verify your account to join your restaurant team." : "Create your account to set up a restaurant or accept your team invitation.", button: "Create account", busy: "Creating your account…" },
     forgot: { title: "Forgot your password?", description: "Enter your account email and we’ll send you a link to reset your password.", button: "Send reset link", busy: "Sending reset link…" },
     reset: { title: "A fresh start.", description: "Choose a new password to keep your account secure.", button: "Save new password", busy: "Updating password…" },
@@ -27,7 +27,7 @@ export function AuthForm({ mode = "login", notice, joining = false }: { mode?: M
 
   return (
     <>
-      <p className="eyebrow form-eyebrow">YOUR RESTAURANT WORKSPACE</p>
+
       <h1 className="auth-title">{copy.title}</h1>
       <p className="auth-description">{copy.description}</p>
       {notice && !state.error && !state.success && <p role="status" className="auth-notice">{notice}</p>}
@@ -51,8 +51,8 @@ export function AuthForm({ mode = "login", notice, joining = false }: { mode?: M
           <span className="sr-only" role="status">{pending ? copy.busy : ""}</span>
         </form>
       )}
-      {mode === "login" ? <div className="auth-access-note"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></svg><p>Your workspace. Your insights. Securely connected.</p></div> : mode !== "signup" && !state.success && <Link href="/login" className="auth-back">← Back to sign in</Link>}
-      {mode === "login" && <p className="auth-invitation">New to ProfitPlate? <Link href="/signup" className="inline-link">Create your account</Link><br />Joining a team? Use the email on your invitation.</p>}
+      {mode !== "login" && mode !== "signup" && !state.success && <Link href="/login" className="auth-back">Back to sign in</Link>}
+      {mode === "login" && <p className="auth-invitation">New to ProfitPlate? <Link href="/signup" className="inline-link">Create your account</Link></p>}
       {mode === "signup" && <p className="auth-invitation">Already have an account? <Link href="/login" className="inline-link">Sign in</Link></p>}
     </>
   );

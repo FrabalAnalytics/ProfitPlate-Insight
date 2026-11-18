@@ -21,12 +21,12 @@ const capabilities = [
   { icon: Users, number: "06", title: "Team access", text: "Give each person the tasks and stock centres they need.", detail: "Named users & assigned roles" },
 ];
 const questions = [
-  ["What can I use today?", "Recipes, menu profitability, purchasing, stock movements, processing, waste, expenses and management reports. Each role has its own workspace."],
-  ["Which data can I upload?", "CSV imports support starting material prices, invoices, sales and expenses. Other master data currently needs manual entry. The test pack labels upload files and manual-entry sheets separately."],
-  ["Can I use my last purchase prices?", "Yes. Enter or import dated starting prices. Posted invoices then update monthly quantity-weighted cost estimates, with starting prices as a fallback."],
-  ["Are these margins actual profit?", "No. Food margins are recipe-based estimates. Missing costs stay flagged. Actual inventory valuation and full operating profit are not calculated."],
-  ["Do I need to replace my POS?", "No. Use supported CSV exports from your existing tools. Direct POS integrations and XLSX uploads are not available yet."],
-  ["What does it cost?", "Subscription pricing has not been announced. Workspace registration does not enrol you in a paid subscription."],
+  ["Why are my food costs rising?", "See which ingredient prices changed and review the dishes they affect. Monthly quantity-weighted purchase costs help you track the pressure on recipe estimates."],
+  ["Which dishes need a pricing review?", "Compare serving cost, selling price and estimated food margin. Identify dishes above your food-cost target before deciding whether to adjust the price, portion or recipe."],
+  ["How can I find avoidable waste?", "Compare actual processing output with agreed yields, then review recorded spoilage and other losses by stock centre. Use the gaps to guide your team's checks."],
+  ["Who needs to act on a stock handover?", "Trace who requested, approved, dispatched and accepted the stock. Pending and incomplete handovers show where follow-up is needed; they do not by themselves prove a loss."],
+  ["What should I focus on as an owner?", "Review price pressure, low-margin dishes, recorded waste and overdue handovers, with the affected outlet and source records. Your team sees the tasks relevant to its role."],
+  ["Will I know how much profit I actually made?", "You can review estimated food margins alongside recorded labour and expenses. These are not actual net profit: missing costs remain flagged, and full operating profit is not calculated."],
 ];
 
 export default function Home() {
