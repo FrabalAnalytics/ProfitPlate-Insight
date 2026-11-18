@@ -54,8 +54,16 @@ export function validateReferencePriceRows(rows: ReferencePriceInput[]) {
  return null;
 }
 
-// Preserve all stored decimal digits. Small positive prices must not display as zero.
+// Round display amounts with decimal-string arithmetic; stored costs remain exact.
+// Tiny nonzero costs stay visibly nonzero rather than being labelled 0.00.
 export function referenceAmount(value: string, currency: string) {
- const [whole, fraction = ""] = value.split(".");
- return `${currency} ${whole.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}.${fraction.replace(/0+$/, "").padEnd(2, "0")}`;
+ const match = /^(-?)(\d+)(?:\.(\d+))?$/.exec(value);
+ if (!match) return "Unavailable";
+ const [, sign, whole, fraction = ""] = match;
+ const nonzero = /[1-9]/.test(whole + fraction);
+ let cents = BigInt(whole) * BigInt(100) + BigInt(fraction.padEnd(2, "0").slice(0, 2));
+ if ((fraction[2] ?? "0") >= "5") cents += BigInt(1);
+ if (cents === BigInt(0) && nonzero) return `${currency} ${sign ? ">-" : "<"}0.01`;
+ const grouped = (cents / BigInt(100)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+ return `${currency} ${sign && cents > BigInt(0) ? "-" : ""}${grouped}.${(cents % BigInt(100)).toString().padStart(2, "0")}`;
 }

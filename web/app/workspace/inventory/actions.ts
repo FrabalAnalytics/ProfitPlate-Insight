@@ -23,7 +23,7 @@ export async function configureStock(_state:StockActionState,form:FormData):Prom
   const {org,client}=await access(form),kind=String(form.get("configuration")??"");
   const value=Object.fromEntries(["code","name","kind","outlet_id","department","source_id","destination_id","approval_role","recipe_version_id","item_id","id","active"].map(key=>[key,String(form.get(key)??"").trim()]));
   const result=await client.rpc("save_stock_configuration",{p_organisation_id:org,p_kind:kind,p_value:value});checked(result.error);
-  revalidatePath("/workspace/inventory");revalidatePath("/workspace");return {success:"Inventory configuration saved."};
+  revalidatePath("/workspace/inventory");revalidatePath("/workspace/setup/production");revalidatePath("/workspace/materials");revalidatePath("/workspace/materials/prices");revalidatePath("/workspace/materials/prices/monthly");revalidatePath("/workspace/recipes");revalidatePath("/workspace/menus");revalidatePath("/workspace");return {success:"Inventory configuration saved."};
  }catch(error){return failure(error);}
 }
 export async function requestStock(_state:StockActionState,form:FormData):Promise<StockActionState>{

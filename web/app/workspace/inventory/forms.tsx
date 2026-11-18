@@ -2,6 +2,7 @@
 import {useActionState,useId,useState,type ReactNode} from "react";
 import {configureStock,requestStock,actOnStock} from "./actions";
 import {stockKinds,type StockPacket,type StockDocument,type StockActionState} from "@/lib/inventory";
+import {displayQuantity} from "@/lib/recipes";
 import {TableScroll} from "@/app/components/data-table";
 
 function Feedback({state}:{state:StockActionState}){return <>{state.error&&<p className="auth-alert" role="alert">{state.error}</p>}{state.success&&<p className="stock-success" role="status">{state.success}</p>}</>;}
@@ -38,8 +39,8 @@ export function AllowStockReturn({organisation,source,destination,sourceName,des
  const [state,action,pending]=useActionState(configureStock,{});
  return <form action={action}><input type="hidden" name="organisation" value={organisation}/><input type="hidden" name="configuration" value="ROUTE"/><input type="hidden" name="source_id" value={destination}/><input type="hidden" name="destination_id" value={source}/><input type="hidden" name="kind" value="TRANSFER"/><input type="hidden" name="approval_role" value="inventory_manager"/><button className="inline-link" disabled={pending} aria-label={`Allow return from ${destinationName} to ${sourceName}`}>{pending?"Saving...":"Allow reverse / excess return"}</button><Feedback state={state}/></form>;
 }
-export function StockRequest({organisation,packet,request,today}:{organisation:string;packet:StockPacket;request:string;today:string}){
- const [state,action,pending]=useActionState(requestStock,{}),[kind,setKind]=useState<keyof typeof stockKinds>("TRANSFER"),[lines,setLines]=useState([{key:0,item_id:"",quantity:""}]);
+export function StockRequest({organisation,packet,request,today,initialKind}:{organisation:string;packet:StockPacket;request:string;today:string;initialKind?:keyof typeof stockKinds}){
+ const [state,action,pending]=useActionState(requestStock,{}),[kind,setKind]=useState<keyof typeof stockKinds>(initialKind??"TRANSFER"),[lines,setLines]=useState([{key:0,item_id:"",quantity:""}]);
  const sites=packet.locations.filter(s=>s.is_active),incoming=["OPENING","GRN","DIRECT_RECEIPT"].includes(kind),production=kind==="PRODUCTION",hasLines=kind!=="GRN"&&!production;
  const selectable=sites.filter(s=>incoming?s.inventory&&s.request:s.request);
  const update=(key:number,field:"item_id"|"quantity",value:string)=>setLines(lines.map(l=>l.key===key?{...l,[field]:value}:l));
@@ -72,7 +73,7 @@ export function StockDecision({organisation,document}:{organisation:string;docum
 }
 
 export function StockOutputBinding({organisation,packet}:{organisation:string;packet:StockPacket}){return (<ConfigForm organisation={organisation} kind="BINDING" title="Link recipe stock output">
-  <Field label="Published recipe version">{id=><select id={id} name="recipe_version_id" required><option value="">Choose recipe version</option>{packet.recipes.map(r=><option key={r.id} value={r.id}>{r.code} - {r.name} v{r.version} ({r.yield} {r.unit})</option>)}</select>}</Field>
+  <Field label="Published recipe version">{id=><select id={id} name="recipe_version_id" required><option value="">Choose recipe version</option>{packet.recipes.map(r=><option key={r.id} value={r.id}>{r.code} - {r.name} v{r.version} ({displayQuantity(r.yield)} {r.unit})</option>)}</select>}</Field>
   <Field label="Produced stock material">{id=><select id={id} name="item_id" required><option value="">Choose output material</option>{packet.items.filter(i=>["SEMI_FINISHED","FINISHED"].includes(i.item_type)).map(i=><option key={i.id} value={i.id}>{i.code} - {i.name} ({i.unit})</option>)}</select>}</Field>
-  <p className="stock-help">Create a tracked semi-finished or finished material in Materials & suppliers first. Its base unit must match the recipe output dimension. Produce child recipes first; a parent consumes their stocked output rather than their raw ingredients again.</p>
+  <p className="stock-help">Choose your processing recipe above, then the material it produces. Linking supplies the estimated cost per base unit; recording and posting a production batch moves the stock. Create a tracked semi-finished or finished material in Materials & suppliers first. Its base unit must match the recipe output dimension. Produce child recipes first; a parent consumes their stocked output rather than their raw ingredients again.</p>
  </ConfigForm>);}

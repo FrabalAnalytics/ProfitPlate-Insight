@@ -137,6 +137,7 @@ createServer(async (request, response) => {
         reporting_calendar: ['p_organisation_id'],
         set_restaurant_access: ['p_organisation_id','p_expected_state','p_state','p_reason','p_confirmed'],
         material_monthly_prices: ['p_organisation_id','p_month','p_search','p_page'],
+        material_cost_estimates: ['p_organisation_id','p_ids','p_as_of'],
         save_management_report: ["p_organisation_id","p_from","p_to","p_location_id","p_request_id","p_title"],
         stage_manual_purchase: ["p_organisation_id","p_request_id","p_invoice","p_lines"],
         purchase_order_access: ["p_organisation_id","p_order_id"],
