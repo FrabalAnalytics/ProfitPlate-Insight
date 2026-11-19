@@ -2,6 +2,8 @@
 
 Use a separate training restaurant. Keep the existing demo restaurant and its historical records. Automated tests create an isolated training restaurant locally; they do not create or change a live Supabase restaurant.
 
+For centre-specific waste review, also follow [Centre waste recording and review](CENTRE_WASTE_REVIEW_GUIDE.md).
+
 ## Before using this release
 
 Apply migration `supabase/migrations/202611180037_guided_stock_setup_and_named_teams.sql` after migrations 001-036, then deploy the matching app. This migration does not reset records or deactivate restaurants. Existing processing definitions and historic batches remain available. Restaurants with older processing settings must explicitly designate their processing unit; no centre is selected automatically.
@@ -100,7 +102,7 @@ KG input and PCS output alone cannot establish a weight-yield percentage. Withou
 
 1. Ada opens **Waste Log > Record waste**.
 2. Choose Kitchen, Snapper Cut, quantity **2 PCS**, category **Spoilage**, and explain the loss.
-3. Submit. Inventory Manager approves and posts.
+3. Submit. A different authorised Kitchen colleague approves and posts. Assign that colleague Kitchen access and **Approve & post waste** first; the Main Store Inventory Manager cannot review Kitchen waste.
 4. Expect Kitchen cut stock **108 PCS**. Main Store and other centres remain unchanged.
 5. Waste Log shows this independent 2 PCS loss. The earlier 4 KG processing trim stays inside its processing batch.
 6. **Combined waste report** shows both records with their units and stock treatment. Do not add KG and PCS into one quantity total.

@@ -265,6 +265,9 @@ Do not post an opening balance for stock already established by earlier movement
 
 ## 16. Record material processing and separate daily waste
 
+Follow [Centre waste recording and review](CENTRE_WASTE_REVIEW_GUIDE.md) to assign a different local waste reviewer at each centre. The Main Store Inventory Manager cannot approve Kitchen or Bar waste. The recorder cannot approve or post their own waste.
+
+
 1. Ada opens **Material Processing Log > Record material processing**, selects Kitchen and the Snapper cutting baseline. Output should auto-fill **Snapper Cut (PCS)**.
 2. Enter actual input **40 KG**, actual output **110 PCS**, measured usable output weight **36 KG**.
 3. Record **4 KG** measured trim inside the batch, explain the output shortage, enter a batch reference, confirm and submit.

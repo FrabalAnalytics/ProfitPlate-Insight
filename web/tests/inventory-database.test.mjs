@@ -37,6 +37,10 @@ test('configurable stock flows preserve quantities, role scopes and an immutable
   await t.test('administrator configures central warehouses, outlet departments and allowed routes',async()=>{
    warehouse=await configure('LOCATION',{code:'WH',name:'Central warehouse',kind:'WAREHOUSE'});
    kitchen=await configure('LOCATION',{code:'KIT',name:'Kitchen',kind:'KITCHEN',outlet_id:outlet,department:'Food production'});
+   // Explicit centre-bound waste review does not come from Finance or general posting roles.
+   await db.exec('reset role');const financeMembership=await value('select id from public.organisation_memberships where organisation_id=$1 and user_id=$2',[org,finance]);await db.query("insert into public.membership_roles(organisation_id,membership_id,role_code) values($1,$2,'stock_department')",[org,financeMembership]);const storeMembership=await value('select id from public.organisation_memberships where organisation_id=$1 and user_id=$2',[org,storekeeper]);await login(owner);
+   await value("select public.save_stock_member_access($1,$2,0,'ASSIGNED',$3)",[org,financeMembership,[warehouse,kitchen].map(location_id=>({location_id,can_request:false,can_handle:false,can_approve:false,can_dispatch:false,can_receive:false,can_review_waste:true}))]);
+   await value("select public.save_stock_member_access($1,$2,0,'ASSIGNED',$3)",[org,storeMembership,[warehouse,kitchen].map(location_id=>({location_id,can_request:true,can_handle:true,can_approve:true,can_dispatch:true,can_receive:true,can_review_waste:true}))]);
    route=await configure('ROUTE',{source_id:warehouse,destination_id:kitchen,kind:'ISSUE',approval_role:'inventory'});
    await denied('select public.save_stock_configuration($1,$2,$3)',[org,'ROUTE',{source_id:warehouse,destination_id:warehouse,kind:'TRANSFER',approval_role:'inventory'}],'22023');
    await login(storekeeper);await denied('select public.save_stock_configuration($1,$2,$3)',[org,'LOCATION',{code:'NO',name:'No',kind:'STORE'}]);
@@ -68,14 +72,14 @@ test('configurable stock flows preserve quantities, role scopes and an immutable
   });
   await t.test('negative balances, stale counts and backdated movements cannot post',async()=>{
    await login(storekeeper);let id=await request('WASTE',warehouse,[{item_id:rice,quantity:'82'}]);
-   await login(finance);await action(id,'APPROVE');await login(storekeeper);
+   await login(finance);await action(id,'APPROVE');
    await denied('select public.stock_document_action($1,$2,$3,$4,null)',[org,id,'POST','Too much'],'22023');assert.equal(await balance(warehouse,rice),81);
-   const count=await request('COUNT',warehouse,[{item_id:rice,quantity:'79'}]);
+   await login(storekeeper);const count=await request('COUNT',warehouse,[{item_id:rice,quantity:'79'}]);
    id=await request('CONSUMPTION',warehouse,[{item_id:rice,quantity:'1'}]);await approvedPost(id);
    await login(finance);await action(count,'APPROVE');await login(storekeeper);
    await denied('select public.stock_document_action($1,$2,$3,$4,null)',[org,count,'POST','Stale count'],'22023');
    id=await request('COUNT',warehouse,[{item_id:rice,quantity:'78'}]);await approvedPost(id);assert.equal(await balance(warehouse,rice),78);
-   id=await request('WASTE',warehouse,[{item_id:rice,quantity:'1'}],{date:'2020-10-01'});await login(finance);await action(id,'APPROVE');await login(storekeeper);
+   id=await request('WASTE',warehouse,[{item_id:rice,quantity:'1'}],{date:'2020-10-01'});await login(finance);await action(id,'APPROVE');
    await denied('select public.stock_document_action($1,$2,$3,$4,null)',[org,id,'POST','Backdated'],'22023');
   });
   await t.test('production consumes stocked sub-recipes once, pins the version and records actual yield',async()=>{
@@ -147,7 +151,7 @@ test('configurable stock flows preserve quantities, role scopes and an immutable
    const newSite=await configure('LOCATION',{code:'MGR_STORE',name:'Manager configured store',kind:'STORE',outlet_id:outlet});assert.ok(newSite);
    const directory=await value('select public.stock_access_directory($1)',[org]);const member=directory.members.find(m=>m.email===`${receiver}@example.test`);
    await value('select public.save_stock_member_access($1,$2,0,$3,$4)',[org,member.id,'ASSIGNED',[{location_id:kitchen,can_request:true,can_handle:true,can_approve:false}]]);
-   await login(storekeeper);const waste=await request('WASTE',warehouse,[{item_id:rice,quantity:'1'}]);
+   await login(owner);const managerMembership=await value('select id from public.organisation_memberships where organisation_id=$1 and user_id=$2',[org,manager]);await value('select public.save_stock_centre($1,$2)',[org,{id:warehouse,code:'WH',name:'Central warehouse',kind:'WAREHOUSE',responsible:managerMembership,processing_enabled:true}]);await login(storekeeper);const waste=await request('WASTE',warehouse,[{item_id:rice,quantity:'1'}]);
    await login(manager);assert.equal((await workspace()).documents.find(d=>d.id===waste).actions.approve,true);await action(waste,'APPROVE');await action(waste,'POST');
    const own=await request('COUNT',warehouse,[{item_id:rice,quantity:'57'}]);await denied('select public.stock_document_action($1,$2,$3,$4,null)',[org,own,'APPROVE','Self approval']);
    await login(finance);await action(own,'APPROVE');await login(manager);await action(own,'POST');

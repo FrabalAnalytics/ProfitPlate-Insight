@@ -53,7 +53,7 @@ test('fine-dining stock assignments separate Main Store, Kitchen and Bar without
    await denied('select public.save_stock_member_access($1,$2,1,$3,$4)',[org,opsMember,'ASSIGNED',[grant(kitchen)]],'22023');
    await denied('select public.save_stock_member_access($1,$2,0,$3,$4)',[org,kitchenMember,'ASSIGNED',[grant(bar)]],'22023');
    await denied('select public.save_stock_member_access($1,$2,1,$3,$4)',[org,kitchenMember,'ASSIGNED',[grant(kitchen),grant(kitchen)]],'22023');
-   assert.deepEqual((await directory()).members.find(m=>m.id===kitchenMember).assignments,[grant(kitchen)]);
+   assert.deepEqual((await directory()).members.find(m=>m.id===kitchenMember).assignments,[{...grant(kitchen),can_review_waste:false}]);
    await login(financeUser);await denied('select public.stock_access_directory($1)',[org]);await denied('select public.save_stock_member_access($1,$2,1,$3,$4)',[org,kitchenMember,'OUTLET',[]]);
    await login(otherUser);await denied('select public.stock_access_directory($1)',[org]);
   });
