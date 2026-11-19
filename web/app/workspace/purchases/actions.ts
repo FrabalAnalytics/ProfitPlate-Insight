@@ -150,3 +150,12 @@ export async function reviewInvoiceExceptions(_state: PurchaseActionState, form:
  const result=await client.rpc("review_invoice_exceptions",{p_organisation_id:organisation,p_purchase_id:purchase,p_request_id:request,p_fingerprint:String(form.get("fingerprint")??""),p_decision:String(form.get("decision")??""),p_note:String(form.get("note")??""),p_confirmed:form.get("confirmed")==="on"});
  if(result.error)return {error:workflowError(result.error)};refreshProcurement();redirect(`/workspace/purchases/invoices?${new URLSearchParams({organisation,purchase,result:"reviewed"})}`);
 }
+
+export async function lastPurchasePrice(organisation:string,item:string,unit:string,asOf:string):Promise<{value?:import('@/lib/procurement').LastPurchasePrice;error?:string}>{
+ const client=await access(organisation,true);
+ if(!client)return {error:'Price lookup is unavailable for this account.'};
+ if(!isUuid(item)||!isUuid(unit)||asOf&&!/^\d{4}-\d{2}-\d{2}$/.test(asOf))return {error:'Choose a valid material, unit and order date.'};
+ const result=await client.rpc('po_last_purchase_price',{p_organisation_id:organisation,p_item_id:item,p_uom_id:unit,p_as_of:asOf||null});
+ if(result.error)return {error:result.error.code==='PGRST202'?'Price lookup needs database update 044.':'Price could not be loaded. Try again.'};
+ return {value:result.data};
+}

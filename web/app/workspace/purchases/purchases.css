@@ -137,3 +137,5 @@
 @media print{.po-document-picker{display:none!important}.po-browse-layout.has-selection{display:block}.po-browse-layout.has-selection>.po-register-overview{display:block}}
 
 .invoice-facts{display:grid;grid-template-columns:1fr 1.4fr 1fr 1fr;gap:1.25rem;margin:1rem 0 1.5rem}.invoice-facts>div{display:flex;flex-direction:column;gap:.3rem;min-width:0}.invoice-facts span,.invoice-facts small{font-size:.8rem;color:var(--muted-foreground,#647570)}.invoice-facts strong{overflow-wrap:anywhere;font-size:1rem}.invoice-audit>summary,.invoice-matching summary{cursor:pointer;font-weight:600;padding:.5rem 0}.invoice-matching details+details{margin-top:.75rem}.invoice-review-action{margin-top:1rem;border-top:1px solid #d8e4de;padding-top:.5rem}.invoice-current .invoice-nav{margin-top:1rem}.invoice-audit .record-edit{display:inline-block;margin-top:1rem}@media(max-width:760px){.invoice-facts{grid-template-columns:1fr 1fr}}
+
+.po-last-price input[readonly]{background:var(--background);color:var(--brand);font-weight:600;cursor:default}.po-last-price small{font-size:12px;line-height:1.5;overflow-wrap:anywhere}
