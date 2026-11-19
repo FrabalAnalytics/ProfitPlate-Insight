@@ -75,7 +75,7 @@ export default async function MenusPage({ searchParams }: { searchParams: Promis
  const profiles=(profilesResult?.data??{}) as Record<string,SetupProfile>;
  const money = (value: string) => referenceAmount(value, estimate?.currency_code ?? org.currency_code);
  return <WorkspaceShell {...shell}>
-  <Link className="catalogue-back" href={`/workspace?organisation=${org.id}`}><ArrowLeft size={14}/> Business setup</Link>
+  <Link className="catalogue-back" href={`/workspace?organisation=${org.id}`}><ArrowLeft size={14}/> Back to workspace</Link>
   <div className="page-heading-row"><div><p className="eyebrow form-eyebrow">PROFITABILITY / MENU & PRICES</p><h1 className="workspace-title">Menu & prices</h1></div>{canEdit && !editing && <Link className="auth-button catalogue-add" href={query({ new: "1" })}><Plus size={16}/> Create menu item</Link>}</div>
   <nav className="catalogue-tabs" aria-label="Menu views"><Link href={query()} aria-current={!packet&&!editing?"page":undefined}>Menu catalogue</Link><Link href={`/workspace/menus/profitability?${new URLSearchParams({organisation:org.id,...(locationId?{location:locationId}:{}),channel,date})}`}>Menu profitability</Link></nav>
   {!canEdit && <p className="catalogue-readonly"><Info size={16}/> You have read-only menu access. An organisation-wide restaurant administrator can publish menu versions and selling prices.</p>}

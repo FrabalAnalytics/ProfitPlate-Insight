@@ -56,8 +56,8 @@ export default async function PurchasesPage({ searchParams }: { searchParams: Pr
   if (!source.error) sourceCsv = source.data?.csv;
  }
  return <WorkspaceShell {...shell}>
-  <Link className="catalogue-back" href={`/workspace?organisation=${org.id}`}><ArrowLeft size={14}/> Business setup</Link>
-  <div className="page-heading-row"><div><p className="eyebrow form-eyebrow">DATA & SETUP / PURCHASE IMPORTS</p><h1 className="workspace-title">Purchase imports</h1></div>{canEdit && params.new !== "1" && !remapping && <Link href={query({ new: "1" })} className="auth-button catalogue-add"><Upload size={16}/> Import purchases</Link>}</div>
+  <Link className="catalogue-back" href={`/workspace?organisation=${org.id}`}><ArrowLeft size={14}/> Back to workspace</Link>
+  <div className="page-heading-row"><div><p className="eyebrow form-eyebrow">PURCHASING / IMPORTS</p><h1 className="workspace-title">Purchase imports</h1></div>{canEdit && params.new !== "1" && !remapping && <Link href={query({ new: "1" })} className="auth-button catalogue-add"><Upload size={16}/> Import purchases</Link>}</div>
   <nav className="invoice-nav" aria-label="Purchase entry options"><Link className="secondary-button" href={`/workspace/purchases/invoices?organisation=${org.id}`}>Supplier invoices</Link><Link className="secondary-button" href={`/workspace/purchases/orders?organisation=${org.id}`}>Purchase Orders</Link>{canEdit && <Link className="secondary-button" href={`/workspace/purchases/invoices?organisation=${org.id}&new=1`}>Record supplier invoice</Link>}</nav>
   <p className="purchase-help">Recording an invoice does not post stock or change reference prices. Purchase-based recipe costing will follow the approved costing policy.</p>
   {!canEdit && <p className="catalogue-readonly">Procurement handles purchase entry and imports. Finance can review records and approve or reject submitted corrections.</p>}

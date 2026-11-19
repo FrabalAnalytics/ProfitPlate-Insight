@@ -33,7 +33,7 @@ export default async function SalesPage({ searchParams }: { searchParams: Promis
  const shell = { email: user.email, restaurantName: org.name, organisationId: org.id, sectionLabel: "Sales & summary", reportingContext:{from:params.from,to:params.to,location:params.location} };
  const query = (values: Record<string, string> = {}) => `/workspace/sales?${new URLSearchParams({ organisation: org.id, ...values })}`;
  const { data: permission, error: permissionError } = await client.rpc("sales_import_access", { p_organisation_id: org.id });
- if (permissionError) return <WorkspaceShell {...shell}><h1 className="workspace-title">Sales imports are not available yet.</h1><p className="workspace-description">The platform administrator may need to finish the sales update, or access is temporarily unavailable.</p><Link className="auth-back" href={`/workspace?organisation=${org.id}`}>Return to setup</Link></WorkspaceShell>;
+ if (permissionError) return <WorkspaceShell {...shell}><h1 className="workspace-title">Sales imports are not available yet.</h1><p className="workspace-description">The platform administrator may need to finish the sales update, or access is temporarily unavailable.</p><Link className="auth-back" href={`/workspace?organisation=${org.id}`}>Return to workspace</Link></WorkspaceShell>;
  if (permission?.read !== true) return <WorkspaceShell {...shell}><h1 className="workspace-title">Business-wide sales access is restricted.</h1><p className="workspace-description">An organisation-wide CEO, finance member or restaurant administrator can view sales records and summaries.</p></WorkspaceShell>;
  const canEdit = permission.write === true;
  const parts = new Intl.DateTimeFormat("en", { timeZone: org.time_zone, year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(new Date());
@@ -66,8 +66,8 @@ export default async function SalesPage({ searchParams }: { searchParams: Promis
  const periods = [["Today", today], ["Last 7 days", weekStart.toISOString().slice(0,10)], ["This month", `${today.slice(0,7)}-01`]];
  const money = (value: string) => referenceAmount(value, summary?.currency_code ?? org.currency_code);
  return <WorkspaceShell {...shell}>
-  <Link className="catalogue-back" href={`/workspace?organisation=${org.id}`}><ArrowLeft size={14}/> Business setup</Link>
-  <div className="page-heading-row"><div><p className="eyebrow form-eyebrow">DATA & SETUP / SALES</p><h1 className="workspace-title">Sales & margin</h1><p className="workspace-description">Recorded revenue and estimated food margins.</p></div>{canEdit && params.new !== "1" && !remapping && <Link className="auth-button catalogue-add" href={query({ new: "1" })}><Upload size={16}/> Import sales</Link>}</div>
+  <Link className="catalogue-back" href={`/workspace?organisation=${org.id}`}><ArrowLeft size={14}/> Back to workspace</Link>
+  <div className="page-heading-row"><div><p className="eyebrow form-eyebrow">SALES REPORTING</p><h1 className="workspace-title">Sales & margin</h1><p className="workspace-description">Recorded revenue and estimated food margins.</p></div>{canEdit && params.new !== "1" && !remapping && <Link className="auth-button catalogue-add" href={query({ new: "1" })}><Upload size={16}/> Import sales</Link>}</div>
   <p className="purchase-help">Reference-price estimates · Stock unchanged</p>
   {!canEdit && <p className="catalogue-readonly">You have read-only sales access. An organisation-wide restaurant administrator can upload and save sales.</p>}
   {(params.new === "1" || remapping) && canEdit && <SalesUpload key={remapping ? batch!.id : "new"} organisationId={org.id} requestId={randomUUID()} currency={org.currency_code} initial={remapping && sourceCsv !== undefined ? batch! : undefined} sourceCsv={sourceCsv}/>}

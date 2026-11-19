@@ -1,3 +1,4 @@
+import {workspacePolicy} from "@/lib/workspace-policy-server";
 import Link from 'next/link';
 import {requireUser,getPlatformAccess,workspacePath} from '@/lib/auth';
 import {redirect} from 'next/navigation';
@@ -15,7 +16,7 @@ export const instant=false;
 export default async function ProductionSetup({searchParams}:{searchParams:Promise<{organisation?:string;page?:string;sp?:string}>}){
  const user=await requireUser(),access=await getPlatformAccess();if(access!=='member')redirect(workspacePath(access));
  const p=await searchParams,client=await createClient(),orgs=await client.from('organisations').select('id,name,time_zone').order('name'),org=p.organisation?orgs.data?.find(o=>o.id===p.organisation):orgs.data?.[0];
- if(!org)return <WorkspaceShell email={user.email}><h1>Business unavailable</h1></WorkspaceShell>;
+ if(!org)return <WorkspaceShell email={user.email}><h1>Business unavailable</h1></WorkspaceShell>;if(!(await workspacePolicy(org.id)).canStockSetup)redirect(`/workspace?organisation=${org.id}`);
  const result=await client.rpc('stock_workspace_v2',{p_organisation_id:org.id,p_location_id:null,p_page:1,p_status:'ALL',p_search:'',p_document_id:null}),packet=result.data as StockPacket|null;
  const page=Math.max(1,Math.min(100000,Number.parseInt(p.page??'1',10)||1)),outputs=packet?.items.filter(i=>['SEMI_FINISHED','FINISHED'].includes(i.item_type))??[],visible=outputs.slice((page-1)*10,page*10);
  const setupResult=await client.rpc('processing_setup',{p_organisation_id:org.id}),setup=setupResult.data as ProcessingSetup|null;

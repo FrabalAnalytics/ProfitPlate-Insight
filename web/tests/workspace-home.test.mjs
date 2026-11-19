@@ -63,3 +63,13 @@ test('Inventory receives through its own workspace without purchasing or finance
  const combined=workspaceHome([role('inventory'),role('procurement')],{...access,purchases:true});
  assert.equal(combined.tasks.filter(task=>task.path==='/workspace/purchases/orders').length,1);
 });
+
+test('Finance has centre waste and financial work without setup or stock handling; extra roles retain their own tools',()=>{
+ const access={...all,inventory:true,orders:true,history:true};const roles=[role('finance')],nav=workspaceNavigation(roles,access),home=workspaceHome(roles,access);
+ assert.equal(nav.team,false);assert.equal(nav.catalogue,false);assert.equal(nav.recipes,false);assert.equal(nav.inventory,true);assert.ok(home.tasks.some(t=>t.action==='Review centre waste'));assert.ok(!home.tasks.some(t=>t.path.startsWith('/workspace/setup')||t.path==='/workspace/inventory'));assert.equal(home.tasks[0].action,'Review supplier invoices');
+ const combined=workspaceHome([role('finance'),role('inventory_manager')],access);assert.ok(combined.tasks.some(t=>t.action==='Manage centres & team access'));assert.ok(combined.tasks.some(t=>t.action==='Review centre waste'));
+});
+
+test('Operations retains recipe and material tools, and explicitly combined executive roles retain navigation',()=>{
+ const access={...all,inventory:true,orders:true};const ops=workspaceNavigation([role('operations')],access);assert.equal(ops.recipes,true);assert.equal(ops.catalogue,true);assert.equal(ops.sales,false);assert.equal(workspaceNavigation([role('ceo')],access).inventory,false);assert.equal(workspaceNavigation([role('ceo'),role('restaurant_admin')],access).inventory,true);
+});

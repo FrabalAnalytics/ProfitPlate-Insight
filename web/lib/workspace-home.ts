@@ -2,11 +2,18 @@ import type { NavigationAccess } from "./overview";
 type Role = { role_code: string; location_id: string | null };
 type Task = { title: string; description: string; action: string; path: string };
 
+export function workspaceRolePolicy(roles:Role[]){
+ const has=(...codes:string[])=>roles.some(r=>codes.includes(r.role_code)),business=(code:string)=>roles.some(r=>r.role_code===code&&r.location_id===null);
+ const admin=business('restaurant_admin'),executive=business('ceo'),stockManager=business('inventory_manager'),stockWork=has('inventory_manager','inventory','operations','stock_department','kitchen_manager','bar_lead','stock_receiver','stock_dispatcher');
+ return {admin,executive,stockManager,stockWork,financeOnly:has('finance')&&!has('restaurant_admin','ceo','procurement')&&!stockWork,procurementOnly:has('procurement')&&!has('restaurant_admin','ceo','finance')&&!stockWork,stockOnly:stockWork&&!has('restaurant_admin','ceo','finance','procurement'),canBusinessSetup:admin,canStockSetup:admin||stockManager};
+}
 export function workspaceNavigation(roles: Role[], access: NavigationAccess): NavigationAccess {
-  const procurement = roles.some(role => role.role_code === "procurement");
-  const otherModuleRole = roles.some(role => ["ceo", "finance", "restaurant_admin", "operations"].includes(role.role_code));
-  const stockRole=roles.some(role=>["ceo","finance","restaurant_admin","operations","inventory_manager","inventory","stock_department","kitchen_manager","bar_lead","stock_receiver","stock_dispatcher"].includes(role.role_code));
-  return procurement ? {...access,...(!otherModuleRole?{recipes:false,menus:false}:{}),...(!stockRole?{inventory:false}:{})} : access;
+ const p=workspaceRolePolicy(roles),nav={...access};
+ if(p.executive&&roles.every(r=>r.role_code==='ceo'))return {...nav,purchases:false,orders:false,inventory:false,sales:false,expenses:false};
+ if(p.financeOnly)return {...nav,team:false,catalogue:false,recipes:false};
+ if(p.procurementOnly)return {...nav,overview:false,expenses:false,sales:false,inventory:false,team:false,recipes:false,menus:false};
+ if(p.stockOnly)return {...nav,overview:false,expenses:false,sales:false,purchases:false,team:false,catalogue:roles.some(r=>r.role_code==='operations')&&nav.catalogue,recipes:roles.some(r=>r.role_code==='operations')&&nav.recipes,menus:false};
+ return nav;
 }
 
 // Membership roles determine the welcome; server capabilities determine links.
@@ -17,11 +24,14 @@ export function workspaceHome(roles: Role[], access: NavigationAccess) {
   const title = has("ceo") ? "Executive workspace" : businessRole("inventory_manager") ? "Inventory Manager workspace" : has("finance") ? "Finance workspace" : has("procurement") ? "Procurement workspace" : has("kitchen_manager") ? "Kitchen Manager workspace" : has("bar_lead") ? "Bar Lead workspace" : has("stock_department") ? "Department stock workspace" : has("stock_receiver") ? "Stock receiving workspace" : has("stock_dispatcher") ? "Stock dispatch workspace" : has("inventory") ? "Inventory / Receiving workspace" : has("restaurant_admin") ? "Administration workspace" : "Operations workspace";
   const tasks: Task[] = [];
   if(access.history)tasks.push({title:"Historical reports",description:"Filter earlier records by date, location and status; trace the source or export the permitted history.",action:"Open historical reports",path:"/workspace/records"});
-  if (access.inventory) tasks.push({title:"Inventory & movements",description:has("stock_department")?"Request materials, accept or reject incoming stock, and return excess to Main Store.":"Review stock balances, reservations, requisitions and confirmed movements.",action:"Open inventory & movements",path:"/workspace/inventory"});
+  const policy=workspaceRolePolicy(roles);
+  if (access.inventory&&!policy.financeOnly) tasks.push({title:"Inventory & movements",description:has("stock_department")?"Request materials, accept or reject incoming stock, and return excess to Main Store.":"Review stock balances, reservations, requisitions and confirmed movements.",action:"Open inventory & movements",path:"/workspace/inventory"});
   if (access.inventory && businessRole("inventory_manager")) {
-    tasks.push({title:"Stock approvals",description:"Review department requests, opening balances, counts, waste and production. A different colleague must approve your own requests.",action:"Review stock requests",path:"/workspace/inventory?view=movements"});
+    tasks.push({title:"Stock approvals",description:"Review department requests, opening balances, counts and production. A different colleague must approve your own requests.",action:"Review stock requests",path:"/workspace/inventory?view=movements"});
     tasks.push({title:"Centres & team access",description:"Choose who runs each stock centre and what their team can do.",action:"Manage centres & team access",path:"/workspace/setup/centres"});
   }
+  if(access.inventory&&roles.some(r=>r.role_code==='finance'))tasks.push({title:'Waste across centres',description:'Review processing loss and other waste by date and centre.',action:'Review centre waste',path:'/workspace/inventory/waste?kind=WASTE'});
+  if(access.inventory&&policy.stockWork)tasks.push({title:'Waste Log',description:'Record and review waste at your permitted centres.',action:'Open Waste Log',path:'/workspace/inventory/waste'});
   const purchasing = businessRole("procurement") || businessRole("restaurant_admin");
   const finance = businessRole("finance") || businessRole("restaurant_admin");
   if (access.purchases && purchasing) {
@@ -42,5 +52,7 @@ export function workspaceHome(roles: Role[], access: NavigationAccess) {
   if (has("ceo")) tasks.sort((a, b) => Number(b.path === "/workspace/overview" || b.path === "/workspace/reports") - Number(a.path === "/workspace/overview" || a.path === "/workspace/reports"));
   else if (has("restaurant_admin") && !has("finance") && !has("procurement")) tasks.sort((a, b) => Number(b.path === "/workspace/setup") - Number(a.path === "/workspace/setup"));
   if (businessRole("ceo")) return {title,description:"See what changed, the profitability impact, where it happened and who needs to act.",tasks:tasks.filter(task=>["/workspace/overview","/workspace/reports"].includes(task.path))};
-  return {title, description: "Start with the tasks available to your assigned roles. Your access applies within the business and location scopes shown below.", tasks};
+  const priority=has('finance')?['Review supplier invoices','Record expense','Review centre waste','Open management reports','Open sales imports','Open historical reports']:has('procurement')?['Open Purchase Orders','Record supplier invoice','Open historical reports','Open catalogue']:policy.stockManager?['Open inventory & movements','Open Goods Received Notes','Review stock requests','Open Waste Log','Manage centres & team access']:['Open inventory & movements','Open Waste Log','Open historical reports'];
+  tasks.sort((a,b)=>{const ai=priority.indexOf(a.action),bi=priority.indexOf(b.action);return(ai<0?99:ai)-(bi<0?99:bi);});
+  return {title, description:has('finance')?'Review invoices, costs and waste across your permitted centres.':has('procurement')?'Manage orders, supplier invoices and delivery evidence.':'Your tasks and stock records.',tasks};
 }
