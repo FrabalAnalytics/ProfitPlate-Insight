@@ -9,8 +9,8 @@ ROOT=Path(__file__).resolve().parents[1]
 DEST=ROOT/'public/templates/complete-restaurant-test-data'
 DATE='2026-11-19'
 PACK_DATE='2026-11-19'
-APP_RELEASE='042-invitation-onboarding'
-MIGRATION='042'
+APP_RELEASE='043-direct-processing'
+MIGRATION='043'
 DATA={}
 def sheet(name,header,rows,folder='manual-entry'):
     DATA[name]={'columns':header.split(','),'rows':rows,'folder':folder}
@@ -42,8 +42,8 @@ sheet('menu-selling-prices','menu_code,outlet_code,channel_code,selling_price,ta
 materials=DATA['materials']['rows']
 sheet('opening-stock','stock_centre,material_code,quantity,base_unit,opening_date,entry_method',[
  [site,m[0],({'WHOLE_SNAPPER':'40','RICE':'20','TOMATO':'10','ONION':'5','OIL':'10','BOX':'100'}.get(m[0],'0') if site=='MAIN_STORE' else '0'),m[4],DATE,('OPENING_REQUEST' if site=='MAIN_STORE' and m[0]!='SNAPPER_CUT' else 'ZERO_OPENING_CONFIRMATION')] for site in ['MAIN_STORE','KITCHEN','BAR'] for m in materials])
-sheet('processing-log','batch_reference,date,centre,process_code,input_material,actual_input,input_unit,output_material,actual_output,output_unit,measured_usable_kg,measured_waste_kg,waste_reason,variance_reason',[
- ['TRAIN-BATCH-001',DATE,'KITCHEN','SNAPPER_CUTTING','WHOLE_SNAPPER','40','KG','SNAPPER_CUT','110','PCS','36','4','Measured trim','Measured output below baseline']])
+sheet('processing-log','batch_reference,date,centre,process_code,input_material,actual_input,input_unit,output_material,actual_output,output_unit,measured_usable_kg,measured_waste_kg,waste_reason,variance_reason,submitter_name',[
+ ['TRAIN-BATCH-001',DATE,'KITCHEN','SNAPPER_CUTTING','WHOLE_SNAPPER','40','KG','SNAPPER_CUT','110','PCS','36','4','Measured trim','Measured output below baseline','Ada']])
 sheet('waste-log','waste_reference,date,centre,material_code,quantity,unit,submitter_name,category,reason',[
  ['TRAIN-WASTE-MAIN',DATE,'MAIN_STORE','RICE','1','KG','Emeka','Spoilage','Measured Main Store spoilage'],
  ['TRAIN-WASTE-001',DATE,'KITCHEN','SNAPPER_CUT','2','PCS','Ada','Spoilage','Two cuts spoiled after processing; separate from recorded trim']])
@@ -56,7 +56,7 @@ sheet('expense-import',headers['expense-import'],[
 sheet('expected-results','checkpoint,expected_value,unit_or_basis',[
  ['Whole snapper starting estimate','3000','NGN per KG'],['Snapper Cut standard estimate','1000','NGN per PCS'],['Stew base batch estimate','11000','NGN per 10 L'],['Final recipe batch estimate','16800','NGN per 10 servings'],['Final recipe serving estimate','1680','NGN'],['Selling price and example net revenue per plate','6000','NGN; fictional NONE tax setting'],['Menu food cost','28.00','percent'],['Menu estimated food margin per plate','4320','NGN; excludes other costs'],['Menu estimated food gross margin','72.00','percent'],['Main Store whole fish after accepted transfer','0','KG'],['Kitchen whole fish after processing','0','KG'],['Kitchen cuts after processing','110','PCS'],['Processing baseline achievement','91.67','percent'],['Usable weight yield','90.00','percent'],['Recorded processing waste','10.00','percent'],['Kitchen cuts after separate spoilage','108','PCS'],['Main Store rice after standalone waste','19','KG; before separate PO/GRN test'],['Finance combined waste entries','3','minimum entries in the core scenario; 1 processing trim and 2 standalone losses'],['CSV invoice total','39000','NGN; 2 separate invoices'],['CSV sales total','18000','NGN; 3 sold servings'],['CSV estimated food cost','5040','NGN; recipe estimate, not stock depletion'],['CSV estimated food margin','12960','NGN; before labour and operating expenses'],['CSV labour','600','NGN'],['CSV operating expense','500','NGN']],'checks')
 sheet('run-details','field,value,notes',[
- ['Pack revision',PACK_DATE,'Use this revision instead of older test packs'],['App release',APP_RELEASE,'Deployment checked before executing'],['Required migration',MIGRATION,'Already applied; do not rerun applied migrations'],['Website','https://profit-plate-insight.vercel.app/',''],['Example transaction date',DATE,'Keep all dependent master/transaction dates aligned'],['Actual execution date','','Date you perform the tests'],['Restaurant name','Training Restaurant - Run 041','Use a fresh restaurant'],['Organisation UUID','','Copy from app URL'],['Lead tester','',''],['Browser / device','',''],['Overall decision','','Record outstanding failures and product gaps']],'checks')
+ ['Pack revision',PACK_DATE,'Use this revision instead of older test packs'],['App release',APP_RELEASE,'Deployment checked before executing'],['Required migration',MIGRATION,'Verify required migration; do not rerun applied migrations'],['Website','https://profit-plate-insight.vercel.app/',''],['Example transaction date',DATE,'Keep all dependent master/transaction dates aligned'],['Actual execution date','','Date you perform the tests'],['Restaurant name','Training Restaurant - Run 041','Use a fresh restaurant'],['Organisation UUID','','Copy from app URL'],['Lead tester','',''],['Browser / device','',''],['Overall decision','','Record outstanding failures and product gaps']],'checks')
 cases=json.loads((ROOT/'docs/product/RESTAURANT_UAT_CASES.json').read_text(encoding='utf-8'))
 sheet('test-results','test_id,area,role,prerequisite,steps,expected_result,status,actual_result,evidence_or_screenshot,issue_reference,tester,executed_on',[
  [c['id'],c['area'],c['role'],c['prerequisite'],c['steps'],c['expected'],'Not run','','','','',''] for c in cases],'checks')
@@ -67,7 +67,7 @@ Start with the Excel workbook for the whole dataset. Use the Word guide for the 
 IMPORTANT: This is a testing pack, not a universal master-data importer. The XLSX workbook is for review/manual entry; do not upload it to a CSV screen. Files in manual-entry/ are populated collection sheets, not application upload formats. Only the four CSVs in upload-ready/ match implemented import screens, and they still need their prerequisite masters created first.
 
 ## Before testing
-- Pack revision 19 November 2026; updated for invitation-onboarding release 042 and migrations through 042. Do not rerun applied migrations.
+- Pack revision 19 November 2026; updated for direct-processing release 043 and migrations through 043. Do not rerun applied migrations.
 - Complete run-details and test-results in the workbook. This replaces the earlier stock-only/v2 testing instructions.
 - Create Training Restaurant, brand Training Kitchen and first outlet Dining Room. Fresh onboarding assigns brand and outlet code PRIMARY; verify these codes in the actual workspace before uploading. Map/replace PRIMARY explicitly if using a different outlet.
 - Owner rows in users.csv represent the same existing owner with two roles; do not invite or create the owner twice.
@@ -85,7 +85,7 @@ IMPORTANT: This is a testing pack, not a universal master-data importer. The XLS
 7. SNAPPER_RICE_MENU selling item, final recipe link and 1 PCS of recipe output per sale; set TAKEAWAY price 6000, NONE tax for this fictional arithmetic test only.
 8. Opening stock. Positive rows need reviewed opening requests and posting. Zero rows need explicit zero-opening readiness confirmation, not zero-quantity stock requests. Opening quantities are per centre, not business-wide totals.
 9. Transfer 40 KG whole fish Main Store -> Kitchen; manager approves/dispatches and Ada accepts before stock changes.
-10. Emeka records 1 KG Main Store rice spoilage with submitter name Emeka (20 -> 19 KG); no approval. Ada records the processing batch and its 4 KG trim once; this production request still needs approval/posting. Ada then records separate 2 PCS spoilage with her name; it posts immediately without waste approval (110 -> 108 PCS).
+10. Emeka records 1 KG Main Store rice spoilage with submitter name Emeka (20 -> 19 KG); no approval. Ada records the processing batch and its 4 KG trim once; enter submitter Ada and select Submit processing; stock updates immediately without approval. Ada then records separate 2 PCS spoilage with her name; it posts immediately without waste approval (110 -> 108 PCS).
 
 ## Upload the four working CSVs
 - initial-material-prices.csv: Initial material prices screen. Six rows; no Snapper Cut purchase price. Reference prices do not add stock.
@@ -111,7 +111,7 @@ README+='''
 - Inventory waste: own responsible centres only, including direct links and exports. Kitchen/Bar: assigned centres only. Test with single-role accounts.
 - Invoice: bill and material summary first; unreviewed matching exceptions and pending correction decisions visible; source/resolved history collapsed. PO approval remains excluded.
 - Weekly stock-count flag: verify Include in weekly stock counts on each material; do not claim missing weekly count automation is implemented.
-- No extra migration is introduced by this documentation pack. The four CSV upload formats remain unchanged.
+- This revision requires migration 043 and the matching app deployment. The four CSV upload formats remain unchanged.
 '''
 DEST.mkdir(parents=True,exist_ok=True)
 for name,data in DATA.items():
@@ -154,7 +154,7 @@ word_guide(guide,DEST/'Complete_Restaurant_Onboarding_and_Test_Guide.docx')
 shutil.copyfile(DEST/'Complete_Restaurant_Onboarding_and_Test_Guide.docx',ROOT/'docs/exports/Complete_Restaurant_Onboarding_and_Test_Guide.docx')
 for name in ['CENTRES_AND_TEAM_ACCESS_GUIDE.md','CENTRE_WASTE_REVIEW_GUIDE.md','TEAM_INVITATIONS_AND_EMAIL_SETUP.md']:
     shutil.copyfile(ROOT/'docs/product'/name,DEST/name)
-(DEST/'CHANGES-2026-11-19.md').write_text('Updated for invitation-onboarding release 042. Centre and owner tasks save together. Waste requires a submitter and posts without approval. Finance reads combined centre waste and exports filtered results, without setup or waste entry. Inventory retains own-centre waste. Invoice materials and pending decisions remain prominent; supporting history collapses. Added executable test-results and run-details sheets. Master setup coverage and four upload schemas are retained. Example transaction dates are 2026-11-19. Use this pack in place of older instructions. No extra migration required.\n',encoding='utf-8')
+(DEST/'CHANGES-2026-11-19.md').write_text('Updated for direct-processing release 043. Processing submits with a named recorder and no approval; multiple material lines, automatic output/variance and stock-shortage checks. Centre and owner tasks save together. Waste requires a submitter and posts without approval. Finance reads combined centre waste and exports filtered results, without setup or waste entry. Inventory retains own-centre waste. Invoice materials and pending decisions remain prominent; supporting history collapses. Added executable test-results and run-details sheets. Master setup coverage and four upload schemas are retained. Example transaction dates are 2026-11-19. Use this pack in place of older instructions. Requires migration 043 and the matching app deployment.\n',encoding='utf-8')
 
 # XLSX workbook: all cells are text to preserve codes, phone numbers and source decimals.
 def col(n):

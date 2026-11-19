@@ -75,3 +75,28 @@ export async function finishWasteRecord(_state:StockActionState,form:FormData):P
   revalidatePath("/workspace/inventory");revalidatePath("/workspace/inventory/waste");revalidatePath("/workspace/records");revalidatePath("/workspace");return {success:"Waste recorded. Stock updated; no approval required."};
  }catch(error){return failure(error);}
 }
+
+export async function submitProcessing(_state:StockActionState,form:FormData):Promise<StockActionState>{
+ let org:string,site:string,date:string;
+ try{
+  const auth=await access(form);org=auth.org;
+  const submission=String(form.get('submission')??'');
+  if(!isUuid(submission))throw new Error('Refresh before recording processing.');
+  const value={source_id:String(form.get('source_id')??''),date:String(form.get('date')??''),submitter_name:String(form.get('submitter_name')??'').trim(),note:String(form.get('note')??'').trim(),rows:parsed(form,'rows')};
+  if(!isUuid(value.source_id)||!value.submitter_name||value.submitter_name.length>120)throw new Error('Choose the processing centre and enter the submitter name.');
+  const result=await auth.client.rpc('submit_material_processing',{p_organisation_id:org,p_submission_id:submission,p_value:value});
+  if(result.error?.code==='PGRST202')throw new Error('Processing needs database migration 043. Ask your administrator to apply it.');
+  checked(result.error);site=value.source_id;date=value.date;
+  for(const path of ['/workspace/inventory','/workspace/inventory/processing','/workspace/inventory/waste','/workspace/records','/workspace/materials','/workspace'])revalidatePath(path);
+ }catch(error){return failure(error);}
+ redirect(`/workspace/inventory/processing?${new URLSearchParams({organisation:org,site,from:date,to:date,result:'recorded'})}`);
+}
+export async function completeProcessing(_state:StockActionState,form:FormData):Promise<StockActionState>{
+ try{
+  const {org,client}=await access(form),doc=String(form.get('document')??''),name=String(form.get('submitter_name')??'').trim();
+  if(!isUuid(doc)||!name||name.length>120)throw new Error('Enter the submitter name (up to 120 characters).');
+  const result=await client.rpc('complete_processing_record',{p_organisation_id:org,p_document_id:doc,p_submitter_name:name});checked(result.error);
+  for(const path of ['/workspace/inventory','/workspace/inventory/processing','/workspace/inventory/waste','/workspace/records','/workspace'])revalidatePath(path);
+  return {success:'Processing recorded. Input and output stock updated once; no approval needed.'};
+ }catch(error){return failure(error);}
+}

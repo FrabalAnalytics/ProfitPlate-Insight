@@ -4,7 +4,7 @@
     "area": "Preparation",
     "role": "Administrator",
     "prerequisite": "None",
-    "steps": "Record deployed URL, invitation release 042, migrations through 042, actual execution date, browser and tester in run-details. Use this revision, not earlier v2 instructions.",
+    "steps": "Record deployed URL, direct processing release 043, migrations through 043, actual execution date, browser and tester in run-details. Use this revision, not earlier v2 instructions.",
     "expected": "Correct app and pack selected; no need to rerun applied migrations."
   },
   {
@@ -130,10 +130,10 @@
   {
     "id": "PROCESS-02",
     "area": "Measured batch",
-    "role": "Ada / Emeka",
+    "role": "Ada",
     "prerequisite": "MOVE-01 / PROCESS-01",
-    "steps": "Record 40 KG input, 110 PCS actual output, 36 KG usable weight, 4 KG trim inside batch. Explain below-baseline output; submit; Emeka approves/posts.",
-    "expected": "Kitchen raw fish 0; cuts 110; achievement 91.67%, usable yield 90%, recorded waste 10%; no extra trim deduction."
+    "steps": "Choose Whole Snapper Fish at Kitchen. Try 41 KG against 40 KG stock; add another material line and test combined shortage, then remove it. Restore 40 KG, output 110 PCS, optional measured usable weight 36 KG and waste 4 KG. Enter submitter Ada; leave note blank; Submit processing. Retry the same submission.",
+    "expected": "Red shortage blocks submission. Expected output 120 PCS, gap -10 PCS, variance -8.33%. One submission updates Kitchen raw fish to 0 and cuts to 110, without approval. Achievement 91.67%, usable yield 90%, waste 10%; no duplicate trim deduction or retry posting."
   },
   {
     "id": "WASTE-02",

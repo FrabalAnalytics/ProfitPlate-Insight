@@ -1,7 +1,7 @@
 {
   "pack_date": "2026-11-19",
-  "app_release": "042-invitation-onboarding",
-  "required_migration": "042",
+  "app_release": "043-direct-processing",
+  "required_migration": "043",
   "test_date": "2026-11-19",
   "source_org": "TRAINING",
   "sheets": {
@@ -768,7 +768,8 @@
         "measured_usable_kg",
         "measured_waste_kg",
         "waste_reason",
-        "variance_reason"
+        "variance_reason",
+        "submitter_name"
       ],
       "rows": [
         [
@@ -785,7 +786,8 @@
           "36",
           "4",
           "Measured trim",
-          "Measured output below baseline"
+          "Measured output below baseline",
+          "Ada"
         ]
       ],
       "folder": "manual-entry"
@@ -1122,13 +1124,13 @@
         ],
         [
           "App release",
-          "042-invitation-onboarding",
+          "043-direct-processing",
           "Deployment checked before executing"
         ],
         [
           "Required migration",
-          "042",
-          "Already applied; do not rerun applied migrations"
+          "043",
+          "Verify required migration; do not rerun applied migrations"
         ],
         [
           "Website",
@@ -1194,7 +1196,7 @@
           "Preparation",
           "Administrator",
           "None",
-          "Record deployed URL, invitation release 042, migrations through 042, actual execution date, browser and tester in run-details. Use this revision, not earlier v2 instructions.",
+          "Record deployed URL, direct processing release 043, migrations through 043, actual execution date, browser and tester in run-details. Use this revision, not earlier v2 instructions.",
           "Correct app and pack selected; no need to rerun applied migrations.",
           "Not run",
           "",
@@ -1416,10 +1418,10 @@
         [
           "PROCESS-02",
           "Measured batch",
-          "Ada / Emeka",
+          "Ada",
           "MOVE-01 / PROCESS-01",
-          "Record 40 KG input, 110 PCS actual output, 36 KG usable weight, 4 KG trim inside batch. Explain below-baseline output; submit; Emeka approves/posts.",
-          "Kitchen raw fish 0; cuts 110; achievement 91.67%, usable yield 90%, recorded waste 10%; no extra trim deduction.",
+          "Choose Whole Snapper Fish at Kitchen. Try 41 KG against 40 KG stock; add another material line and test combined shortage, then remove it. Restore 40 KG, output 110 PCS, optional measured usable weight 36 KG and waste 4 KG. Enter submitter Ada; leave note blank; Submit processing. Retry the same submission.",
+          "Red shortage blocks submission. Expected output 120 PCS, gap -10 PCS, variance -8.33%. One submission updates Kitchen raw fish to 0 and cuts to 110, without approval. Achievement 91.67%, usable yield 90%, waste 10%; no duplicate trim deduction or retry posting.",
           "Not run",
           "",
           "",

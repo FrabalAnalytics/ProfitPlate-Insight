@@ -1,4 +1,5 @@
 "use client";
+import {ProcessingForm} from "./processing-form";
 import {WasteForm} from "./waste-form";
 import Link from "next/link";
 import {useActionState,useId,useState,type ReactNode} from "react";
@@ -39,6 +40,7 @@ export function AllowStockReturn({organisation,source,destination,sourceName,des
 export function StockRequest({organisation,packet,request,today,initialKind,fixedKind=false}:{organisation:string;packet:StockPacket;request:string;today:string;initialKind?:keyof typeof stockKinds;fixedKind?:boolean}){
  const [state,action,pending]=useActionState(requestStock,{}),[kind,setKind]=useState<keyof typeof stockKinds>(initialKind??"TRANSFER"),[lines,setLines]=useState([{key:0,item_id:"",quantity:""}]),[site,setSite]=useState("");
  const sites=packet.locations.filter(s=>s.is_active),incoming=["OPENING","GRN","DIRECT_RECEIPT"].includes(kind),production=kind==="PRODUCTION",hasLines=kind!=="GRN"&&!production;
+ if(production)return <ProcessingForm organisation={organisation} packet={packet} submission={request} today={today} otherMovement={fixedKind?undefined:()=>setKind("TRANSFER")}/>;
  const selectable=sites.filter(s=>production?s.request&&s.processing_enabled:incoming?s.inventory&&s.request:s.request&&(kind!=="WASTE"||packet.processing?.waste_sites?.some(w=>w.id===s.id)===true));
  const update=(key:number,field:"item_id"|"quantity",value:string)=>setLines(lines.map(l=>l.key===key?{...l,[field]:value}:l));
  if(kind==="WASTE")return <WasteForm organisation={organisation} packet={packet} request={request} today={today} otherMovement={fixedKind?undefined:()=>setKind("TRANSFER")}/>;
@@ -61,6 +63,7 @@ export function StockDecision({organisation,document}:{organisation:string;docum
  const labels:Record<string,string>={APPROVE:"Approve request",POST:"Post stock quantities",DISPATCH:"Confirm dispatch",RECEIVE:"Accept transfer",REJECT:"Reject transfer",DECLINE:"Decline request",RESOLVE:"Resolve follow-up",CANCEL:"Cancel request"};
  if(document.kind==="WASTE")return <WasteRecordCompletion organisation={organisation} document={document}/>;
  if(!Object.values(document.actions).some(Boolean))return ["POSTED","RECEIVED","CANCELLED"].includes(document.state)?null:<p className="stock-help">No action is available to your account for this record.</p>;
+ if(document.kind==="PRODUCTION")return ["REQUESTED","APPROVED"].includes(document.state)?<p className="stock-help">This older processing entry has not updated stock. Its original recorder can complete it in the <Link className="inline-link" href={`/workspace/inventory/processing?organisation=${organisation}&site=${document.source_id}&from=${document.document_date}&to=${document.document_date}`}>Material Processing Log</Link>.</p>:null;
  const primary=["approve","post","dispatch","receive","resolve"].some(k=>document.actions[k as keyof typeof document.actions]);
  const form=<form action={action} onReset={e=>e.preventDefault()} className="stock-form"><input type="hidden" name="organisation" value={organisation}/><input type="hidden" name="document" value={document.id}/><input type="hidden" name="received" value={JSON.stringify(received)}/><fieldset disabled={pending}><legend>Review and act</legend>
   <Field label="Stock decision">{id=><select id={id} name="decision" required value={choice} onChange={e=>setChoice(e.target.value)}><option value="" disabled>Choose an action</option>{Object.entries(document.actions).filter(([,allowed])=>allowed).map(([name])=><option key={name} value={name.toUpperCase()}>{labels[name.toUpperCase()]}</option>)}</select>}</Field>

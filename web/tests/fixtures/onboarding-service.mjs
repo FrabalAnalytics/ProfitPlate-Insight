@@ -156,6 +156,8 @@ createServer(async (request, response) => {
         save_processing_standard: ['p_organisation_id','p_request_id','p_value'],
         complete_waste_record: ['p_organisation_id','p_document_id','p_submitter_name'],
         centre_waste_report: ['p_organisation_id','p_site_id','p_from','p_to','p_kind','p_page','p_state','p_export'],
+        submit_material_processing: ['p_organisation_id','p_submission_id','p_value'],
+        complete_processing_record: ['p_organisation_id','p_document_id','p_submitter_name'],
         processing_activity: ['p_organisation_id','p_site_id','p_from','p_to','p_kind','p_page','p_state'],
         save_management_report: ["p_organisation_id","p_from","p_to","p_location_id","p_request_id","p_title"],
         stage_manual_purchase: ["p_organisation_id","p_request_id","p_invoice","p_lines"],

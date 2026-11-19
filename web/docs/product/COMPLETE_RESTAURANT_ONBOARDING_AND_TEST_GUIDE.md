@@ -1,6 +1,6 @@
 # Complete Restaurant Onboarding & Test Guide
 
-ProfitPlate Insight | Updated 19 November 2026 / invitation update 042 / migrations through 042 | Includes the full master-data setup and daily operational test sequence.
+ProfitPlate Insight | Updated 19 November 2026 / direct processing update 043 / migrations through 043 | Includes the full master-data setup and daily operational test sequence.
 
 This replaces the stock-only walkthrough as the main onboarding guide. Use a fresh training restaurant; preserve the existing demo restaurant and its historical records. The examples are fictional training data, not recommended recipes, prices or operating defaults.
 
@@ -8,7 +8,7 @@ This replaces the stock-only walkthrough as the main onboarding guide. Use a fre
 
 Use this guide with **profitplate-complete-test-data-2026-11-19.zip**. It supersedes earlier test-pack instructions. The example transaction date is **19 November 2026**, aligned across prices, recipes, openings and imports. Use that date in the app filters. Record your actual execution date separately in the workbook. If starting later, update the sample dates together before entry. Receiver acceptance posts on its actual business date; subsequent processing/waste must use that date or later. If the test spans days, use the current operational date for later stock activity and widen report filters; keep master versions effective on or before that date.
 
-1. Use the deployed site at https://profit-plate-insight.vercel.app/ and confirm migrations through **042** are applied. They are already confirmed for this deployment; do not rerun them.
+1. Use the deployed site at https://profit-plate-insight.vercel.app/ and confirm migrations through **043** are applied and the matching app is deployed. Do not rerun applied migrations.
 2. Create a fresh training restaurant, for example **Training Restaurant - Run 041**. Keep the earlier demo and its histories intact.
 3. Open **ProfitPlate_Complete_Test_Data.xlsx**. Complete **run-details**, then use **test-results** to record Not run, Pass, Fail, Blocked or Not available, actual result and evidence. Run the sections in order.
 4. Replace example emails with verified accounts or aliases you control. For a Gmail account, a plus alias such as `yourname+finance@gmail.com` goes to the same inbox but is registered as a separate app login. Use a separate browser profile for each tester role. Do not save passwords in the pack.
@@ -285,15 +285,17 @@ Do not post an opening balance for stock already established by earlier movement
 Follow [Centre waste logging](CENTRE_WASTE_REVIEW_GUIDE.md). Standalone waste requires a submitter name and records immediately without approval. Centre access restrictions remain in place.
 
 
-1. Ada opens **Material Processing Log > Record material processing**, selects Kitchen and the Snapper cutting baseline. Output should auto-fill **Snapper Cut (PCS)**.
+1. Ada opens **Material Processing Log > Record material processing**, selects Kitchen and Whole Snapper Fish. Output should auto-fill **Snapper Cut (PCS)**.
 2. Enter actual input **40 KG**, actual output **110 PCS**, measured usable output weight **36 KG**.
-3. Record **4 KG** measured trim inside the batch, explain the output shortage, enter a batch reference, confirm and submit.
-4. Before posting, confirm the stock has not changed. Emeka approves Ada's request and posts it.
+3. Under **Measured waste & weights (optional)**, record **4 KG** processing waste and **36 KG** usable weight. Enter submitter **Ada**. The reason / additional note is optional.
+4. Before submission expect **120 PCS**, a gap of **-10 PCS** and **-8.33%** variance. Select **Submit processing** once. No approval is required; inputs and output update together at Kitchen.
 5. Expect Kitchen Whole Snapper Fish **0 KG** and Snapper Cut **110 PCS**. Raw deduction and output addition must occur together.
 6. Expect baseline achievement **91.67%**, usable weight yield **90.00%**, recorded waste **10.00%**, and no unexplained weight for these measurements.
 7. Do not enter another standalone waste record for the same 4 KG trim. It is already included in the 40 KG consumption.
 8. For an independent loss, Ada opens **Waste Log > Record waste**, selects Kitchen and Snapper Cut, quantity **2 PCS**, submitter name **Ada**, reason **Spoilage**, and optional explanatory notes. Select **Record waste**; no approval or separate posting is required.
 9. After submission expect Kitchen Snapper Cut **108 PCS**. Waste Log shows the 2 PCS independent loss. Combined waste reporting includes it and the 4 KG processing trim once each, with their distinct stock treatment.
+
+Before submitting, try **41 KG** input against 40 KG available: a red shortage must appear and submission must be disabled. Use **Add material** to test multiple lines; the form must check combined input quantities. Remove this trial line and restore 40 KG before submitting the core scenario. Repeating the same saved submission must not duplicate stock. Older Requested/Approved processing entries are not silently posted: the original recorder can expand the older entry in the Material Processing Log and complete it with a submitter name.
 
 KG input and PCS output do not alone establish weight yield. Without measured usable weight show that the weight measurement is needed, while retaining the valid count-based baseline achievement. Actual batch cost can differ from the standard SKU estimate when actual yield differs; it does not automatically rewrite the approved baseline. Never add unlike units such as KG and PCS into a single waste quantity total.
 

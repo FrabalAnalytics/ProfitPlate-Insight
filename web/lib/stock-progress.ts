@@ -1,6 +1,8 @@
 import type {StockDocument} from "./inventory";
 export function stockProgress(doc:Pick<StockDocument,"kind"|"state"|"actions"|"posting_policy">){
  if(doc.kind==="WASTE"&&["REQUESTED","APPROVED"].includes(doc.state))return {title:"Submitter name needed",detail:"The original recorder adds the submitter name to complete this waste entry. No approval is required."};
+ if(doc.kind==="PRODUCTION"&&["REQUESTED","APPROVED"].includes(doc.state))return {title:"Processing not yet recorded",detail:"This older entry has not changed stock. The original recorder can complete it in the Material Processing Log without approval."};
+ if(doc.kind==="PRODUCTION"&&doc.state==="POSTED")return {title:"Processing completed",detail:"Inputs were deducted and actual output added at this centre. No further action is needed."};
  const transfer=doc.kind==="TRANSFER"||doc.kind==="ISSUE";
  switch(doc.state){
  case "REQUESTED":return {title:"Submitted ? awaiting approval",detail:"Stock has not changed. A different authorised colleague must approve this record."};
