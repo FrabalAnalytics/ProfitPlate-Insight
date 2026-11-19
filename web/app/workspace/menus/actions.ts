@@ -33,7 +33,7 @@ export async function publishMenu(_state: MenuState, form: FormData): Promise<Me
  const {data:id,error}=await client.rpc("save_menu_setup",{p_organisation_id:org,p_request_id:get("request_id"),p_value:values});
  if(error)return failure(error);
  revalidatePath("/workspace/setup");revalidatePath("/workspace/setup/standards");revalidatePath("/admin");
- revalidatePath("/workspace/menus");
+ revalidatePath("/workspace/menus");revalidatePath("/workspace/menus/profitability");
  redirect(`/workspace/menus?organisation=${org}&item=${id}&saved=${get("recipe_version_id")?"menu":"draft"}`);
 }
 export async function saveMenuPrice(_state: MenuState, form: FormData): Promise<MenuState> {
@@ -45,7 +45,7 @@ export async function saveMenuPrice(_state: MenuState, form: FormData): Promise<
  const { error } = await client.rpc("save_menu_selling_price", { p_organisation_id: org, p_menu_id: menuId, p_request_id: get("request_id"), p_location_id: get("location_id"), p_channel: get("channel"), p_price: get("price"), p_tax_setting: tax, p_tax_percent: get("tax_percent"), p_effective_from: get("effective_from"), p_effective_to: get("effective_to") || null, p_notes: get("notes") });
  if (error) return failure(error);
  revalidatePath("/workspace/setup");revalidatePath("/workspace/setup/standards");revalidatePath("/admin");
- revalidatePath("/workspace/menus");
+ revalidatePath("/workspace/menus");revalidatePath("/workspace/menus/profitability");
  redirect(`/workspace/menus?organisation=${org}&item=${menuId}&saved=price&location=${get("location_id")}&channel=${get("channel")}${isUuid(get("view_version_id")) ? `&version=${get("view_version_id")}` : ""}`);
 }
 export async function toggleMenuActive(_state: MenuState, form: FormData): Promise<MenuState> {
@@ -54,6 +54,6 @@ export async function toggleMenuActive(_state: MenuState, form: FormData): Promi
  const { error } = await client.rpc("set_menu_item_active", { p_organisation_id: org, p_menu_id: id, p_active: active === "true" });
  if (error) return failure(error);
  revalidatePath("/workspace/setup");revalidatePath("/workspace/setup/standards");revalidatePath("/admin");
- revalidatePath("/workspace/menus");
+ revalidatePath("/workspace/menus");revalidatePath("/workspace/menus/profitability");
  redirect(`/workspace/menus?organisation=${org}&item=${id}&saved=status`);
 }
