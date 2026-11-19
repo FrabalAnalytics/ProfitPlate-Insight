@@ -1,0 +1,354 @@
+[
+  {
+    "id": "RUN-01",
+    "area": "Preparation",
+    "role": "Administrator",
+    "prerequisite": "None",
+    "steps": "Record deployed URL, release a6d348d, migrations through 041, actual execution date, browser and tester in run-details. Use this revision, not earlier v2 instructions.",
+    "expected": "Correct app and pack selected; no need to rerun applied migrations."
+  },
+  {
+    "id": "SET-01",
+    "area": "Business/calendar",
+    "role": "Owner",
+    "prerequisite": "RUN-01",
+    "steps": "Register and verify the owner through the app, then create Training Restaurant - Run 041. Use Africa/Lagos, NGN, brand Training Kitchen, outlet Dining Room, Wednesday week start, Tuesday count and 23:30 cutoff.",
+    "expected": "Fresh business created; existing demo unchanged; calendar saved. Brand/outlet codes PRIMARY verified."
+  },
+  {
+    "id": "SET-02",
+    "area": "Users",
+    "role": "Administrator / all roles",
+    "prerequisite": "SET-01",
+    "steps": "Use users sheet to invite named colleagues. Replace example.test emails with verified accounts/aliases you control. Register/verify each account through app signup and accept matching invitation in its own browser profile.",
+    "expected": "All six people have appropriate roles; no owner duplication. App registration creates the Supabase Auth identity; no manual SQL user insertion needed."
+  },
+  {
+    "id": "SET-03",
+    "area": "Centres and access",
+    "role": "Administrator",
+    "prerequisite": "SET-02",
+    "steps": "Create Main Store / Emeka, Kitchen / Ada and Bar / Bola. Set exact codes from stock-centres. Save owner tasks together: Request materials, Record waste, Accept transfers. Check Kitchen/Bar outlet assignment.",
+    "expected": "Each centre and active responsible owner saved. Ada only Kitchen; Bola only Bar. Existing Inventory Manager role-wide access retained."
+  },
+  {
+    "id": "SET-04",
+    "area": "Processing unit/routes",
+    "role": "Administrator / Inventory Manager",
+    "prerequisite": "SET-03",
+    "steps": "Choose Kitchen under Choose where material processing happens. Configure Main Store -> Kitchen and reverse; add Bar route pair. Source approval role Inventory Manager.",
+    "expected": "One processing unit selected; transfer and excess-return routes available; selecting a unit moves no stock."
+  },
+  {
+    "id": "MASTER-01",
+    "area": "Suppliers",
+    "role": "Administrator / Procurement",
+    "prerequisite": "SET-01",
+    "steps": "Manually enter both suppliers from manual-entry/suppliers.csv. Verify unique codes, names and active status.",
+    "expected": "FISH_SUP and DRY_SUP selectable in purchasing."
+  },
+  {
+    "id": "MASTER-02",
+    "area": "Materials",
+    "role": "Administrator",
+    "prerequisite": "SET-03",
+    "steps": "Manually enter all seven materials, base units, stock classes and processing/weekly flags from materials.csv.",
+    "expected": "Whole fish RAW/PURCHASED/KG requires processing; Snapper Cut SEMI_FINISHED/PROCESSED/PCS; all seven weekly flags saved; no stock or price invented."
+  },
+  {
+    "id": "MASTER-03",
+    "area": "Unit conversion",
+    "role": "Administrator",
+    "prerequisite": "MASTER-02",
+    "steps": "Save the RICE BAG -> KG factor 50 using the unit-conversions sheet. Do not create a KG -> PCS conversion for fish.",
+    "expected": "Material-specific rice conversion retained; input/output dimensions remain separate for fish processing."
+  },
+  {
+    "id": "COST-01",
+    "area": "Initial prices",
+    "role": "Administrator",
+    "prerequisite": "MASTER-02",
+    "steps": "Use the six-row initial-material-prices.csv on Initial material prices, or enter its rows manually, once. Preview before saving.",
+    "expected": "Whole fish 3000/KG and Rice 1800/KG; six prices, no separate Snapper Cut price, no stock movement."
+  },
+  {
+    "id": "PROCESS-01",
+    "area": "Baseline and output cost",
+    "role": "Administrator",
+    "prerequisite": "COST-01 / SET-04",
+    "steps": "Save SNAPPER_CUTTING baseline: 40 KG whole fish -> 120 PCS Snapper Cut; Kitchen; date 2026-11-19; tolerance 0; approved uniform cuts.",
+    "expected": "Output SKU selectable. Estimated 120000 batch input cost and 1000 per cut, formatted cleanly. Baseline adds no stock."
+  },
+  {
+    "id": "RECIPE-01",
+    "area": "Sub-recipe",
+    "role": "Administrator / permitted Operations",
+    "prerequisite": "COST-01",
+    "steps": "Publish STEW_BASE for 10 L with 5 KG tomato, 1 KG onion and 1 L oil.",
+    "expected": "Estimated 11000 per batch / 1100 per L; save lowest-level recipes first."
+  },
+  {
+    "id": "RECIPE-02",
+    "area": "Final recipe",
+    "role": "Administrator / permitted Operations",
+    "prerequisite": "PROCESS-01 / RECIPE-01",
+    "steps": "Publish SNAPPER_RICE_RECIPE for 10 PCS/servings with 2 KG Rice, 2 L STEW_BASE v1, 10 PCS Snapper Cut and 10 PCS boxes.",
+    "expected": "Batch estimate 16800; per serving 1680; no duplicate raw fish or child ingredients in parent components."
+  },
+  {
+    "id": "MENU-01",
+    "area": "Menu and profitability",
+    "role": "Administrator",
+    "prerequisite": "RECIPE-02",
+    "steps": "Create SNAPPER_RICE_MENU linked to final recipe v1, one PCS per sale. Set Dining Room / TAKEAWAY price 6000, NONE tax, effective 2026-11-19 for this fictional arithmetic test.",
+    "expected": "Cost 1680; food cost 28%; estimated food margin 4320 / 72%. Other costs excluded; table and detail agree."
+  },
+  {
+    "id": "OPEN-01",
+    "area": "Opening stock",
+    "role": "Inventory Manager / separate reviewer",
+    "prerequisite": "SET-03 / MASTER-02",
+    "steps": "Establish all 21 material-centre openings from opening-stock.csv manually. Positive requests need separate review and posting. Use explicit zero-opening confirmation for zero rows.",
+    "expected": "Main Store whole fish 40 KG, Rice 20 KG, Tomato 10 KG, Onion 5 KG, Oil 10 L, Box 100 PCS; other centre/material openings explicitly zero."
+  },
+  {
+    "id": "MOVE-01",
+    "area": "Receiver-confirmed transfer",
+    "role": "Ada / Emeka",
+    "prerequisite": "OPEN-01 / SET-04",
+    "steps": "Ada requests 40 KG whole fish from Main Store. Emeka approves and dispatches. Inspect balances before Ada accepts, then accept all.",
+    "expected": "Before acceptance Main Store on hand 40, Kitchen 0; source reserved. After acceptance Main Store 0 and Kitchen 40; one paired movement."
+  },
+  {
+    "id": "WASTE-01",
+    "area": "Main Store standalone waste",
+    "role": "Emeka",
+    "prerequisite": "OPEN-01",
+    "steps": "Record 1 KG Rice at Main Store; submitter Emeka; reason Spoilage.",
+    "expected": "Immediately recorded without approval, Main Store Rice 20 -> 19 KG. Submitter and signed-in account retained."
+  },
+  {
+    "id": "PROCESS-02",
+    "area": "Measured batch",
+    "role": "Ada / Emeka",
+    "prerequisite": "MOVE-01 / PROCESS-01",
+    "steps": "Record 40 KG input, 110 PCS actual output, 36 KG usable weight, 4 KG trim inside batch. Explain below-baseline output; submit; Emeka approves/posts.",
+    "expected": "Kitchen raw fish 0; cuts 110; achievement 91.67%, usable yield 90%, recorded waste 10%; no extra trim deduction."
+  },
+  {
+    "id": "WASTE-02",
+    "area": "Kitchen standalone waste",
+    "role": "Ada",
+    "prerequisite": "PROCESS-02",
+    "steps": "Record 2 PCS Snapper Cut at Kitchen; submitter Ada; Spoilage; optional notes. Do not repeat the 4 KG trim here.",
+    "expected": "No approval or extra post action; Kitchen cuts 110 -> 108 PCS. Named independent waste shown in log."
+  },
+  {
+    "id": "WASTE-03",
+    "area": "Waste validation",
+    "role": "Ada",
+    "prerequisite": "WASTE-02",
+    "steps": "Try blank submitter, zero/negative quantity, or more stock than available. For retry test resubmit the same confirmation, not a deliberately new record.",
+    "expected": "Invalid entries rejected without stock change; retry does not create a second record/deduction. A genuinely new submission is a new loss."
+  },
+  {
+    "id": "FIN-01",
+    "area": "Finance workspace",
+    "role": "Chioma, Finance only",
+    "prerequisite": "SET-02",
+    "steps": "Sign in; inspect primary shortcuts and collapsed groups. Expand Finance records and Purchasing.",
+    "expected": "At most six primary shortcuts; invoices, expenses, waste, sales/history/reports relevant. No setup, team, catalogue or stock-handling navigation."
+  },
+  {
+    "id": "FIN-02",
+    "area": "Direct setup restriction",
+    "role": "Chioma, Finance only",
+    "prerequisite": "FIN-01",
+    "steps": "Open /workspace/setup, /workspace/setup/centres, /workspace/setup/production and /workspace/setup/standards with own organisation UUID.",
+    "expected": "Returns to Finance workspace; no setup access. Do not give Finance extra Admin/Inventory Manager role for this test."
+  },
+  {
+    "id": "FIN-03",
+    "area": "Combined waste",
+    "role": "Chioma",
+    "prerequisite": "WASTE-01 / WASTE-02",
+    "steps": "Open Review centre waste; set From/Through 2026-11-19; all permitted centres; source Processing & other waste; Recorded state.",
+    "expected": "At least 3 core entries: Main Store Rice 1 KG; Kitchen trim 4 KG; Kitchen cuts spoilage 2 PCS. No Record waste action; unlike units not summed."
+  },
+  {
+    "id": "FIN-04",
+    "area": "Waste filters/export",
+    "role": "Chioma",
+    "prerequisite": "FIN-03",
+    "steps": "Filter Kitchen; under Source & status choose Processing loss only, then Waste outside processing. Export each filtered CSV.",
+    "expected": "Main Store absent for Kitchen filter; processing-only 4 KG; other-only 2 PCS. Export matches full filtered scope and includes submitter/source; no second stock change."
+  },
+  {
+    "id": "SCOPE-01",
+    "area": "Own-centre waste",
+    "role": "Emeka / Ada / Bola",
+    "prerequisite": "FIN-03",
+    "steps": "Open waste log and historical waste report under each single-role account. Try foreign-centre filter/document URLs and export.",
+    "expected": "Emeka Main Store only, Ada Kitchen only, Bola Bar only. Expected denials or absent foreign records are Pass; Finance keeps consolidated read scope."
+  },
+  {
+    "id": "PO-01",
+    "area": "Order entry",
+    "role": "Procurement",
+    "prerequisite": "MASTER-01 / MASTER-02",
+    "steps": "Create separate manual test PO TRAIN-MANUAL-PO-001 for 2 KG Rice at 1800/KG; inspect total and issue directly.",
+    "expected": "Total 3600 automatically calculated; no PO approval stage; Procurement cannot receive its own order."
+  },
+  {
+    "id": "GRN-01",
+    "area": "Partial receiving",
+    "role": "Inventory",
+    "prerequisite": "PO-01",
+    "steps": "Record first GRN accepting 1 KG against the 2 KG Rice order; inspect material rows, partial state and separate PO/GRN registers.",
+    "expected": "Accepted 1 KG, outstanding 1 KG; records traceable. Do not duplicate openings or treat invoice import as stock receiving."
+  },
+  {
+    "id": "INV-01",
+    "area": "Invoice entry/layout",
+    "role": "Procurement / Finance",
+    "prerequisite": "GRN-01",
+    "steps": "Procurement records linked invoice for 2 KG Rice / 3600. Finance opens it.",
+    "expected": "Invoice facts and materials precede Delivery & billing check; billed-more-than-received exception and Finance review visible; supporting history collapsed."
+  },
+  {
+    "id": "INV-02",
+    "area": "Review source changes",
+    "role": "Finance / Inventory",
+    "prerequisite": "INV-01",
+    "steps": "Finance acknowledges exception with a reason; Inventory records second GRN accepting remaining 1 KG; refresh invoice.",
+    "expected": "Review saved without payment or stock receipt. Matching updates for received total 2 KG; earlier review validity reflects changed source."
+  },
+  {
+    "id": "INV-03",
+    "area": "Correction accountability",
+    "role": "Procurement / Finance",
+    "prerequisite": "INV-02",
+    "steps": "Request a correction with reason using a separate stated scenario; Finance checks before/proposed values and approves/rejects. Expand source/correction history afterwards.",
+    "expected": "Pending values do not replace current values; Finance decision controls present; prior evidence retained; resolved history collapsed by default."
+  },
+  {
+    "id": "IMPORT-01",
+    "area": "Invoice CSV",
+    "role": "Procurement",
+    "prerequisite": "MASTER-01 / MASTER-02 / MENU-01",
+    "steps": "Upload purchases-import.csv with TRAINING source code, EXCLUSIVE tax basis. Review two supplier invoices before posting once.",
+    "expected": "Fish 30000 + Rice 9000 = 39000. No GRN/stock delivery created automatically. Distinct references from manual PO/invoice."
+  },
+  {
+    "id": "IMPORT-02",
+    "area": "Sales CSV",
+    "role": "Permitted Finance/Admin",
+    "prerequisite": "MENU-01",
+    "steps": "Upload sales-import.csv; TRAINING, EXCLUSIVE, NGN. Review 3 paid TAKEAWAY servings / 18000 and save once.",
+    "expected": "Net sales 18000; estimated food cost 5040; estimated food margin 12960 before other costs. Kitchen stock is not automatically reduced for these sales."
+  },
+  {
+    "id": "IMPORT-03",
+    "area": "Expense CSV",
+    "role": "Finance",
+    "prerequisite": "SET-01",
+    "steps": "Upload expense-import.csv using TRAINING, WAGES and RENT, LOCATION scope / PRIMARY outlet / ON_DATE. Review 1100 then save once.",
+    "expected": "Labour 600, operating expense 500. No duplicate manual entry of these two source expenses."
+  },
+  {
+    "id": "IMPORT-04",
+    "area": "Duplicate prevention",
+    "role": "Respective import roles",
+    "prerequisite": "IMPORT-01 / IMPORT-02 / IMPORT-03",
+    "steps": "Re-upload the same source data as an explicit duplicate test. Compare records/totals/ledger before and after.",
+    "expected": "Duplicates detected/skipped/rejected by supported workflow; no doubled financial totals or stock movement."
+  },
+  {
+    "id": "FIN-05",
+    "area": "Manual expense",
+    "role": "Finance",
+    "prerequisite": "IMPORT-03",
+    "steps": "Create a different manual expense reference/scenario, for example 75 NGN utilities; review and record.",
+    "expected": "Manual expense succeeds without requiring spreadsheet identifiers; separate from 1100 CSV total. Record the additional 75 when checking combined totals."
+  },
+  {
+    "id": "WEEK-01",
+    "area": "Weekly-count inclusion",
+    "role": "Administrator",
+    "prerequisite": "MASTER-02",
+    "steps": "Reopen each material and verify Include in weekly stock counts remains checked; verify an excluded separate trial SKU can save unchecked.",
+    "expected": "All seven sample flags persist, including Snapper Cut. Flag alone is not proof of automatic count sheet/reminder support."
+  },
+  {
+    "id": "COUNT-01",
+    "area": "Physical count",
+    "role": "Inventory / separate reviewer",
+    "prerequisite": "PROCESS-02 / WASTE-02",
+    "steps": "Use a separate centre/material count scenario after baseline checkpoints. Explicitly enter zero for a zero-stock line; leave another line missing and inspect validation/completeness.",
+    "expected": "Explicit zero valid; missing quantity not treated as zero; review/post only through permitted workflow. Record resulting adjustments before later balance comparisons."
+  },
+  {
+    "id": "MOVE-02",
+    "area": "Rejection and excess return",
+    "role": "Department / Inventory Manager",
+    "prerequisite": "MOVE-01",
+    "steps": "Using a separate request with available stock, test partial acceptance/rejection and a return via the configured reverse route. Record actual quantities in results.",
+    "expected": "Only receiver-confirmed quantities move; rejected quantity remains at source; return is traceable and not a new purchase."
+  },
+  {
+    "id": "REPORT-01",
+    "area": "Historical reports",
+    "role": "Each role",
+    "prerequisite": "PO-01 through IMPORT-03",
+    "steps": "Filter permitted PO, GRN, invoice, sales, requisition, waste and count reports by date/centre/status. Open source material details and exports.",
+    "expected": "Separate PO and GRN reports; source traces work; each role sees only authorised data. No setup permission gained from report access."
+  },
+  {
+    "id": "UX-01",
+    "area": "Role focus / mobile",
+    "role": "Each role",
+    "prerequisite": "SET-02 / FIN-01",
+    "steps": "Inspect greetings, Needs Attention counts and up to six primary shortcuts. Expand additional tools and nav groups. Repeat core records at a narrow mobile viewport.",
+    "expected": "Concise copy; relevant actions; no whole-page horizontal overflow. Wide tables scroll internally. No operational clutter on CEO-only home."
+  },
+  {
+    "id": "CEO-01",
+    "area": "Executive review",
+    "role": "CEO / Admin owner",
+    "prerequisite": "IMPORT-01 through REPORT-01",
+    "steps": "Review what changed, profitability impact, where and accountable exceptions. Keep unavailable inputs visibly unavailable.",
+    "expected": "Estimated margins labelled; waste/processing losses not added twice; source scope/dates clear. Admin privileges remain available only when separately assigned."
+  },
+  {
+    "id": "PRICE-01",
+    "area": "Monthly weighted prices",
+    "role": "Procurement / Finance",
+    "prerequisite": "Baseline checkpoints completed",
+    "steps": "In a separate documented scenario post an invoice at a different unit price; compute sum of eligible net material amounts divided by eligible base quantity in that month, including current approved corrections. Reopen recipe estimate at that date.",
+    "expected": "Monthly quantity-weighted price and downstream recipe estimate agree with source amounts/quantities. Initial price is fallback, not an extra invoice contribution. Record changed expectations before reusing baseline checks."
+  },
+  {
+    "id": "GAP-01",
+    "area": "Missing bulk masters",
+    "role": "Administrator",
+    "prerequisite": "Master tests complete",
+    "steps": "Look for supplier/material/recipe/menu/opening-stock master import screens. Do not upload collection CSVs or full workbook into transaction screens.",
+    "expected": "Mark unsupported master importers Blocked - not implemented, not Pass. Only four upload-ready formats currently supported."
+  },
+  {
+    "id": "GAP-02",
+    "area": "Future weekly automation",
+    "role": "Administrator / Inventory",
+    "prerequisite": "WEEK-01",
+    "steps": "Check separately for automatic weekly sheets, reminders and sales-driven theoretical/actual usage.",
+    "expected": "Record Not available for missing features; do not infer implementation from calendar or material flags."
+  },
+  {
+    "id": "SIGN-01",
+    "area": "Sign-off",
+    "role": "Owner / test coordinator",
+    "prerequisite": "All cases reviewed",
+    "steps": "Record passed, failed, blocked, unavailable and not-run counts. Attach evidence for stock, permissions and monetary mismatches. Resolve critical failures before restaurant pilot.",
+    "expected": "Acceptance record complete; no critical stock/access failures; known gaps explicitly accepted or scheduled. Do not mark unrun tests Pass."
+  }
+]

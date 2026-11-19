@@ -1,11 +1,11 @@
 # Centre waste logging: no approval required
 
-Apply `supabase/migrations/202611190039_simple_named_waste_logging.sql` after migrations 001-038, then deploy the matching app. This release replaces the approval workflow introduced in 038. No reviewer assignment is required.
+Current test deployment: migrations through **041** are already applied. Do not rerun them. Standalone waste needs a submitter name and no reviewer assignment.
 
 ## Set up access
 
-1. Assign a responsible named user to every stock centre in **Data & Setup > Stock centres & responsibilities**.
-2. In **Inventory & movements > Department access**, give each person access to their centre and enable **Record waste**. With migration 040, this is independent of **Request materials**. See [Centres & team access](CENTRES_AND_TEAM_ACCESS_GUIDE.md) for the combined setup flow.
+1. Assign a responsible named user to every stock centre in **Data & Setup > Centres & team access**.
+2. Save the responsible owner and **Record waste** task together on the centre form. Use **Additional staff & detailed permissions** on the same page for other colleagues. Record waste is independent of Request materials. See [Centres & team access](CENTRES_AND_TEAM_ACCESS_GUIDE.md) for the combined setup flow.
 3. The Inventory Manager's waste access remains limited to centres where they are the responsible user. Kitchen and Bar staff retain their assigned centre access. Management reporting roles retain their permitted reporting scope.
 
 ## Record waste
@@ -33,3 +33,7 @@ Record processing trim within the Material Processing Log. It remains part of th
 - Leave the name blank or enter more waste than available stock. Expect a clear error and no partial posting.
 - Repeat the same submission. Expect the same record and no second deduction.
 - Confirm the Main Store Inventory Manager cannot retrieve Kitchen waste through the Waste Log, a direct document link or an export.
+
+## Finance reporting
+
+Finance-only users open **Review centre waste** from My workspace, or **Finance records > Waste across centres**. The default combines processing and other waste across permitted centres. Filter centre/dates, expand Source & status if needed, and export the same filtered scope. Finance has no waste recording action or setup access. Inventory Manager remains restricted to centres they own.

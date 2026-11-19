@@ -1,2 +1,2 @@
 ﻿batch_reference,date,centre,process_code,input_material,actual_input,input_unit,output_material,actual_output,output_unit,measured_usable_kg,measured_waste_kg,waste_reason,variance_reason
-TRAIN-BATCH-001,2026-11-18,KITCHEN,SNAPPER_CUTTING,WHOLE_SNAPPER,40,KG,SNAPPER_CUT,110,PCS,36,4,Measured trim,Measured output below baseline
+TRAIN-BATCH-001,2026-11-19,KITCHEN,SNAPPER_CUTTING,WHOLE_SNAPPER,40,KG,SNAPPER_CUT,110,PCS,36,4,Measured trim,Measured output below baseline

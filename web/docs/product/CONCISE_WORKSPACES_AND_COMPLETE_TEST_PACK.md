@@ -1,6 +1,6 @@
 # Concise workspaces and complete restaurant test data
 
-Prepared 18 November 2026. Presentation and sample files only; no new database migration.
+Updated 19 November 2026 for release a6d348d / migration 041. Presentation and sample files only; no new database migration.
 
 ## Presentation
 
@@ -12,13 +12,13 @@ Prepared 18 November 2026. Presentation and sample files only; no new database m
 
 ## Test data
 
-Download /templates/profitplate-complete-test-data-2026-11-18.zip. It contains a 21-sheet Excel workbook, 20 populated CSVs, the full Word guide, START-HERE instructions and expected results.
+Download /templates/profitplate-complete-test-data-2026-11-19.zip. It contains a 23-sheet Excel workbook, 22 populated CSVs, the refreshed Word guide, START-HERE instructions, expected results and 44 acceptance cases with blank result fields.
 
 The dataset covers business/calendar, named roles, storage centres, routes, suppliers, materials, conversions, starting prices, processing baselines, sub/final recipes, selling menu items, selling prices, opening counts, processing, independent waste, invoices, sales and expenses.
 
 Only four upload-ready CSVs match current app import screens: initial prices, purchase invoices, sales and expenses. Manual-entry files and the XLSX workbook are preparation/review documents. Missing master-data importers remain an explicit product gap.
 
-Use a separate training restaurant, replace example.test emails with accounts you control, and confirm that the first outlet code is PRIMARY. Source organisation code for transaction CSVs is TRAINING. Dates are 2026-11-18; keep dependent dates consistent if you change them. Use EXCLUSIVE source tax format for the fictional zero-tax transaction examples.
+Use a separate training restaurant, replace example.test emails with accounts you control, and confirm that the first outlet code is PRIMARY. Source organisation code for transaction CSVs is TRAINING. Dates are 2026-11-19; keep dependent dates consistent if you change them. Use EXCLUSIVE source tax format for the fictional zero-tax transaction examples.
 
 ## Rebuild and validation
 

@@ -1,6 +1,6 @@
 # Centres, team access and waste recording
 
-Release prerequisite: apply migration `202611190040_centre_setup_and_waste_access.sql` after migrations 001-039, then deploy the matching app. Existing stock history and permissions remain intact. Existing explicit waste access is retained.
+Current test deployment: migrations through **041** are already applied; do not rerun them. Existing stock history and permissions remain intact. Existing explicit waste access is retained.
 
 ## Set up a centre in one place
 

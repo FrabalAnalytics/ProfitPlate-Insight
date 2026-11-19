@@ -1,2 +1,3 @@
-﻿waste_reference,date,centre,material_code,quantity,unit,category,reason
-TRAIN-WASTE-001,2026-11-18,KITCHEN,SNAPPER_CUT,2,PCS,Spoilage,Two cuts spoiled after processing; separate from recorded trim
+﻿waste_reference,date,centre,material_code,quantity,unit,submitter_name,category,reason
+TRAIN-WASTE-MAIN,2026-11-19,MAIN_STORE,RICE,1,KG,Emeka,Spoilage,Measured Main Store spoilage
+TRAIN-WASTE-001,2026-11-19,KITCHEN,SNAPPER_CUT,2,PCS,Ada,Spoilage,Two cuts spoiled after processing; separate from recorded trim

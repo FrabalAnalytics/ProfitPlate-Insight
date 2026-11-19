@@ -1,8 +1,21 @@
 # Complete Restaurant Onboarding & Test Guide
 
-ProfitPlate Insight | Prepared 18 November 2026 | Includes the full master-data setup and daily operational test sequence.
+ProfitPlate Insight | Updated 19 November 2026 / release a6d348d / migrations through 041 | Includes the full master-data setup and daily operational test sequence.
 
 This replaces the stock-only walkthrough as the main onboarding guide. Use a fresh training restaurant; preserve the existing demo restaurant and its historical records. The examples are fictional training data, not recommended recipes, prices or operating defaults.
+
+## Before you start this updated run
+
+Use this guide with **profitplate-complete-test-data-2026-11-19.zip**. It supersedes earlier test-pack instructions. The example transaction date is **19 November 2026**, aligned across prices, recipes, openings and imports. Use that date in the app filters. Record your actual execution date separately in the workbook. If starting later, update the sample dates together before entry. Receiver acceptance posts on its actual business date; subsequent processing/waste must use that date or later. If the test spans days, use the current operational date for later stock activity and widen report filters; keep master versions effective on or before that date.
+
+1. Use the deployed site at https://profit-plate-insight.vercel.app/ and confirm migrations through **041** are applied. They are already confirmed for this deployment; do not rerun them.
+2. Create a fresh training restaurant, for example **Training Restaurant - Run 041**. Keep the earlier demo and its histories intact.
+3. Open **ProfitPlate_Complete_Test_Data.xlsx**. Complete **run-details**, then use **test-results** to record Not run, Pass, Fail, Blocked or Not available, actual result and evidence. Run the sections in order.
+4. Replace example emails with verified accounts or aliases you control. For a Gmail account, a plus alias such as `yourname+finance@gmail.com` goes to the same inbox but is registered as a separate app login. Use a separate browser profile for each tester role. Do not save passwords in the pack.
+5. Keep the four **upload-ready** CSVs separate from the manual-entry/checklist files. The full Excel workbook is a reference and test record, not an app upload.
+6. Stop at a failed stock balance, duplicate posting or access restriction. Record the reference and screenshot; resolve it before continuing with dependent tests. An expected access denial is a Pass.
+
+Changes in this revision: one-save centre/owner tasks; standalone waste without approval and with a submitter; Inventory own-centre waste restrictions; Finance combined waste reporting/export; Finance setup restrictions; concise role navigation and invoice layouts. Existing master data, pricing and recipe tests remain included.
 
 ## 1. What this guide covers
 
@@ -48,7 +61,7 @@ For the first training pass, enter a small complete sample manually. For bulk-ro
 ## 3. Create the restaurant and reporting calendar
 
 1. Register a fresh owner account, confirm the email and sign in.
-2. Complete onboarding with business name **Training Restaurant**, the actual restaurant concept, **Nigeria**, **NGN**, brand **Training Kitchen**, outlet **Dining Room**, and timezone **Africa/Lagos** for this example.
+2. Complete onboarding with business name **Training Restaurant - Run 041**, the actual restaurant concept, **Nigeria**, **NGN**, brand **Training Kitchen**, outlet **Dining Room**, and timezone **Africa/Lagos** for this example.
 3. Choose the real reporting week start, physical count day and local cutoff time. These are restaurant decisions, not universal defaults.
 4. Create the workspace. Check the displayed brand, outlet and currency.
 5. Open **Data & Setup** and review the setup journey. An incomplete stage should remain visible until its required data exists.
@@ -62,7 +75,7 @@ Expected result: a separate active restaurant with its own records and calendar.
 1. In My workspace, expand **Set the name shown in your workspace**, enter your name and save.
 2. Open **Users & roles > Invite colleague**.
 3. Enter colleague name, verified email, role and scope; review permissions; create the invitation; copy the link and share it manually. The app does not send the invitation email automatically.
-4. Each invited person signs in with the matching verified email and accepts their invitation.
+4. Each invited person uses the app signup/sign-in with the exact invited email, verifies it, then reopens their invitation link and accepts. Staff should not create their own separate restaurant. App registration creates the Supabase Auth identity automatically; do not insert users with SQL.
 5. Use separate sessions or browser profiles when testing different people. Avoid accidentally completing several roles' actions as the same account.
 
 | Example person | Role | Responsibility |
@@ -75,19 +88,19 @@ Expected result: a separate active restaurant with its own records and calendar.
 | Finance tester | Finance / Auditor | Financial review, expenses and permitted reports |
 | Operations tester, if required | Operations Manager | Operational master-data responsibilities within assigned access |
 
-Inventory Manager uses business-wide scope. Kitchen Manager and Bar Lead initially have no stock-centre assignments: configure those explicitly later. Being named responsible for a centre does not itself grant process permissions. Optional receiver/dispatcher roles remain available. Custom role creation is not implemented.
+Inventory Manager uses business-wide scope. Kitchen Manager and Bar Lead initially have no stock-centre assignments: configure those explicitly later. Save the responsible owner and their selected tasks together in Centres & team access. Naming a responsible person without enabling their tasks does not grant those tasks. Optional receiver/dispatcher roles remain available. Custom role creation is not implemented.
 
 Expected result: names and roles appear correctly; greetings use the restaurant timezone; staff cannot access unrelated modules simply because their job title sounds senior. There is no current bulk user-import screen.
 
 ## 5. Define stock centres, owners and movement routes
 
-1. Open **Data & Setup > Stock centres & responsibilities**.
-2. Create **MAIN_STORE / Main Store**, type Main store, responsible user **Emeka / Inventory Manager**.
-3. Create **KITCHEN / Kitchen**, type Kitchen, responsible user **Ada / Kitchen Manager**. Assign its outlet if it belongs to one outlet.
-4. Optionally create **BAR / Bar**, responsible user **Bola / Bar Lead**. Add other actual centres such as Front Kitchen, Back Kitchen or Central Kitchen when needed.
+1. Open **Data & Setup > Centres & team access** (expand Business administration first).
+2. Enter **Main Store**, type Main store, responsible user **Emeka / Inventory Manager**. Under More centre details set code **MAIN_STORE**. Select **Save centre & access**; existing Inventory Manager role-wide permissions remain intact.
+3. Create **Kitchen**, code **KITCHEN**, type Kitchen, outlet Dining Room, responsible user **Ada / Kitchen Manager**. Enable **Request materials**, **Record waste** and **Accept transfers**, then select **Save centre & access**.
+4. Create **Bar**, code **BAR**, outlet Dining Room, responsible user **Bola / Bar Lead**. Enable the same three owner tasks and select **Save centre & access**. Add other actual centres only for a separate test scenario.
 5. Assign an active responsible person to every centre before choosing the processing unit.
-6. Under **Choose the business processing unit**, select **Kitchen** for this example and save. A restaurant that processes in Main Store chooses Main Store instead.
-7. Open **Stock process permissions**. For Ada choose Selected stock locations only; allow Kitchen; enable Request stock and Accept/reject; confirm and save. Assign Bola only Bar as appropriate.
+6. Under **Choose where material processing happens**, select **Kitchen** for this example and save. A restaurant that processes in Main Store chooses Main Store instead.
+7. Use **Additional staff & detailed permissions** only for other colleagues or extra controls. Confirm Ada has Kitchen only and Bola has Bar only. Waste permission is independent of requesting materials; no waste approver is needed.
 8. In **Inventory & movements > Locations & routes**, configure Main Store to Kitchen and the reverse return route. Add Bar routes only if needed. Use Inventory Manager as source approver for the normal workflow.
 9. Check that each centre has its own ledger/balances and that only the selected processing unit is designated for processing.
 
@@ -261,6 +274,8 @@ Expected result: correct effective price and final-recipe version, no missing co
 8. Ada accepts all 40 KG. Only now expect Main Store 0 KG and Kitchen 40 KG.
 9. Test a partial acceptance or rejection with a reason using a separate request; review follow-up/reservations. Use the reverse route for an actual excess return.
 
+Before continuing, run a separate Main Store waste check: Emeka records **1 KG Rice**, submitter **Emeka**, reason **Spoilage**. Expect Rice to change from **20 KG to 19 KG** immediately, with no approval. Leave the processing inputs unchanged. Finance should later see both this Main Store entry and Ada's Kitchen entry.
+
 Do not post an opening balance for stock already established by earlier movements, and do not post a GRN again for goods included in opening counts. A price import, invoice or recipe publication is not an opening-stock import. Dedicated opening-stock CSV import is not currently implemented.
 
 ## 16. Record material processing and separate daily waste
@@ -275,7 +290,7 @@ Follow [Centre waste logging](CENTRE_WASTE_REVIEW_GUIDE.md). Standalone waste re
 5. Expect Kitchen Whole Snapper Fish **0 KG** and Snapper Cut **110 PCS**. Raw deduction and output addition must occur together.
 6. Expect baseline achievement **91.67%**, usable weight yield **90.00%**, recorded waste **10.00%**, and no unexplained weight for these measurements.
 7. Do not enter another standalone waste record for the same 4 KG trim. It is already included in the 40 KG consumption.
-8. For an independent loss, Ada opens **Waste Log > Record waste**, selects Kitchen and Snapper Cut, quantity **2 PCS**, submitter name **Ada**, category **Spoilage**, and a reason. Confirm and select **Record waste**; no approval or separate posting is required.
+8. For an independent loss, Ada opens **Waste Log > Record waste**, selects Kitchen and Snapper Cut, quantity **2 PCS**, submitter name **Ada**, reason **Spoilage**, and optional explanatory notes. Select **Record waste**; no approval or separate posting is required.
 9. After submission expect Kitchen Snapper Cut **108 PCS**. Waste Log shows the 2 PCS independent loss. Combined waste reporting includes it and the 4 KG processing trim once each, with their distinct stock treatment.
 
 KG input and PCS output do not alone establish weight yield. Without measured usable weight show that the weight measurement is needed, while retaining the valid count-based baseline achievement. Actual batch cost can differ from the standard SKU estimate when actual yield differs; it does not automatically rewrite the approved baseline. Never add unlike units such as KG and PCS into a single waste quantity total.
@@ -290,10 +305,35 @@ KG input and PCS output do not alone establish weight yield. Without measured us
 6. Use **sales-import.csv** in Sales & summary with the existing selling menu code, outlet and the source's actual tax/receipt format. Review totals before posting. This guide does not claim a separate general manual sales-entry form.
 7. Finance tests a manual expense, then an **expense-import.csv** batch with correct category, location/central scope, period and recognition method. Do not duplicate the same expenses using both routes.
 8. Check historical reports for each role using dates, outlet/centre and status. Trace records to their material lines and source documents.
-9. Check Inventory Manager's Needs Attention counts and Kitchen/Bar incoming confirmations. Department users should see only permitted centres and should not gain financial costs or posting authority.
+9. Check Inventory Manager's Needs Attention counts and Kitchen/Bar incoming confirmations. Department users should see only permitted centres and permitted stock actions; they should not gain financial reports or manager approval/dispatch authority. Standalone waste recording itself posts the loss immediately.
 10. Check CEO views for changes, profitability impact, location and accountable exceptions rather than a long operational task list.
 
 A sales CSV is not proof of automatic actual ingredient depletion. Validate the existing consumption/count workflows separately. Use supported source formats; do not imply a general POS, XLSX, refund or combo integration from the existence of a CSV upload.
+
+## 17A. Finance and role-workspace checks for release 041
+
+1. Sign in as **Chioma / Finance**, holding only Finance (not Restaurant Administrator or Inventory Manager). My workspace should lead with invoice reviews, expenses, waste, management reports, sales and history. There are at most six primary shortcuts; additional tools appear under **More records & tools** when available.
+2. Expand **Finance records** to find sales, waste and expenses. Expand Purchasing for separate PO, GRN and invoice pages. No **Data & Setup**, **Users & roles**, **Materials & suppliers**, **Inventory & movements** or **Material Processing Log** link should appear in Finance navigation.
+3. Test a direct setup URL: copy the organisation UUID from an existing page, then open `/workspace/setup/centres?organisation=THAT_UUID`. Finance should return to its workspace. Repeat for `/workspace/setup`, `/workspace/setup/production` and `/workspace/setup/standards`. A separately assigned Admin or Inventory Manager retains its own setup responsibilities.
+4. Open **Review centre waste**. Default scope is all permitted centres and source **Processing & other waste**. Use From **2026-11-19** and Through **2026-11-19**. Expect Main Store **1 KG Rice**, Kitchen **2 PCS Snapper Cut**, and Kitchen **4 KG processing trim**, after the production batch is posted. Do not sum KG and PCS.
+5. Select Kitchen and apply **Filter waste log**. The Main Store entry disappears. Expand **Source & status** and choose **Processing loss only**; expect only the 4 KG trim. Choose **Waste outside processing**; expect only the 2 PCS spoilage. Choose Recorded to exclude unposted entries.
+6. Export CSV for each filtered selection. Compare centre, material, quantity, unit, source and submitter with the displayed filters. The CSV includes the full filtered result, not only the current page. Finance should have no **Record waste** action. Recorded processing trim must not cause a second stock deduction.
+7. Sign in as Emeka. Waste Log and waste reports should show Main Store only, not Kitchen/Bar. As Ada expect Kitchen only; as Bola expect Bar only. Opening a foreign-centre link must not reveal that centre's waste data. Keep these testers single-role so extra reporting roles do not intentionally widen access.
+8. In Procurement use a separate **TRAIN-MANUAL-PO-001** reference: order **2 KG Rice at NGN 1,800/KG** (NGN **3,600**); issue it directly. Inventory records a GRN accepting **1 KG**. Procurement records an invoice for **2 KG / NGN 3,600**, linked to this PO. Do not reuse either uploaded invoice reference.
+9. Finance opens that invoice. Invoice/supplier/date/outlet/total and the materials should appear before **Delivery & billing check**. The billed-more-than-received exception and Finance review action should be visible. Matching-only quantity details expand when the unreviewed exception requires attention; source and correction history remain collapsed until opened. Zero-only tax/discount columns may be omitted.
+10. Finance records an exception review with a reason. This does not authorise payment or receive stock. Inventory records the remaining **1 KG** under a second GRN. On refreshing the invoice, matching and the earlier review validity must reflect the changed source records. Check PO/GRN materials and separate historical reports too.
+11. Procurement requests a separate invoice correction with a reason. Until Finance decides, the current invoice figures stay unchanged. Finance sees the pending before/proposed values and decision controls. After approval the new figures appear; expand **Source & correction history** to inspect the preserved earlier values.
+12. Check desktop and narrow mobile screens. Tables should remain readable within their own horizontal scroll area; the whole page should not overflow. Navigation groups open on selection and allow collapse. A CEO-only workspace should prioritise profitability changes; a CEO who also has Administrator duties retains the corresponding administration navigation.
+
+The manual PO above changes later monthly recipe cost if its net unit price differs from the sample's reference price. Use the supplied 1,800/KG Rice price to keep the baseline arithmetic unchanged. Treat its deliveries as separate from starting counts and from imported invoice quantities; record actual stock receipt through the relevant workflow once.
+
+## 17B. Weekly-count classification check
+
+1. As Administrator, open each material and check **Include in weekly stock counts** (the material's weekly-count flag). All seven sample SKUs are included in this pack.
+2. Save, reopen and confirm the choice persists, including for the processed **SNAPPER_CUT** SKU. For a separate inactive trial SKU, disable the flag and verify it stays off; do not change the seven sample quantities to test this.
+3. Verify the reporting week starts Wednesday, physical count day Tuesday and cutoff 23:30 in Africa/Lagos for this fictional setup. Use your restaurant's own schedule for a real pilot.
+4. Record counts at the correct centre through the available count workflow; verify that an explicit zero is accepted and an omitted count is not silently interpreted as zero.
+5. A complete automatic weekly count-sheet/reminder/theoretical-usage programme remains a separate phase. Mark a missing automatic feature **Not available**; do not report it as Passed simply because the material flag saved.
 
 ## 18. Bulk-import requirements still to implement and test
 
@@ -325,6 +365,9 @@ Use the following checklist as the restaurant's acceptance record. Add tester na
 - Opening counts established once per material/centre; transfer acceptance and return behaviour tested.
 - Processing deductions/additions, yield measurements and standalone waste tested without duplicate loss entries.
 - PO, GRN, invoices, permitted imports, sales, expenses and historical reports checked.
+- Finance setup restrictions, invoice readability and combined centre waste/export checked.
+- Inventory/Kitchen/Bar waste access stays centre-restricted; submitter names present without approval.
+- Weekly-count material flags saved and reporting calendar verified; unavailable automation recorded separately.
 - CEO profitability/accountability view and operational Needs Attention queues checked.
 - All required manual-entry tests passed; working import routes passed; missing master-data importers explicitly tracked as blocked.
 
