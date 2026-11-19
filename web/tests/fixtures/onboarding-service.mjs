@@ -145,6 +145,7 @@ createServer(async (request, response) => {
         processing_output_choices: ['p_organisation_id','p_search','p_version_id'],
         processing_recipe_inputs: ['p_organisation_id','p_version_id'],
         save_stock_centre: ['p_organisation_id','p_value'],
+        save_stock_centre_with_access: ['p_organisation_id','p_value','p_enable_owner','p_revision','p_owner_tasks'],
         save_processing_standard: ['p_organisation_id','p_request_id','p_value'],
         complete_waste_record: ['p_organisation_id','p_document_id','p_submitter_name'],
         processing_activity: ['p_organisation_id','p_site_id','p_from','p_to','p_kind','p_page','p_state'],

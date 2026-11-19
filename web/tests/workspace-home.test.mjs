@@ -12,7 +12,7 @@ test('Inventory Manager gets stock oversight and department access without finan
  const home=workspaceHome([role('inventory_manager')],{overview:false,expenses:false,sales:false,purchases:false,orders:true,inventory:true,menus:false,recipes:false,catalogue:false,team:false});
  assert.equal(home.title,'Inventory Manager workspace');
  assert.ok(home.tasks.some(task=>task.action==='Review stock requests'));
- assert.ok(home.tasks.some(task=>task.action==='Manage department stock access'));
+ assert.ok(home.tasks.some(task=>task.action==='Manage centres & team access'));
  assert.ok(home.tasks.some(task=>task.action==='Open Goods Received Notes'));
  assert.ok(!home.tasks.some(task=>task.path.includes('/expenses')||task.path.includes('/invoices')||task.path.includes('/team')));
 });

@@ -36,7 +36,7 @@ export async function requestStock(_state:StockActionState,form:FormData):Promis
    const category=String(form.get("waste_category")??"");
    if(!['Spoilage','Expiry','Damage','Bad production','Other loss'].includes(category))throw new Error("Choose a waste category.");
    if(!document.submitter_name||document.submitter_name.length>120)throw new Error("Enter the submitter name (up to 120 characters).");
-   document.note=`${category}: ${document.note}`;
+   document.note=document.note?`${category}: ${document.note}`:category;
   }
   const result=await auth.client.rpc("request_stock_document",{p_organisation_id:org,p_request_id:request,p_document:{...document,...(document.kind==="PRODUCTION"?{processing_waste:parsed(form,"processing_waste"),waste_confirmed:form.get("waste_confirmed")==="on"}:{})},p_lines:parsed(form,"lines")});checked(result.error);id=result.data;
   revalidatePath("/workspace/inventory");revalidatePath("/workspace/inventory/processing");revalidatePath("/workspace/inventory/waste");revalidatePath("/workspace/setup/centres");revalidatePath("/workspace");

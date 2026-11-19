@@ -26,6 +26,8 @@ Apply migration `supabase/migrations/202611180037_guided_stock_setup_and_named_t
 6. Kitchen Manager and Bar Lead start with no stock centres. They cannot approve, dispatch, post stock, view financial costs or administer the team merely because of their role.
 7. Operations Manager remains available. Custom roles are deferred; do not use an unrelated broader role as a substitute for a missing job title.
 
+For the current one-screen setup and simplified waste form, follow [Centres & team access](CENTRES_AND_TEAM_ACCESS_GUIDE.md).
+
 ## 3. Define stock centres and choose the processing unit
 
 1. Open **Data & Setup > Stock centres & responsibilities**.

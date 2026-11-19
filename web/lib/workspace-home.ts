@@ -20,7 +20,7 @@ export function workspaceHome(roles: Role[], access: NavigationAccess) {
   if (access.inventory) tasks.push({title:"Inventory & movements",description:has("stock_department")?"Request materials, accept or reject incoming stock, and return excess to Main Store.":"Review stock balances, reservations, requisitions and confirmed movements.",action:"Open inventory & movements",path:"/workspace/inventory"});
   if (access.inventory && businessRole("inventory_manager")) {
     tasks.push({title:"Stock approvals",description:"Review department requests, opening balances, counts, waste and production. A different colleague must approve your own requests.",action:"Review stock requests",path:"/workspace/inventory?view=movements"});
-    tasks.push({title:"Departments & stock access",description:"Configure storage locations, movement routes and staff access to Main Store, Kitchen, Bar and other departments.",action:"Manage department stock access",path:"/workspace/inventory?view=access"});
+    tasks.push({title:"Centres & team access",description:"Choose who runs each stock centre and what their team can do.",action:"Manage centres & team access",path:"/workspace/setup/centres"});
   }
   const purchasing = businessRole("procurement") || businessRole("restaurant_admin");
   const finance = businessRole("finance") || businessRole("restaurant_admin");

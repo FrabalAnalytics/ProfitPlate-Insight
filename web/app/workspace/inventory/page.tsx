@@ -24,7 +24,7 @@ export default async function InventoryPage({searchParams}:{searchParams:Promise
  const org=params.organisation?organisations.data?.find(o=>o.id===params.organisation):organisations.data?.[0];
  if(organisations.error||!org)return <WorkspaceShell email={user.email}><h1 className="workspace-title">This business is unavailable.</h1><Link href="/workspace">Return to workspace</Link></WorkspaceShell>;
  const shell={email:user.email,restaurantName:org.name,organisationId:org.id,sectionLabel:"Inventory & movements"};
- const views={balances:"Stock balances",movements:"Movements & requests",ledger:"Stock ledger",setup:"Locations & routes",access:"Department access"};
+ const views={balances:"Stock balances",movements:"Movements & requests",ledger:"Stock ledger",setup:"Locations & routes",access:"Team access"};
  const view=params.view&&params.view in views?params.view as keyof typeof views:"balances";
  const page=Number(params.page??1),bp=Number(params.bp??1),lp=Number(params.lp??1),location=params.location??"",status=params.status??"ALL",q=(params.q??"").trim().slice(0,80);
  if((location&&!isUuid(location))||(params.document&&!isUuid(params.document))||[page,bp,lp].some(n=>!Number.isInteger(n)||n<1||n>100000)||!(status in stockFilters))return <WorkspaceShell {...shell}><p role="alert" className="auth-alert">Choose valid stock filters and page numbers.</p><Link href={`/workspace/inventory?organisation=${org.id}`}>Return to inventory</Link></WorkspaceShell>;

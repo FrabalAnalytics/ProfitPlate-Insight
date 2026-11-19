@@ -2,8 +2,8 @@ import {clickNavigation} from './navigation';
 import {test,expect,type Page} from '@playwright/test';
 async function login(page:Page,email:string){await page.goto('/login');await page.getByLabel('Email address',{exact:true}).fill(email);await page.getByLabel('Password',{exact:true}).fill('TestPassword123!');await page.getByRole('button',{name:'Sign in',exact:true}).click();await expect(page).toHaveURL(/\/workspace/);}
 async function saveAccess(page:Page,email:string,site:string|null){
- await page.getByLabel('Staff member',{exact:true}).selectOption({label:email});await page.getByLabel('Stock access mode',{exact:true}).selectOption('ASSIGNED');
- const choices=page.getByRole('table',{name:'Department permission choices',exact:true});
+ await page.getByLabel('Staff member',{exact:true}).selectOption((await page.getByLabel('Staff member',{exact:true}).locator('option').filter({hasText:email}).getAttribute('value'))!);await page.getByLabel('Stock access mode',{exact:true}).selectOption('ASSIGNED');
+ const choices=page.getByRole('group',{name:'Centre task choices',exact:true});
  for(const checkbox of await choices.getByRole('checkbox',{name:/^Allow stock location /}).all())await checkbox.uncheck();
  if(site)await page.getByRole('checkbox',{name:`Allow stock location ${site}`,exact:true}).check();
  const group=page.getByRole('group',{name:`Department permissions for ${email}`,exact:true});await group.getByRole('checkbox',{name:/I reviewed this staff member/}).check();await group.getByRole('button',{name:'Save department access',exact:true}).click();await expect(page.getByRole('status')).toHaveText('Department access saved.');
@@ -14,15 +14,15 @@ test('administrator assigns Kitchen and Bar separately and changes immediately r
  test.setTimeout(90000);const staffContext=await browser.newContext();const staff=await staffContext.newPage();
  try{
   await login(page,'catalogue@example.test');await clickNavigation(page,'Inventory & movements');await page.getByRole('link',{name:'Locations & routes',exact:true}).click();
-  const config=page.getByRole('group',{name:'Add stock location',exact:true});
+  const configuration=new URL(page.url());configuration.searchParams.set("view","setup");const configUrl=configuration.href;await page.getByRole('link',{name:'Manage stock centres',exact:true}).click();await expect(page).toHaveURL(/\/workspace\/setup\/centres/);const centresUrl=page.url(),config=page.getByRole('group',{name:'Add a stock centre',exact:true});
   for(const[code,name,kind]of[['DEPT_MAIN','Dining Main Store','STORE'],['DEPT_KITCHEN','Dining Kitchen','KITCHEN'],['DEPT_BAR','Dining Bar','BAR']]){
-   await config.getByLabel('Stock location code',{exact:true}).fill(code);await config.getByLabel('Stock location name',{exact:true}).fill(name);await config.getByLabel('Storage type',{exact:true}).selectOption(kind);await config.getByLabel('Outlet assignment',{exact:true}).selectOption({label:'Main outlet'});await config.getByRole('button',{name:'Add stock location',exact:true}).click();await expect(page.getByRole('table',{name:'Stock locations',exact:true})).toContainText(name);
-  }
+   await page.goto(centresUrl);await config.getByText('More centre details',{exact:true}).click();await config.getByLabel('Centre code',{exact:true}).fill(code);await config.getByLabel('Centre name',{exact:true}).fill(name);await config.getByLabel('Storage type',{exact:true}).selectOption(kind);await config.getByLabel('Outlet assignment',{exact:true}).selectOption({label:'Main outlet'});await config.getByLabel('Responsible member',{exact:true}).selectOption((await config.getByLabel('Responsible member',{exact:true}).locator('option').filter({hasText:'catalogue@example.test'}).getAttribute('value'))!);await config.getByRole('button',{name:'Save centre & access',exact:true}).click();await expect(page.getByRole('table',{name:'Stock centres',exact:true})).toContainText(name);
+  }await page.goto(configUrl);
   const route=page.getByRole('group',{name:'Save movement route',exact:true});
   for(const name of['Dining Kitchen','Dining Bar']){
    await route.getByLabel('From stock location',{exact:true}).selectOption({label:'Dining Main Store'});await route.getByLabel('To stock location',{exact:true}).selectOption({label:name});await route.getByLabel('Route movement type',{exact:true}).selectOption('ISSUE');await route.getByRole('button',{name:'Save movement route',exact:true}).click();await expect(page.getByRole('table',{name:'Stock movement routes',exact:true})).toContainText(name);
   }
-  await page.getByRole('link',{name:'Department access',exact:true}).click();await saveAccess(page,'department-kitchen@example.test','Dining Kitchen');await saveAccess(page,'department-bar@example.test','Dining Bar');
+  await page.getByRole('link',{name:'Team access',exact:true}).click();await saveAccess(page,'department-kitchen@example.test','Dining Kitchen');await saveAccess(page,'department-bar@example.test','Dining Bar');
   const kitchenRow=page.getByRole('table',{name:'Staff stock access',exact:true}).getByRole('row').filter({hasText:'department-kitchen@example.test'});await expect(kitchenRow).toContainText('Dining Kitchen');await expect(kitchenRow).not.toContainText('Dining Bar');
   const base=new URL(page.url());base.searchParams.delete('member');base.searchParams.delete('result');base.searchParams.set('view','balances');
   await login(staff,'department-kitchen@example.test');await staff.goto(base.href);const filter=staff.getByLabel('Stock location filter',{exact:true});await expect(filter).toContainText('Dining Kitchen');await expect(filter).not.toContainText('Dining Bar');await expect(filter).not.toContainText('Dining Main Store');
@@ -37,5 +37,5 @@ test('administrator assigns Kitchen and Bar separately and changes immediately r
 });
 
 test('Finance cannot open department administration or obtain assignment controls',async({page})=>{
- await login(page,'reader@example.test');await clickNavigation(page,'Inventory & movements');await expect(page).toHaveURL(/\/workspace\/inventory\?/);await expect(page.getByRole('heading',{name:'Inventory & movements',level:1,exact:true})).toBeVisible();await expect(page.getByRole('link',{name:'Department access',exact:true})).toHaveCount(0);const url=new URL(page.url());url.searchParams.set('view','access');await page.goto(url.href);await expect(page.getByRole('main').getByRole('alert')).toContainText('Inventory Manager or business-wide Restaurant Administrator');await expect(page.getByLabel('Staff member',{exact:true})).toHaveCount(0);
+ await login(page,'reader@example.test');await clickNavigation(page,'Inventory & movements');await expect(page).toHaveURL(/\/workspace\/inventory\?/);await expect(page.getByRole('heading',{name:'Inventory & movements',level:1,exact:true})).toBeVisible();await expect(page.getByRole('link',{name:'Team access',exact:true})).toHaveCount(0);const url=new URL(page.url());url.searchParams.set('view','access');await page.goto(url.href);await expect(page.getByRole('main').getByRole('alert')).toContainText('Inventory Manager or business-wide Restaurant Administrator');await expect(page.getByLabel('Staff member',{exact:true})).toHaveCount(0);
 });

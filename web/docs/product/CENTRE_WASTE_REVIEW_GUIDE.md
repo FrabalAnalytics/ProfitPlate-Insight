@@ -5,7 +5,7 @@ Apply `supabase/migrations/202611190039_simple_named_waste_logging.sql` after mi
 ## Set up access
 
 1. Assign a responsible named user to every stock centre in **Data & Setup > Stock centres & responsibilities**.
-2. In **Inventory & movements > Department access**, give each person access to their centre and **Request stock** permission. This also permits recording waste there.
+2. In **Inventory & movements > Department access**, give each person access to their centre and enable **Record waste**. With migration 040, this is independent of **Request materials**. See [Centres & team access](CENTRES_AND_TEAM_ACCESS_GUIDE.md) for the combined setup flow.
 3. The Inventory Manager's waste access remains limited to centres where they are the responsible user. Kitchen and Bar staff retain their assigned centre access. Management reporting roles retain their permitted reporting scope.
 
 ## Record waste
