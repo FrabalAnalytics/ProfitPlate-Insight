@@ -1,0 +1,11 @@
+# Next onboarding improvement ? user request, 19 November 2026
+
+Status: agreed direction recorded for the next improvement; not implemented by this note. Current opening-stock and pricing workflows remain in use during the active test.
+
+Material creation and reviewed master import should collect optional dated last-purchase/reference unit price and opening stock alongside the material, instead of forcing users to retype those known data elsewhere. Opening quantities must identify the stock centre and date; support multiple centre rows. Blank is unknown, explicit zero is a confirmed zero. A historical last price is a starting reference estimate, not a fabricated supplier invoice or GRN. Preserve monthly quantity-weighted invoice costing and processed-SKU recipe-derived costs.
+
+Collect and validate all supplied values together, preserve missing-data flags, and retain authorised opening review/posting controls and audit history. Creating a material alone must not silently post stock. Existing stock history must not be replaced by replaying an onboarding upload. The current separate price/opening routes remain available to complete missing data later. Import preview must show master changes, reference-price additions and opening requests separately within the same review, with row errors, matching codes/units/centres, duplicate prevention and all required posting controls. Do not present a collection sheet as a functioning importer.
+
+Menu creation and reviewed menu import should include optional selling price, outlet, channel, currency, tax treatment and effective date. Save the menu and supplied initial price together. Retain the separate price/history workflow for later changes and missing values. Blank price remains missing; zero cannot be invented. Prevent duplicate or conflicting price events on retry.
+
+Acceptance: a user can supply known material identity, dated starting price and per-centre openings in one entry/review; can supply menu identity and its initial scoped price together; can save incomplete data and finish later; permissions, maker/checker controls, idempotency and historical records are preserved. Manual and actual bulk import paths require equivalent validation and transparent preview.

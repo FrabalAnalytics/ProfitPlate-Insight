@@ -44,12 +44,15 @@ export async function requestStock(_state:StockActionState,form:FormData):Promis
  redirect(`/workspace/inventory?${new URLSearchParams({organisation:org,view:"movements",document:id})}`);
 }
 export async function actOnStock(_state:StockActionState,form:FormData):Promise<StockActionState>{
+ let org:string,document:string,decision:string;
  try{
-  const {org,client}=await access(form),document=String(form.get("document")??"");
+  const auth=await access(form);org=auth.org;const client=auth.client;document=String(form.get("document")??"");
   if(!isUuid(document)||form.get("confirmed")!=="on")throw new Error("Confirm the stock decision before saving.");
-  const result=await client.rpc("stock_document_action",{p_organisation_id:org,p_document_id:document,p_action:String(form.get("decision")??""),p_note:String(form.get("note")??"").trim(),p_received:parsed(form,"received")});checked(result.error);
-  revalidatePath("/workspace/inventory");revalidatePath("/workspace/inventory/processing");revalidatePath("/workspace/inventory/waste");revalidatePath("/workspace/setup/centres");revalidatePath("/workspace");return {success:"Stock decision saved. Balances and movement history are updated."};
+  decision=String(form.get("decision")??"");if(!["APPROVE","POST","DISPATCH","RECEIVE","REJECT","DECLINE","RESOLVE","CANCEL"].includes(decision))throw new Error("Choose a stock action.");
+  const result=await client.rpc("stock_document_action",{p_organisation_id:org,p_document_id:document,p_action:decision,p_note:String(form.get("note")??"").trim(),p_received:parsed(form,"received")});checked(result.error);
+  revalidatePath("/workspace/inventory");revalidatePath("/workspace/inventory/processing");revalidatePath("/workspace/inventory/waste");revalidatePath("/workspace/setup/centres");revalidatePath("/workspace");
  }catch(error){return failure(error);}
+ redirect(`/workspace/inventory?${new URLSearchParams({organisation:org,view:"movements",document,result:decision.toLowerCase()})}`);
 }
 export async function saveDepartmentAccess(_state:StockActionState,form:FormData):Promise<StockActionState>{
  let org:string,member:string;

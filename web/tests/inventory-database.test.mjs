@@ -47,7 +47,7 @@ test('configurable stock flows preserve quantities, role scopes and an immutable
    const token=randomUUID();opening=await request('OPENING',warehouse,[{item_id:rice,quantity:'100'}],{},token);
    assert.equal(await request('OPENING',warehouse,[{item_id:rice,quantity:'100'}],{},token),opening);
    await denied('select public.stock_document_action($1,$2,$3,$4,null)',[org,opening,'APPROVE','Self approval']);
-   await approvedPost(opening);assert.equal(await balance(warehouse,rice),100);
+   await login(finance);await action(opening,'APPROVE');await denied('select public.stock_document_action($1,$2,$3,$4,null)',[org,opening,'APPROVE','Repeated approval'],'22023');assert.equal(await balance(warehouse,rice),0);await login(storekeeper);await action(opening,'POST');assert.equal(await balance(warehouse,rice),100);
    await denied('select public.stock_document_action($1,$2,$3,$4,null)',[org,opening,'POST','Retry'],'22023');
    assert.equal(await balance(warehouse,rice),100);
    const extra=await request('OPENING',warehouse,[{item_id:baseItem,quantity:'1'}]);
