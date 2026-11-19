@@ -1,7 +1,7 @@
 {
   "pack_date": "2026-11-19",
-  "app_release": "a6d348d",
-  "required_migration": "041",
+  "app_release": "042-invitation-onboarding",
+  "required_migration": "042",
   "test_date": "2026-11-19",
   "source_org": "TRAINING",
   "sheets": {
@@ -1122,12 +1122,12 @@
         ],
         [
           "App release",
-          "a6d348d",
+          "042-invitation-onboarding",
           "Deployment checked before executing"
         ],
         [
           "Required migration",
-          "041",
+          "042",
           "Already applied; do not rerun applied migrations"
         ],
         [
@@ -1194,7 +1194,7 @@
           "Preparation",
           "Administrator",
           "None",
-          "Record deployed URL, release a6d348d, migrations through 041, actual execution date, browser and tester in run-details. Use this revision, not earlier v2 instructions.",
+          "Record deployed URL, invitation release 042, migrations through 042, actual execution date, browser and tester in run-details. Use this revision, not earlier v2 instructions.",
           "Correct app and pack selected; no need to rerun applied migrations.",
           "Not run",
           "",
@@ -1222,8 +1222,8 @@
           "Users",
           "Administrator / all roles",
           "SET-01",
-          "Use users sheet to invite named colleagues. Replace example.test emails with verified accounts/aliases you control. Register/verify each account through app signup and accept matching invitation in its own browser profile.",
-          "All six people have appropriate roles; no owner duplication. App registration creates the Supabase Auth identity; no manual SQL user insertion needed.",
+          "Invite named colleagues using emails or aliases you control. Select existing stock centres and tasks when available; otherwise assign after joining. Check email request/failure state. Open email sign-in link in a separate browser, review and accept; a manual backup link also works.",
+          "Named users reach their assigned role workspace, not business setup. Pending invitations recover at /join after verification. Custom SMTP is required if the default sender rejects staff addresses. No owner duplication.",
           "Not run",
           "",
           "",

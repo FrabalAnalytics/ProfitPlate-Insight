@@ -1,6 +1,6 @@
 # Complete Restaurant Onboarding & Test Guide
 
-ProfitPlate Insight | Updated 19 November 2026 / release a6d348d / migrations through 041 | Includes the full master-data setup and daily operational test sequence.
+ProfitPlate Insight | Updated 19 November 2026 / invitation update 042 / migrations through 042 | Includes the full master-data setup and daily operational test sequence.
 
 This replaces the stock-only walkthrough as the main onboarding guide. Use a fresh training restaurant; preserve the existing demo restaurant and its historical records. The examples are fictional training data, not recommended recipes, prices or operating defaults.
 
@@ -8,7 +8,7 @@ This replaces the stock-only walkthrough as the main onboarding guide. Use a fre
 
 Use this guide with **profitplate-complete-test-data-2026-11-19.zip**. It supersedes earlier test-pack instructions. The example transaction date is **19 November 2026**, aligned across prices, recipes, openings and imports. Use that date in the app filters. Record your actual execution date separately in the workbook. If starting later, update the sample dates together before entry. Receiver acceptance posts on its actual business date; subsequent processing/waste must use that date or later. If the test spans days, use the current operational date for later stock activity and widen report filters; keep master versions effective on or before that date.
 
-1. Use the deployed site at https://profit-plate-insight.vercel.app/ and confirm migrations through **041** are applied. They are already confirmed for this deployment; do not rerun them.
+1. Use the deployed site at https://profit-plate-insight.vercel.app/ and confirm migrations through **042** are applied. They are already confirmed for this deployment; do not rerun them.
 2. Create a fresh training restaurant, for example **Training Restaurant - Run 041**. Keep the earlier demo and its histories intact.
 3. Open **ProfitPlate_Complete_Test_Data.xlsx**. Complete **run-details**, then use **test-results** to record Not run, Pass, Fail, Blocked or Not available, actual result and evidence. Run the sections in order.
 4. Replace example emails with verified accounts or aliases you control. For a Gmail account, a plus alias such as `yourname+finance@gmail.com` goes to the same inbox but is registered as a separate app login. Use a separate browser profile for each tester role. Do not save passwords in the pack.
@@ -74,8 +74,8 @@ Expected result: a separate active restaurant with its own records and calendar.
 
 1. In My workspace, expand **Set the name shown in your workspace**, enter your name and save.
 2. Open **Users & roles > Invite colleague**.
-3. Enter colleague name, verified email, role and scope; review permissions; create the invitation; copy the link and share it manually. The app does not send the invitation email automatically.
-4. Each invited person uses the app signup/sign-in with the exact invited email, verifies it, then reopens their invitation link and accepts. Staff should not create their own separate restaurant. App registration creates the Supabase Auth identity automatically; do not insert users with SQL.
+3. Enter colleague name, email, role and outlet scope. For Kitchen/Bar or stock-process roles, the **Stock centres** section lets you select existing centres and tasks. If centres are not created yet, assign them after the colleague joins. Review and create the invitation; the app requests an email sign-in link and shows a backup copyable link. Check email request/failure state; Resend email is available in invitation history. Custom SMTP in Supabase is required to email arbitrary staff when using its restricted default sender.
+4. Each invited person opens the emailed sign-in link, reviews their pending restaurant invitation and accepts. They may set a password for future sign-ins. For the manual backup link, sign up/sign in with the exact invited email and verify it; pending invitations can be recovered at **/join**, even in another browser. Staff must not create a separate restaurant. App authentication creates the Supabase Auth identity automatically; do not insert users with SQL.
 5. Use separate sessions or browser profiles when testing different people. Avoid accidentally completing several roles' actions as the same account.
 
 | Example person | Role | Responsibility |
@@ -91,6 +91,8 @@ Expected result: a separate active restaurant with its own records and calendar.
 Inventory Manager uses business-wide scope. Kitchen Manager and Bar Lead initially have no stock-centre assignments: configure those explicitly later. Save the responsible owner and their selected tasks together in Centres & team access. Naming a responsible person without enabling their tasks does not grant those tasks. Optional receiver/dispatcher roles remain available. Custom role creation is not implemented.
 
 Expected result: names and roles appear correctly; greetings use the restaurant timezone; staff cannot access unrelated modules simply because their job title sounds senior. There is no current bulk user-import screen.
+
+See [Team invitations and email setup](TEAM_INVITATIONS_AND_EMAIL_SETUP.md) for SMTP/template settings and recovery when an existing colleague was sent to setup.
 
 ## 5. Define stock centres, owners and movement routes
 

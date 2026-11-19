@@ -1,3 +1,4 @@
+import {pendingTeamInvitations} from "@/lib/team-invitation-server";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -26,7 +27,7 @@ export default async function WorkspacePage({ searchParams }: { searchParams: Pr
   const client = await createClient();
   const organisations = await client.from("organisations").select("id,name,time_zone").order("name").order("id");
   if (organisations.error) return <WorkspaceShell email={user.email}><h1 className="workspace-title">Your workspace is temporarily unavailable.</h1><p>Please refresh to try again.</p></WorkspaceShell>;
-  if (!organisations.data?.length) redirect("/onboarding");
+  if (!organisations.data?.length){const pending=await pendingTeamInvitations();if(pending.invitations.length)redirect("/join");if(pending.error)return <WorkspaceShell email={user.email}><h1>Team invitations could not be loaded.</h1><p>Refresh to try again.</p></WorkspaceShell>;redirect("/onboarding");}
   const org = params.organisation ? organisations.data.find(item => item.id === params.organisation) : organisations.data[0];
   if (!org) return <WorkspaceShell email={user.email}><h1 className="workspace-title">This business isn’t available to your account.</h1><Link href="/workspace">Return to your workspace</Link></WorkspaceShell>;
   const membership = await client.from("organisation_memberships").select("id,display_name").eq("organisation_id", org.id).eq("user_id", user.id).eq("status", "active").maybeSingle();

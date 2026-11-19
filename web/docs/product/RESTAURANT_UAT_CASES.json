@@ -4,7 +4,7 @@
     "area": "Preparation",
     "role": "Administrator",
     "prerequisite": "None",
-    "steps": "Record deployed URL, release a6d348d, migrations through 041, actual execution date, browser and tester in run-details. Use this revision, not earlier v2 instructions.",
+    "steps": "Record deployed URL, invitation release 042, migrations through 042, actual execution date, browser and tester in run-details. Use this revision, not earlier v2 instructions.",
     "expected": "Correct app and pack selected; no need to rerun applied migrations."
   },
   {
@@ -20,8 +20,8 @@
     "area": "Users",
     "role": "Administrator / all roles",
     "prerequisite": "SET-01",
-    "steps": "Use users sheet to invite named colleagues. Replace example.test emails with verified accounts/aliases you control. Register/verify each account through app signup and accept matching invitation in its own browser profile.",
-    "expected": "All six people have appropriate roles; no owner duplication. App registration creates the Supabase Auth identity; no manual SQL user insertion needed."
+    "steps": "Invite named colleagues using emails or aliases you control. Select existing stock centres and tasks when available; otherwise assign after joining. Check email request/failure state. Open email sign-in link in a separate browser, review and accept; a manual backup link also works.",
+    "expected": "Named users reach their assigned role workspace, not business setup. Pending invitations recover at /join after verification. Custom SMTP is required if the default sender rejects staff addresses. No owner duplication."
   },
   {
     "id": "SET-03",

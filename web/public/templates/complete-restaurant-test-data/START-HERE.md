@@ -5,7 +5,7 @@ Start with the Excel workbook for the whole dataset. Use the Word guide for the 
 IMPORTANT: This is a testing pack, not a universal master-data importer. The XLSX workbook is for review/manual entry; do not upload it to a CSV screen. Files in manual-entry/ are populated collection sheets, not application upload formats. Only the four CSVs in upload-ready/ match implemented import screens, and they still need their prerequisite masters created first.
 
 ## Before testing
-- Pack revision 19 November 2026; tested against app release a6d348d and migrations through 041. Do not rerun applied migrations.
+- Pack revision 19 November 2026; updated for invitation-onboarding release 042 and migrations through 042. Do not rerun applied migrations.
 - Complete run-details and test-results in the workbook. This replaces the earlier stock-only/v2 testing instructions.
 - Create Training Restaurant, brand Training Kitchen and first outlet Dining Room. Fresh onboarding assigns brand and outlet code PRIMARY; verify these codes in the actual workspace before uploading. Map/replace PRIMARY explicitly if using a different outlet.
 - Owner rows in users.csv represent the same existing owner with two roles; do not invite or create the owner twice.
@@ -41,6 +41,8 @@ The sample sales and expense files test financial records; they do not automatic
 Suppliers, materials, conversions, recipe headers/components, menu items/prices, processing baselines and opening stock currently have no bulk upload screen. Their manual-entry sheets must remain labelled as such until the relevant importers are built.
 
 ## Updated role checks
+- Inviting requests a Supabase email sign-in link; copyable backup and resend remain available. Custom SMTP is needed for unrestricted staff delivery.
+- Existing centres/tasks can be selected on the invitation. If none exist yet, assign them after joining. Verified pending invitations recover at /join across browsers; staff must not create a restaurant.
 - Finance-only: six primary shortcuts maximum; no business/stock setup links or setup access through direct URLs.
 - Finance waste: all permitted centres by default, processing plus other waste, centre/date/source/status filters and a CSV that matches those filters. No Record waste action.
 - Inventory waste: own responsible centres only, including direct links and exports. Kitchen/Bar: assigned centres only. Test with single-role accounts.

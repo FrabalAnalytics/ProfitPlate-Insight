@@ -1,3 +1,4 @@
+import {EmailSessionCapture} from "@/app/components/email-session-capture";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -27,7 +28,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       {/* Browser extensions can add body attributes before React hydrates.
           Limit the exception to this element; child mismatches still warn. */}
-      <body suppressHydrationWarning className="min-h-full flex flex-col">{children}</body>
+      <body suppressHydrationWarning className="min-h-full flex flex-col"><EmailSessionCapture/>{children}</body>
     </html>
   );
 }

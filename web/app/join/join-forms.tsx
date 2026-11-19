@@ -18,7 +18,7 @@ function BrowserInvitationCapture({children}:{children:ReactNode}) {
  if(!token)return children;
  return <><h1>Your team invitation</h1><p>Continue to review the invitation. You will need to sign in with the invited email address.</p><form action={action}><input type="hidden" name="token" value={token}/><button className="auth-button" disabled={pending}>{pending?"Preparing…":"Review invitation"}</button></form>{state.error&&<p role="alert" className="auth-alert">{state.error}</p>}</>;
 }
-export function AcceptInvitationForm() {
+export function AcceptInvitationForm({invitation,emailLink=false}:{invitation?:string;emailLink?:boolean}) {
  const [state,action,pending]=useActionState<TeamState,FormData>(acceptInvitation,{});
- return <form action={action}><label className="team-confirm"><input type="checkbox" name="confirm" required/> I reviewed this business and the permissions being granted.</label><button className="auth-button" disabled={pending}>{pending?"Joining…":"Accept invitation"}</button>{state.error&&<p role="alert" className="auth-alert">{state.error}</p>}</form>;
+ return <form action={action}>{invitation&&<input type="hidden" name="invitation" value={invitation}/>}<label className="team-confirm"><input type="checkbox" name="confirm" required/> I reviewed this business and the permissions being granted.</label>{emailLink&&<details className="join-password"><summary>Set a password for future sign-ins (optional)</summary><label>Password<input name="password" type="password" minLength={8} autoComplete="new-password"/></label><label>Confirm password<input name="confirmPassword" type="password" minLength={8} autoComplete="new-password"/></label></details>}<button className="auth-button" disabled={pending}>{pending?"Joining…":"Accept invitation"}</button>{state.error&&<p role="alert" className="auth-alert">{state.error}</p>}</form>;
 }

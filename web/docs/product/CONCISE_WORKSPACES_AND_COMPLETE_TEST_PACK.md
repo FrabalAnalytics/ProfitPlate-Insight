@@ -1,6 +1,6 @@
 # Concise workspaces and complete restaurant test data
 
-Updated 19 November 2026 for release a6d348d / migration 041. Presentation and sample files only; no new database migration.
+Updated 19 November 2026 for invitation release 042. Presentation and sample files only; no new database migration.
 
 ## Presentation
 
@@ -12,7 +12,7 @@ Updated 19 November 2026 for release a6d348d / migration 041. Presentation and s
 
 ## Test data
 
-Download /templates/profitplate-complete-test-data-2026-11-19.zip. It contains a 23-sheet Excel workbook, 22 populated CSVs, the refreshed Word guide, START-HERE instructions, expected results and 44 acceptance cases with blank result fields.
+Download /templates/profitplate-complete-test-data-2026-11-19.zip. It contains a 23-sheet Excel workbook, 22 populated CSVs, the refreshed Word guide (including invitation email, centre selection and cross-browser recovery), START-HERE instructions, expected results and 44 acceptance cases with blank result fields.
 
 The dataset covers business/calendar, named roles, storage centres, routes, suppliers, materials, conversions, starting prices, processing baselines, sub/final recipes, selling menu items, selling prices, opening counts, processing, independent waste, invoices, sales and expenses.
 

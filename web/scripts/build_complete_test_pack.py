@@ -9,8 +9,8 @@ ROOT=Path(__file__).resolve().parents[1]
 DEST=ROOT/'public/templates/complete-restaurant-test-data'
 DATE='2026-11-19'
 PACK_DATE='2026-11-19'
-APP_RELEASE='a6d348d'
-MIGRATION='041'
+APP_RELEASE='042-invitation-onboarding'
+MIGRATION='042'
 DATA={}
 def sheet(name,header,rows,folder='manual-entry'):
     DATA[name]={'columns':header.split(','),'rows':rows,'folder':folder}
@@ -67,7 +67,7 @@ Start with the Excel workbook for the whole dataset. Use the Word guide for the 
 IMPORTANT: This is a testing pack, not a universal master-data importer. The XLSX workbook is for review/manual entry; do not upload it to a CSV screen. Files in manual-entry/ are populated collection sheets, not application upload formats. Only the four CSVs in upload-ready/ match implemented import screens, and they still need their prerequisite masters created first.
 
 ## Before testing
-- Pack revision 19 November 2026; tested against app release a6d348d and migrations through 041. Do not rerun applied migrations.
+- Pack revision 19 November 2026; updated for invitation-onboarding release 042 and migrations through 042. Do not rerun applied migrations.
 - Complete run-details and test-results in the workbook. This replaces the earlier stock-only/v2 testing instructions.
 - Create Training Restaurant, brand Training Kitchen and first outlet Dining Room. Fresh onboarding assigns brand and outlet code PRIMARY; verify these codes in the actual workspace before uploading. Map/replace PRIMARY explicitly if using a different outlet.
 - Owner rows in users.csv represent the same existing owner with two roles; do not invite or create the owner twice.
@@ -104,6 +104,8 @@ Suppliers, materials, conversions, recipe headers/components, menu items/prices,
 '''
 README+='''
 ## Updated role checks
+- Inviting requests a Supabase email sign-in link; copyable backup and resend remain available. Custom SMTP is needed for unrestricted staff delivery.
+- Existing centres/tasks can be selected on the invitation. If none exist yet, assign them after joining. Verified pending invitations recover at /join across browsers; staff must not create a restaurant.
 - Finance-only: six primary shortcuts maximum; no business/stock setup links or setup access through direct URLs.
 - Finance waste: all permitted centres by default, processing plus other waste, centre/date/source/status filters and a CSV that matches those filters. No Record waste action.
 - Inventory waste: own responsible centres only, including direct links and exports. Kitchen/Bar: assigned centres only. Test with single-role accounts.
@@ -150,9 +152,9 @@ guide=(ROOT/'docs/product/COMPLETE_RESTAURANT_ONBOARDING_AND_TEST_GUIDE.md').rea
 (DEST/'Complete_Restaurant_Onboarding_and_Test_Guide.md').write_text(guide,encoding='utf-8')
 word_guide(guide,DEST/'Complete_Restaurant_Onboarding_and_Test_Guide.docx')
 shutil.copyfile(DEST/'Complete_Restaurant_Onboarding_and_Test_Guide.docx',ROOT/'docs/exports/Complete_Restaurant_Onboarding_and_Test_Guide.docx')
-for name in ['CENTRES_AND_TEAM_ACCESS_GUIDE.md','CENTRE_WASTE_REVIEW_GUIDE.md']:
+for name in ['CENTRES_AND_TEAM_ACCESS_GUIDE.md','CENTRE_WASTE_REVIEW_GUIDE.md','TEAM_INVITATIONS_AND_EMAIL_SETUP.md']:
     shutil.copyfile(ROOT/'docs/product'/name,DEST/name)
-(DEST/'CHANGES-2026-11-19.md').write_text('Updated for release a6d348d / migration 041. Centre and owner tasks save together. Waste requires a submitter and posts without approval. Finance reads combined centre waste and exports filtered results, without setup or waste entry. Inventory retains own-centre waste. Invoice materials and pending decisions remain prominent; supporting history collapses. Added executable test-results and run-details sheets. Master setup coverage and four upload schemas are retained. Example transaction dates are 2026-11-19. Use this pack in place of older instructions. No extra migration required.\n',encoding='utf-8')
+(DEST/'CHANGES-2026-11-19.md').write_text('Updated for invitation-onboarding release 042. Centre and owner tasks save together. Waste requires a submitter and posts without approval. Finance reads combined centre waste and exports filtered results, without setup or waste entry. Inventory retains own-centre waste. Invoice materials and pending decisions remain prominent; supporting history collapses. Added executable test-results and run-details sheets. Master setup coverage and four upload schemas are retained. Example transaction dates are 2026-11-19. Use this pack in place of older instructions. No extra migration required.\n',encoding='utf-8')
 
 # XLSX workbook: all cells are text to preserve codes, phone numbers and source decimals.
 def col(n):

@@ -12,7 +12,11 @@ create function auth.uid() returns uuid language sql stable as $$ select nullif(
 grant usage on schema public,auth to authenticated,anon; grant execute on function auth.uid() to authenticated,anon;`);
 for (const migration of (await readdir(new URL("../../supabase/migrations/", import.meta.url))).filter(name => name.endsWith(".sql")).sort())
   await db.exec(await readFile(new URL(`../../supabase/migrations/${migration}`, import.meta.url), "utf8"));
+const emailRequests=[];
 const users = [
+  {id:"00000000-0000-0000-0000-000000000020",email:"invited-kitchen@example.test"},
+  {id:"00000000-0000-0000-0000-000000000021",email:"invited-verify@example.test"},
+  {id:"00000000-0000-0000-0000-000000000022",email:"invited-email-failure@example.test"},
   {id:"00000000-0000-0000-0000-000000000017",email:"training-owner@example.test"},
   {id:"00000000-0000-0000-0000-000000000018",email:"training-chef@example.test"},
   {id:"00000000-0000-0000-0000-000000000019",email:"training-manager@example.test"},
@@ -127,9 +131,12 @@ createServer(async (request, response) => {
       const account = users.find(candidate => candidate.email === body.email);
       return account && body.password === "TestPassword123!" ? send(200, session(account)) : send(400, { code: "invalid_credentials", msg: "Invalid credentials" });
     }
+    if(url.pathname==="/auth/v1/otp"){emailRequests.push({email:body.email,redirect_to:url.searchParams.get("redirect_to"),code_challenge:body.code_challenge??null});return body.email==="invited-email-failure@example.test"?send(429,{code:"over_email_send_rate_limit",error_code:"over_email_send_rate_limit",msg:"Email rate limit exceeded"}):send(200,{});}
+    if(url.pathname==="/auth/v1/verify"&&body.token_hash==="test-verified-invitation")return send(200,session(users.find(u=>u.email==="invited-verify@example.test")));
     if (url.pathname === "/auth/v1/signup") return send(200, { id: "00000000-0000-0000-0000-000000000004", email: body.email, identities: [], app_metadata: {}, user_metadata: {}, created_at: new Date().toISOString() });
     if (url.pathname === "/auth/v1/user") return user ? send(200, authUser(user)) : send(401, { code: "bad_jwt", msg: "Invalid token" });
     if (url.pathname === "/auth/v1/logout") return send(200, {});
+    if(url.pathname==="/__test/email-requests"&&user?.email==="catalogue@example.test")return send(200,emailRequests);
     if (!user) return send(401, { code: "42501", message: "Authentication required" });
     if (url.pathname.startsWith("/rest/v1/rpc/")) {
       const functionName = url.pathname.split("/").at(-1);
@@ -203,6 +210,8 @@ createServer(async (request, response) => {
         purchasing_report_options: ["p_organisation_id","p_type"],
         purchasing_history_report: ["p_organisation_id","p_type","p_view","p_from","p_to","p_outlet_id","p_supplier_id","p_item_id","p_user_id","p_status","p_receiving","p_search","p_page","p_export"],
         save_member_name: ["p_organisation_id","p_membership_id","p_name"],
+        pending_team_invitations: [],accept_pending_team_invitation:["p_invitation_id"],team_invitation_email:["p_organisation_id","p_invitation_id","p_status"],
+        invite_team_member_with_centres:["p_organisation_id","p_request_id","p_email","p_name","p_assignments","p_stock_access"],
         invite_named_team_member: ["p_organisation_id","p_request_id","p_email","p_name","p_assignments"],
         set_processing_unit: ["p_organisation_id","p_centre_id"],
         save_material_processing_baseline: ["p_organisation_id","p_request_id","p_value"],

@@ -14,7 +14,10 @@ export const teamRoles = [
 ] as const;
 export type Assignment = {role_code: string; location_id: string | null; location_name?: string | null};
 export type TeamMember = {id: string; user_id: string; email: string; display_name?: string; status: string; updated_at: string; is_owner: boolean; is_self: boolean; assignments: Assignment[]};
-export type TeamInvite = {id: string; email: string; display_name?: string; state: string; expires_at: string; created_at: string; assignments: Assignment[]};
+export type StockInvitationAccess={location_id:string;can_request:boolean;can_record_waste:boolean;can_receive:boolean;can_dispatch:boolean};
+export type InvitationCentre={id:string;name:string;outlet_id:string|null;is_active:boolean};
+export type PendingTeamInvitation={id:string;organisation_name:string;email:string;expires_at:string;assignments:Assignment[];stock_centres?:string[]};
+export type TeamInvite = {stock_centres?:string[];email_status?:string;id: string; email: string; display_name?: string; state: string; expires_at: string; created_at: string; assignments: Assignment[]};
 export type TeamDirectory = {members: TeamMember[]; member_total: number; invitations: TeamInvite[]; invitation_total: number};
 export type TeamState = {error?: string; success?: string; token?: string; expires?: string};
 export const roleName = (code: string) => teamRoles.find(([key])=>key===code)?.[1] ?? code;

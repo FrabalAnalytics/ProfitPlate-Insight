@@ -1,4 +1,5 @@
 "use server";
+import {pendingTeamInvitations} from "@/lib/team-invitation-server";
 
 import { cookies } from "next/headers";
 import { invitationCookie } from "@/lib/team";
@@ -37,7 +38,7 @@ export async function login(_state: AuthState, formData: FormData): Promise<Auth
   } catch {
     return { error: "We couldn’t connect. Check your connection and try again." };
   }
-  redirect((await cookies()).has(invitationCookie)?"/join":"/dashboard");
+  redirect((await cookies()).has(invitationCookie)||(await pendingTeamInvitations()).invitations.length?"/join":"/dashboard");
 }
 
 export async function signup(_state: AuthState, formData: FormData): Promise<AuthState> {
@@ -67,7 +68,7 @@ export async function signup(_state: AuthState, formData: FormData): Promise<Aut
   } catch {
     return { error: "We couldn’t connect. Please check your connection and try again." };
   }
-  if (signedIn) redirect((await cookies()).has(invitationCookie)?"/join":"/dashboard");
+  if (signedIn) redirect((await cookies()).has(invitationCookie)||(await pendingTeamInvitations()).invitations.length?"/join":"/dashboard");
   if((await cookies()).has(invitationCookie)) return {success:"If this email is eligible for registration, you will receive a confirmation link. Open it in this browser to verify your email and return to your team invitation. If you already have an account, sign in instead."};
   return { success: "If this email is eligible for registration, you’ll receive a confirmation link. Open it in this browser to verify your email, then continue setting up your restaurant. If you already have an account, sign in instead." };
 }
