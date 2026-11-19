@@ -13,7 +13,7 @@ test('configurable stock flows preserve quantities, role scopes and an immutable
  let org,outlet,warehouse,kitchen,kg,pcs,rice,baseItem,finalItem,opening,route,transfer,baseVersion,finalVersion,supplier;
  const workspace=(site=null,page=1)=>value('select public.stock_workspace($1,$2,$3)',[org,site,page]);
  const configure=(kind,input)=>value('select public.save_stock_configuration($1,$2,$3)',[org,kind,input]);
- const request=async(kind,site,lines,extra={},id=randomUUID())=>{if(kind==='PRODUCTION'){const setup=await value('select public.processing_setup($1)',[org]),standard=setup.standards.find(s=>s.recipe_version_id===extra.recipe_version_id),recipe=(await workspace()).recipes.find(r=>r.id===extra.recipe_version_id);lines=standard.inputs.map(i=>({item_id:i.item_id,quantity:String(Number(i.quantity)*Number(extra.planned_output)/Number(recipe.yield))}));extra={...extra,processing_standard_id:standard.id,variance_reason:'Measured yield result',processing_waste:[],waste_confirmed:true};}return value('select public.request_stock_document($1,$2,$3,$4)',[org,id,{kind,date:new Date().toISOString().slice(0,10),note:'Checked source record',...(kind==='OPENING'||kind==='GRN'||kind==='DIRECT_RECEIPT'?{destination_id:site}:{source_id:site}),...extra},lines]);};
+ const request=async(kind,site,lines,extra={},id=randomUUID())=>{if(kind==='PRODUCTION'){const setup=await value('select public.processing_setup($1)',[org]),standard=setup.standards.find(s=>s.recipe_version_id===extra.recipe_version_id),recipe=(await workspace()).recipes.find(r=>r.id===extra.recipe_version_id);lines=standard.inputs.map(i=>({item_id:i.item_id,quantity:String(Number(i.quantity)*Number(extra.planned_output)/Number(recipe.yield))}));extra={...extra,processing_standard_id:standard.id,variance_reason:'Measured yield result',processing_waste:[],waste_confirmed:true};}return value('select public.request_stock_document($1,$2,$3,$4)',[org,id,{kind,submitter_name:'Stock Test',date:new Date().toISOString().slice(0,10),note:'Checked source record',...(kind==='OPENING'||kind==='GRN'||kind==='DIRECT_RECEIPT'?{destination_id:site}:{source_id:site}),...extra},lines]);};
  const action=(id,choice,received=null)=>value('select public.stock_document_action($1,$2,$3,$4,$5)',[org,id,choice,'Verified physical stock',received]);
  const balance=async(site,item)=>Number((await workspace(site)).balances.find(b=>b.item_id===item)?.quantity??0);
  const approvedPost=async id=>{await login(finance);await action(id,'APPROVE');await login(storekeeper);await action(id,'POST');};
@@ -71,16 +71,13 @@ test('configurable stock flows preserve quantities, role scopes and an immutable
    await denied('select public.stock_document_action($1,$2,$3,$4,null)',[org,transfer,'CANCEL','Already received'],'42501');
   });
   await t.test('negative balances, stale counts and backdated movements cannot post',async()=>{
-   await login(storekeeper);let id=await request('WASTE',warehouse,[{item_id:rice,quantity:'82'}]);
-   await login(finance);await action(id,'APPROVE');
-   await denied('select public.stock_document_action($1,$2,$3,$4,null)',[org,id,'POST','Too much'],'22023');assert.equal(await balance(warehouse,rice),81);
+   await login(storekeeper);let id;await assert.rejects(request('WASTE',warehouse,[{item_id:rice,quantity:'82'}]),e=>e.code==='22023');assert.equal(await balance(warehouse,rice),81);
    await login(storekeeper);const count=await request('COUNT',warehouse,[{item_id:rice,quantity:'79'}]);
    id=await request('CONSUMPTION',warehouse,[{item_id:rice,quantity:'1'}]);await approvedPost(id);
    await login(finance);await action(count,'APPROVE');await login(storekeeper);
    await denied('select public.stock_document_action($1,$2,$3,$4,null)',[org,count,'POST','Stale count'],'22023');
    id=await request('COUNT',warehouse,[{item_id:rice,quantity:'78'}]);await approvedPost(id);assert.equal(await balance(warehouse,rice),78);
-   id=await request('WASTE',warehouse,[{item_id:rice,quantity:'1'}],{date:'2020-10-01'});await login(finance);await action(id,'APPROVE');
-   await denied('select public.stock_document_action($1,$2,$3,$4,null)',[org,id,'POST','Backdated'],'22023');
+   await assert.rejects(request('WASTE',warehouse,[{item_id:rice,quantity:'1'}],{date:'2020-10-01'}),e=>e.code==='22023');
   });
   await t.test('production consumes stocked sub-recipes once, pins the version and records actual yield',async()=>{
    await login(owner);
@@ -152,7 +149,7 @@ test('configurable stock flows preserve quantities, role scopes and an immutable
    const directory=await value('select public.stock_access_directory($1)',[org]);const member=directory.members.find(m=>m.email===`${receiver}@example.test`);
    await value('select public.save_stock_member_access($1,$2,0,$3,$4)',[org,member.id,'ASSIGNED',[{location_id:kitchen,can_request:true,can_handle:true,can_approve:false}]]);
    await login(owner);const managerMembership=await value('select id from public.organisation_memberships where organisation_id=$1 and user_id=$2',[org,manager]);await value('select public.save_stock_centre($1,$2)',[org,{id:warehouse,code:'WH',name:'Central warehouse',kind:'WAREHOUSE',responsible:managerMembership,processing_enabled:true}]);await login(storekeeper);const waste=await request('WASTE',warehouse,[{item_id:rice,quantity:'1'}]);
-   await login(manager);assert.equal((await workspace()).documents.find(d=>d.id===waste).actions.approve,true);await action(waste,'APPROVE');await action(waste,'POST');
+   await login(manager);assert.equal((await workspace()).documents.find(d=>d.id===waste).state,'POSTED');
    const own=await request('COUNT',warehouse,[{item_id:rice,quantity:'57'}]);await denied('select public.stock_document_action($1,$2,$3,$4,null)',[org,own,'APPROVE','Self approval']);
    await login(finance);await action(own,'APPROVE');await login(manager);await action(own,'POST');
    const managerRoute=await configure('ROUTE',{source_id:warehouse,destination_id:kitchen,kind:'TRANSFER',approval_role:'inventory_manager'});

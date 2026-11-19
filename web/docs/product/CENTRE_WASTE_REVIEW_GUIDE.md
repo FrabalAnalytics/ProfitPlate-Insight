@@ -1,35 +1,35 @@
-# Centre waste recording and review
+# Centre waste logging: no approval required
 
-Release prerequisite: apply `supabase/migrations/202611190038_centre_owned_waste.sql` after migrations 001-037, then deploy the matching app. Existing waste records remain intact. The new reviewer permission starts disabled; administrators must assign reviewers before department waste can be approved or posted.
+Apply `supabase/migrations/202611190039_simple_named_waste_logging.sql` after migrations 001-038, then deploy the matching app. This release replaces the approval workflow introduced in 038. No reviewer assignment is required.
 
-## Set up each centre
+## Set up access
 
-1. In **Data & Setup > Stock centres & responsibilities**, assign the responsible named user. Assign the Inventory Manager to Main Store or the centre they manage.
-2. Invite the colleagues who will record and review waste, using an appropriate operational role: Kitchen Manager, Bar Lead, Department stock user, Operations Manager or Inventory.
-3. In **Inventory & movements > Department access**, choose the recorder. Select **Selected stock locations only**, allow their centre and enable **Request stock**. Save.
-4. Choose a different colleague as reviewer. Allow the same centre and enable **Approve & post waste**. General stock posting and transfer approval are separate permissions; they are not required for waste review. Confirm and save.
-5. Repeat for Kitchen, Bar, Main Store and every other centre. An Inventory Manager who owns a centre can review another colleague's waste there. If that manager records waste, another authorised reviewer at the same centre must review it.
+1. Assign a responsible named user to every stock centre in **Data & Setup > Stock centres & responsibilities**.
+2. In **Inventory & movements > Department access**, give each person access to their centre and **Request stock** permission. This also permits recording waste there.
+3. The Inventory Manager's waste access remains limited to centres where they are the responsible user. Kitchen and Bar staff retain their assigned centre access. Management reporting roles retain their permitted reporting scope.
 
-## Record, approve and post
+## Record waste
 
-1. The recorder opens **Waste Log > Record waste**, chooses their centre, material, quantity, category and explanation, then submits.
-2. A different authorised colleague opens the stock document, checks the evidence, enters a decision note and approves or declines.
-3. An authorised colleague other than the recorder posts an approved request. Approval alone does not change stock; posting deducts the recorded quantity once from that centre.
-4. Confirm the document is **Posted**, the centre balance decreased by that quantity, and its Waste Log contains the record.
+1. Open **Waste Log > Record waste**.
+2. Select the date, centre, material and quantity in its base unit.
+3. Enter the **Submitter name**, select a waste category and explain the loss.
+4. Confirm the details and select **Record waste**.
+5. The record is saved immediately and stock decreases once at that centre. No approval or separate posting is required. Stock availability and date checks still apply.
 
-The same independent colleague may approve and post. The recorder cannot approve or post their own waste. Revoking a reviewer's centre access blocks subsequent actions, including posting an already approved request.
+The submitted name is stored separately from the signed-in account and audit timestamp. It appears in the waste history, document detail and waste report CSV so the business can analyse recording patterns later. Previously posted entries retain their historical data; missing names are shown as unrecorded, not invented.
 
-## What each person sees
+## Existing pending entries
 
-- An Inventory Manager's Waste Log, waste reports, exports and standalone waste documents are limited to centres where they are the responsible user. An unassigned manager sees no waste records and is prompted to request an assignment.
-- Kitchen and Bar users see the centres allowed by their roles and assignments. Their reviewers need an explicit waste-review grant at those centres.
-- Separately assigned CEO, Finance and Restaurant Administrator roles keep their permitted management reporting scope. A management reporting role alone does not grant waste approval or posting.
-- Processing and other stock oversight retain their existing permissions. Processing trim is recorded in the processing batch and must not also be entered as standalone waste. Combined waste history labels its stock treatment.
+Older waste requests are not automatically posted. Their original recorder opens the entry, adds the submitter name under **Complete waste recording**, and selects **Record waste**. This records the loss and updates stock once, with no approval. Cancelled, rejected and already posted records cannot be rewritten through this action.
 
-## Check the controls
+## Processing waste
 
-- Record Kitchen waste as Ada. The Main Store Inventory Manager must not see or approve it, including through a direct document link or a waste-report export.
-- Approve and post it as a different authorised Kitchen colleague. Kitchen stock decreases; Main Store stock stays unchanged.
-- Try self-approval, self-posting, a different centre and a revoked reviewer. Each action must be denied.
-- Record Main Store waste using another Main Store colleague. Its responsible Inventory Manager can approve and post it.
-- Confirm processing trim appears once and causes no second deduction through the standalone waste log.
+Record processing trim within the Material Processing Log. It remains part of that batch's input consumption and must not also be logged as standalone waste. The production batch keeps its existing controls; this release removes approval from standalone waste recording.
+
+## Check this release
+
+- Record Kitchen spoilage as Ada without a waste reviewer. Expect **Recorded**, the entered name and an immediate Kitchen stock deduction.
+- Confirm there is no waste approval button or waste review permission checkbox.
+- Leave the name blank or enter more waste than available stock. Expect a clear error and no partial posting.
+- Repeat the same submission. Expect the same record and no second deduction.
+- Confirm the Main Store Inventory Manager cannot retrieve Kitchen waste through the Waste Log, a direct document link or an export.

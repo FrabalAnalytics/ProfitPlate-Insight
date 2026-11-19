@@ -265,7 +265,7 @@ Do not post an opening balance for stock already established by earlier movement
 
 ## 16. Record material processing and separate daily waste
 
-Follow [Centre waste recording and review](CENTRE_WASTE_REVIEW_GUIDE.md) to assign a different local waste reviewer at each centre. The Main Store Inventory Manager cannot approve Kitchen or Bar waste. The recorder cannot approve or post their own waste.
+Follow [Centre waste logging](CENTRE_WASTE_REVIEW_GUIDE.md). Standalone waste requires a submitter name and records immediately without approval. Centre access restrictions remain in place.
 
 
 1. Ada opens **Material Processing Log > Record material processing**, selects Kitchen and the Snapper cutting baseline. Output should auto-fill **Snapper Cut (PCS)**.
@@ -275,8 +275,8 @@ Follow [Centre waste recording and review](CENTRE_WASTE_REVIEW_GUIDE.md) to assi
 5. Expect Kitchen Whole Snapper Fish **0 KG** and Snapper Cut **110 PCS**. Raw deduction and output addition must occur together.
 6. Expect baseline achievement **91.67%**, usable weight yield **90.00%**, recorded waste **10.00%**, and no unexplained weight for these measurements.
 7. Do not enter another standalone waste record for the same 4 KG trim. It is already included in the 40 KG consumption.
-8. For an independent loss, Ada opens **Waste Log > Record waste**, selects Kitchen and Snapper Cut, quantity **2 PCS**, category **Spoilage**, and a reason.
-9. After approval/posting expect Kitchen Snapper Cut **108 PCS**. Waste Log shows the 2 PCS independent loss. Combined waste reporting includes it and the 4 KG processing trim once each, with their distinct stock treatment.
+8. For an independent loss, Ada opens **Waste Log > Record waste**, selects Kitchen and Snapper Cut, quantity **2 PCS**, submitter name **Ada**, category **Spoilage**, and a reason. Confirm and select **Record waste**; no approval or separate posting is required.
+9. After submission expect Kitchen Snapper Cut **108 PCS**. Waste Log shows the 2 PCS independent loss. Combined waste reporting includes it and the 4 KG processing trim once each, with their distinct stock treatment.
 
 KG input and PCS output do not alone establish weight yield. Without measured usable weight show that the weight measurement is needed, while retaining the valid count-based baseline achievement. Actual batch cost can differ from the standard SKU estimate when actual yield differs; it does not automatically rewrite the approved baseline. Never add unlike units such as KG and PCS into a single waste quantity total.
 

@@ -31,10 +31,11 @@ export async function requestStock(_state:StockActionState,form:FormData):Promis
  try{
   const auth=await access(form);org=auth.org;
   const request=String(form.get("request")??"");if(!isUuid(request)||form.get("confirmed")!=="on")throw new Error("Review and confirm the stock request.");
-  const document=Object.fromEntries(["kind","date","note","source_id","destination_id","route_id","receipt_id","recipe_version_id","planned_output","actual_output","supplier_id","delivery_reference","processing_standard_id","variance_reason","usable_weight_kg"].map(key=>[key,String(form.get(key)??"").trim()]));
+  const document=Object.fromEntries(["kind","date","note","submitter_name","source_id","destination_id","route_id","receipt_id","recipe_version_id","planned_output","actual_output","supplier_id","delivery_reference","processing_standard_id","variance_reason","usable_weight_kg"].map(key=>[key,String(form.get(key)??"").trim()]));
   if(document.kind==="WASTE"){
    const category=String(form.get("waste_category")??"");
    if(!['Spoilage','Expiry','Damage','Bad production','Other loss'].includes(category))throw new Error("Choose a waste category.");
+   if(!document.submitter_name||document.submitter_name.length>120)throw new Error("Enter the submitter name (up to 120 characters).");
    document.note=`${category}: ${document.note}`;
   }
   const result=await auth.client.rpc("request_stock_document",{p_organisation_id:org,p_request_id:request,p_document:{...document,...(document.kind==="PRODUCTION"?{processing_waste:parsed(form,"processing_waste"),waste_confirmed:form.get("waste_confirmed")==="on"}:{})},p_lines:parsed(form,"lines")});checked(result.error);id=result.data;
@@ -61,4 +62,13 @@ export async function saveDepartmentAccess(_state:StockActionState,form:FormData
   checked(result.error);revalidatePath("/workspace/inventory");revalidatePath("/workspace/inventory/processing");revalidatePath("/workspace/inventory/waste");revalidatePath("/workspace/setup/centres");revalidatePath("/workspace");
  }catch(error){return failure(error);}
  redirect(`/workspace/inventory?${new URLSearchParams({organisation:org,view:"access",member,result:"access-saved"})}`);
+}
+
+export async function finishWasteRecord(_state:StockActionState,form:FormData):Promise<StockActionState>{
+ try{
+  const {org,client}=await access(form),doc=String(form.get("document")??""),name=String(form.get("submitter_name")??"").trim();
+  if(!isUuid(doc)||!name||name.length>120)throw new Error("Enter the submitter name (up to 120 characters).");
+  const result=await client.rpc("complete_waste_record",{p_organisation_id:org,p_document_id:doc,p_submitter_name:name});checked(result.error);
+  revalidatePath("/workspace/inventory");revalidatePath("/workspace/inventory/waste");revalidatePath("/workspace/records");revalidatePath("/workspace");return {success:"Waste recorded. Stock updated; no approval required."};
+ }catch(error){return failure(error);}
 }

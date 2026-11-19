@@ -63,7 +63,7 @@ test('fine-dining stock assignments separate Main Store, Kitchen and Bar without
    }
    await login(kitchenUser);const packet=await workspace();assert.equal(packet.balances.length,1);assert.equal(packet.balances[0].location_id,kitchen);assert.ok(packet.ledger.every(l=>l.location==='Kitchen'));
    assert.ok(packet.documents.every(d=>d.destination_id===kitchen));
-   await denied('select public.request_stock_document($1,$2,$3,$4)',[org,randomUUID(),{kind:'WASTE',source_id:bar,date:'2020-10-02',note:'Forbidden'},[{item_id:rice,quantity:'1'}]]);
+   await denied('select public.request_stock_document($1,$2,$3,$4)',[org,randomUUID(),{kind:'WASTE',submitter_name:'Test User',source_id:bar,date:'2020-10-02',note:'Forbidden'},[{item_id:rice,quantity:'1'}]]);
    await login(opsUser);await denied('select public.request_stock_document($1,$2,$3,$4)',[org,randomUUID(),{kind:'ISSUE',route_id:toBar,date:'2020-10-02',note:'Wrong department'},[{item_id:rice,quantity:'1'}]]);
    const unrelated=await value('select public.request_stock_document($1,$2,$3,$4)',[org,randomUUID(),{kind:'ISSUE',route_id:toKitchen,date:'2020-10-02',note:'Kitchen requisition'},[{item_id:rice,quantity:'9'}]]);issue=unrelated;
    await login(barUser);assert.ok(!(await workspace()).documents.some(d=>d.id===issue));await denied('select public.stock_document_action($1,$2,$3,$4,null)',[org,issue,'APPROVE','Wrong department']);
