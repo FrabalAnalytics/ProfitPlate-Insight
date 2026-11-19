@@ -39,7 +39,7 @@ export async function requestStock(_state:StockActionState,form:FormData):Promis
    document.note=document.note?`${category}: ${document.note}`:category;
   }
   const result=await auth.client.rpc("request_stock_document",{p_organisation_id:org,p_request_id:request,p_document:{...document,...(document.kind==="PRODUCTION"?{processing_waste:parsed(form,"processing_waste"),waste_confirmed:form.get("waste_confirmed")==="on"}:{})},p_lines:parsed(form,"lines")});checked(result.error);id=result.data;
-  revalidatePath("/workspace/inventory");revalidatePath("/workspace/inventory/processing");revalidatePath("/workspace/inventory/waste");revalidatePath("/workspace/setup/centres");revalidatePath("/workspace");
+  revalidatePath("/workspace/inventory");revalidatePath("/workspace/inventory/processing");revalidatePath("/workspace/inventory/waste");revalidatePath("/workspace/setup/centres");revalidatePath("/workspace/materials");revalidatePath("/workspace/setup");revalidatePath("/workspace/setup/standards");revalidatePath("/workspace");
  }catch(error){return failure(error);}
  redirect(`/workspace/inventory?${new URLSearchParams({organisation:org,view:"movements",document:id})}`);
 }
@@ -50,7 +50,7 @@ export async function actOnStock(_state:StockActionState,form:FormData):Promise<
   if(!isUuid(document)||form.get("confirmed")!=="on")throw new Error("Confirm the stock decision before saving.");
   decision=String(form.get("decision")??"");if(!["APPROVE","POST","DISPATCH","RECEIVE","REJECT","DECLINE","RESOLVE","CANCEL"].includes(decision))throw new Error("Choose a stock action.");
   const result=await client.rpc("stock_document_action",{p_organisation_id:org,p_document_id:document,p_action:decision,p_note:String(form.get("note")??"").trim(),p_received:parsed(form,"received")});checked(result.error);
-  revalidatePath("/workspace/inventory");revalidatePath("/workspace/inventory/processing");revalidatePath("/workspace/inventory/waste");revalidatePath("/workspace/setup/centres");revalidatePath("/workspace");
+  revalidatePath("/workspace/inventory");revalidatePath("/workspace/inventory/processing");revalidatePath("/workspace/inventory/waste");revalidatePath("/workspace/setup/centres");revalidatePath("/workspace/materials");revalidatePath("/workspace/setup");revalidatePath("/workspace/setup/standards");revalidatePath("/workspace");
  }catch(error){return failure(error);}
  redirect(`/workspace/inventory?${new URLSearchParams({organisation:org,view:"movements",document,result:decision.toLowerCase()})}`);
 }
@@ -62,7 +62,7 @@ export async function saveDepartmentAccess(_state:StockActionState,form:FormData
   const revision=Number(form.get("revision"));if(!Number.isInteger(revision)||revision<0)throw new Error("Refresh and review the latest permissions.");
   const result=await auth.client.rpc("save_stock_member_access",{p_organisation_id:org,p_membership_id:member,p_revision:revision,p_mode:String(form.get("mode")??""),p_assignments:parsed(form,"assignments")});
   if(result.error?.code==="PGRST202")return {error:"Department access needs migration 024. Ask your administrator to apply it after 023."};
-  checked(result.error);revalidatePath("/workspace/inventory");revalidatePath("/workspace/inventory/processing");revalidatePath("/workspace/inventory/waste");revalidatePath("/workspace/setup/centres");revalidatePath("/workspace");
+  checked(result.error);revalidatePath("/workspace/inventory");revalidatePath("/workspace/inventory/processing");revalidatePath("/workspace/inventory/waste");revalidatePath("/workspace/setup/centres");revalidatePath("/workspace/materials");revalidatePath("/workspace/setup");revalidatePath("/workspace/setup/standards");revalidatePath("/workspace");
  }catch(error){return failure(error);}
  redirect(`/workspace/inventory?${new URLSearchParams({organisation:org,view:"access",member,result:"access-saved"})}`);
 }
