@@ -5,7 +5,7 @@ Start with the Excel workbook for the whole dataset. Use the Word guide for the 
 IMPORTANT: This is a testing pack, not a universal master-data importer. The XLSX workbook is for review/manual entry; do not upload it to a CSV screen. Files in manual-entry/ are populated collection sheets, not application upload formats. Only the four CSVs in upload-ready/ match implemented import screens, and they still need their prerequisite masters created first.
 
 ## Before testing
-- Pack revision 19 November 2026; updated for direct-processing release 043 and migrations through 043. Do not rerun applied migrations.
+- Pack revision 20 November 2026; updated for executive menu and PO exposure release 045 and migrations through 045. The core example transaction date remains 19 November. Do not rerun applied migrations.
 - Complete run-details and test-results in the workbook. This replaces the earlier stock-only/v2 testing instructions.
 - Create Training Restaurant, brand Training Kitchen and first outlet Dining Room. Fresh onboarding assigns brand and outlet code PRIMARY; verify these codes in the actual workspace before uploading. Map/replace PRIMARY explicitly if using a different outlet.
 - Owner rows in users.csv represent the same existing owner with two roles; do not invite or create the owner twice.
@@ -48,4 +48,4 @@ Suppliers, materials, conversions, recipe headers/components, menu items/prices,
 - Inventory waste: own responsible centres only, including direct links and exports. Kitchen/Bar: assigned centres only. Test with single-role accounts.
 - Invoice: bill and material summary first; unreviewed matching exceptions and pending correction decisions visible; source/resolved history collapsed. PO approval remains excluded.
 - Weekly stock-count flag: verify Include in weekly stock counts on each material; do not claim missing weekly count automation is implemented.
-- This revision requires migration 043 and the matching app deployment. The four CSV upload formats remain unchanged.
+- This revision requires migration 045 and the matching app deployment. The four CSV upload formats remain unchanged.

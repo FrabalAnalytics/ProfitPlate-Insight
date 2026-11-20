@@ -49,7 +49,7 @@ export async function postPurchases(_state: PurchaseActionState, form: FormData)
  if (form.get("confirmed") !== "yes") return { error: "Confirm that you checked the supplier invoice totals before saving." };
  const { data, error } = await client.rpc("post_purchase_import", { p_organisation_id: organisationId, p_batch_id: batchId, p_controls: controls });
  if (error) return { error: error.code === "22023" ? error.message : "We could not save this import. Your review remains available; try again." };
- revalidatePath("/workspace/purchases");
+ revalidatePath("/workspace");revalidatePath("/workspace/menus");revalidatePath("/workspace/menus/profitability");revalidatePath("/workspace/purchases");
  redirect(`/workspace/purchases?organisation=${organisationId}&batch=${batchId}&result=${data?.posted ? "recorded" : "review"}`);
 }
 
@@ -92,14 +92,14 @@ export async function decideCorrection(_state: PurchaseActionState, form: FormDa
  if (!client || !isUuid(purchase) || !isUuid(correction) || !["APPROVE", "REJECT"].includes(choice) || form.get("confirmed") !== "on") return { error: "Review the proposed correction and confirm your decision." };
  const result = await client.rpc("decide_purchase_correction", { p_organisation_id: organisation, p_correction_id: correction, p_approve: choice === "APPROVE", p_note: String(form.get("note") ?? "").trim() });
  if (result.error) return { error: result.error.code === "22023" ? result.error.message : "Finance approval is required, or this decision could not be saved. Refresh to check its status." };
- revalidatePath("/workspace/purchases");revalidatePath("/workspace/purchases/invoices");
+ revalidatePath("/workspace");revalidatePath("/workspace/menus");revalidatePath("/workspace/menus/profitability");revalidatePath("/workspace/purchases");revalidatePath("/workspace/purchases/invoices");
  redirect(`/workspace/purchases/invoices?${new URLSearchParams({ organisation, purchase, result: "decided" })}`);
 }
 
 function workflowError(error: { code?: string; message: string } | null) {
  return error?.code === "PGRST202" ? "PO and GRN workflows need migrations 018 and 019. Ask your administrator to complete setup." : error?.code === "22023" ? error.message : "The request could not be saved. Check your access and connection, then refresh to review its status.";
 }
-function refreshProcurement() { revalidatePath("/workspace/purchases");revalidatePath("/workspace/purchases/orders");revalidatePath("/workspace/purchases/invoices"); }
+function refreshProcurement() { revalidatePath("/workspace");revalidatePath("/workspace/menus/profitability"); revalidatePath("/workspace/purchases");revalidatePath("/workspace/purchases/orders");revalidatePath("/workspace/purchases/invoices"); }
 export async function saveOrder(_state: PurchaseActionState, form: FormData): Promise<PurchaseActionState> {
  const organisation=String(form.get("organisation")??""),client=await access(organisation,true),request=String(form.get("request")??""),id=String(form.get("order_id")??"");
  if(!client||!isUuid(request)||(id&&!isUuid(id)))return {error:"Procurement access and a valid order are required."};

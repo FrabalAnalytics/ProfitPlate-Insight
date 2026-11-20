@@ -4,7 +4,7 @@
     "area": "Preparation",
     "role": "Administrator",
     "prerequisite": "None",
-    "steps": "Record deployed URL, direct processing release 043, migrations through 043, actual execution date, browser and tester in run-details. Use this revision, not earlier v2 instructions.",
+    "steps": "Record deployed URL, executive menu and PO exposure release 045, migrations through 045, actual execution date, browser and tester in run-details. Use this revision, not earlier v2 instructions.",
     "expected": "Correct app and pack selected; no need to rerun applied migrations."
   },
   {
@@ -316,8 +316,8 @@
     "area": "Executive review",
     "role": "CEO / Admin owner",
     "prerequisite": "IMPORT-01 through REPORT-01",
-    "steps": "Review what changed, profitability impact, where and accountable exceptions. Keep unavailable inputs visibly unavailable.",
-    "expected": "Estimated margins labelled; waste/processing losses not added twice; source scope/dates clear. Admin privileges remain available only when separately assigned."
+    "steps": "Open Menu & prices and verify profitability is the first view. Choose Dining Room / Takeaway / test date. Review cost per serving 1680, selling price 6000, food cost 28%, estimated contribution 4320 and Gross Profit Margin 72%. Configure the Food target at 30%; test Within target. Change to 25% and test Exceeds target, summary counts and Needs attention filter. Restore 30%. Open the item; check that recipe and price history are behind expandable details and Back retains filters.",
+    "expected": "Numbers appear before descriptions; exceptions sort before pagination. Missing price or target does not become green. Est. Contribution Margin is explicitly based on ingredients/packaging, excluding other variable costs. No claim of full or actual profit."
   },
   {
     "id": "PRICE-01",
@@ -350,5 +350,21 @@
     "prerequisite": "All cases reviewed",
     "steps": "Record passed, failed, blocked, unavailable and not-run counts. Attach evidence for stock, permissions and monetary mismatches. Resolve critical failures before restaurant pilot.",
     "expected": "Acceptance record complete; no critical stock/access failures; known gaps explicitly accepted or scheduled. Do not mark unrun tests Pass."
+  },
+  {
+    "id": "CEO-PO-01",
+    "area": "Issued PO early warning",
+    "role": "Procurement / CEO",
+    "prerequisite": "MASTER-02 / PRICE-01",
+    "steps": "Use a separate optional PO reference. Order 2 KG Rice at 1980/KG against the 1800/KG initial or latest purchase baseline. Check no CEO warning while draft, then issue. Filter the CEO briefing to the actual issue day.",
+    "expected": "Price warning appears at issue: +10%, potential unbilled exposure 360 NGN, correct material/outlet and linked recipes. Recipe estimates remain unchanged. If later purchase history differs from 1800, calculate expected figures from the baseline displayed."
+  },
+  {
+    "id": "CEO-PO-02",
+    "area": "Delivery and billing progress",
+    "role": "Inventory / Procurement / Finance / CEO",
+    "prerequisite": "CEO-PO-01",
+    "steps": "Record a partial GRN for 1 KG on that optional PO. Record a linked invoice for 1 KG. Refresh CEO briefing. Finish receiving and billing. Separately test a corrected invoice requiring renewed links and an approved void.",
+    "expected": "GRNs update delivery quantities without changing recipe prices. Valid billed quantity reduces unbilled quote exposure; when fully billed it reaches zero. Invoice price evidence updates monthly recipe estimates. Corrected stale links are visibly flagged, approved voids restore the appropriate progress. PO potential and invoice comparisons are never combined as a profit total. Optional extra transactions change the earlier core expected totals."
   }
 ]

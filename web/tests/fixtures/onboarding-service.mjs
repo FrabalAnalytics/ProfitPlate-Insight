@@ -241,6 +241,8 @@ createServer(async (request, response) => {
         cancel_sales_import: ["p_organisation_id", "p_batch_id"],
         sales_period_summary: ["p_organisation_id", "p_from", "p_to", "p_location_id"],
         menu_access: ["p_organisation_id"],
+        menu_profitability_scope: ["p_organisation_id","p_location_id","p_channel","p_as_of"],
+        menu_profitability_dashboard: ["p_organisation_id","p_location_id","p_channel","p_as_of","p_search","p_page","p_status"],
         menu_profitability: ["p_organisation_id","p_location_id","p_channel","p_as_of","p_search","p_page"],
         search_menu_recipes: ["p_organisation_id", "p_search", "p_page"],
         publish_menu_item_version: ["p_organisation_id", "p_menu_id", "p_request_id", "p_code", "p_name", "p_brand_id", "p_category", "p_recipe_version_id", "p_recipe_quantity", "p_effective_from", "p_notes"],

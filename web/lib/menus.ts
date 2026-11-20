@@ -18,8 +18,9 @@ export type MenuEstimate = {
 };
 export type MenuProfitability = {
  total: number; currency_code: string; unassigned_menu_count: number;
+ summary?:{total:number;at_risk:number;within_target:number;incomplete:number;target_not_set:number};
  rows: { id: string; code: string; name: string; version_id: string | null;
-  primary_category?:string|null; target?:string|null; version: number | null; effective_from: string | null; recipe_quantity: string | null; estimate: MenuEstimate | null }[];
+  target_state?:string;target_gap_pp?:string|null;primary_category?:string|null; target?:string|null; version: number | null; effective_from: string | null; recipe_quantity: string | null; estimate: MenuEstimate | null }[];
 };
 export function validMenuTaxRate(value: string) {
  return /^(?:0|[1-9]\d{0,2})(?:\.\d{1,6})?$/.test(value) && Number(value) <= 100;

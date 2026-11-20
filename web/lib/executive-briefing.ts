@@ -2,6 +2,7 @@ import type { Overview } from "./overview";
 import type { SalesSummary } from "./sales-imports";
 
 export type ExecutiveBriefing = {
+ po_exposure?:{unavailable:string|null;total:number;open:number;potential_exposure:string;unmatched:number;rows:{order_id:string;reference:string;line_id:string;item_id:string;name:string;location_id:string;outlet_name:string;supplier:string;unit:string;baseline:{source:string;date?:string;backfilled?:boolean};quote_unit_cost:string;baseline_unit_cost:string;change_percent:string|null;ordered_quantity:string;received_quantity:string;billed_quantity:string;unbilled_quantity:string;potential_exposure:string;stage:string;affected_menus:{id:string;name:string}[]}[]};
  processing?:{batches:number;exceptions:number;rows:{id:string;reference:string;source_id:string;centre:string;recipe:string;output_unit:string;variance_percent:string;unexplained_weight_kg:string|null;responsible_name:string;actual_unit_cost:string|null;standard_unit_cost:string|null}[]};
  from:string;to:string;prior_from:string;prior_to:string;currency:string;refreshed_at:string;recorded_days:number;
  summary:SalesSummary;previous:SalesSummary|null;comparison:Overview["comparison"];outlets:Overview["outlets"];food_cost_percent:string|null;food_cost_change_pp:string|null;food_margin_change_pp:string|null;

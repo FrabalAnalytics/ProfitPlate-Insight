@@ -1,14 +1,14 @@
 # Complete Restaurant Onboarding & Test Guide
 
-ProfitPlate Insight | Updated 19 November 2026 / direct processing update 043 / migrations through 043 | Includes the full master-data setup and daily operational test sequence.
+ProfitPlate Insight | Updated 20 November 2026 / executive menu and PO exposure update 045 / migrations through 045 | Includes the full master-data setup and daily operational test sequence.
 
 This replaces the stock-only walkthrough as the main onboarding guide. Use a fresh training restaurant; preserve the existing demo restaurant and its historical records. The examples are fictional training data, not recommended recipes, prices or operating defaults.
 
 ## Before you start this updated run
 
-Use this guide with **profitplate-complete-test-data-2026-11-19.zip**. It supersedes earlier test-pack instructions. The example transaction date is **19 November 2026**, aligned across prices, recipes, openings and imports. Use that date in the app filters. Record your actual execution date separately in the workbook. If starting later, update the sample dates together before entry. Receiver acceptance posts on its actual business date; subsequent processing/waste must use that date or later. If the test spans days, use the current operational date for later stock activity and widen report filters; keep master versions effective on or before that date.
+Use this guide with **profitplate-complete-test-data-2026-11-20.zip**. It supersedes earlier test-pack instructions. The example transaction date is **19 November 2026**, aligned across prices, recipes, openings and imports. Use that date in the app filters. Record your actual execution date separately in the workbook. If starting later, update the sample dates together before entry. Receiver acceptance posts on its actual business date; subsequent processing/waste must use that date or later. If the test spans days, use the current operational date for later stock activity and widen report filters; keep master versions effective on or before that date.
 
-1. Use the deployed site at https://profit-plate-insight.vercel.app/ and confirm migrations through **043** are applied and the matching app is deployed. Do not rerun applied migrations.
+1. Use the deployed site at https://profit-plate-insight.vercel.app/ and confirm migrations through **045** are applied and the matching app is deployed. Do not rerun applied migrations.
 2. Create a fresh training restaurant, for example **Training Restaurant - Run 041**. Keep the earlier demo and its histories intact.
 3. Open **ProfitPlate_Complete_Test_Data.xlsx**. Complete **run-details**, then use **test-results** to record Not run, Pass, Fail, Blocked or Not available, actual result and evidence. Run the sections in order.
 4. Replace example emails with verified accounts or aliases you control. For a Gmail account, a plus alias such as `yourname+finance@gmail.com` goes to the same inbox but is registered as a separate app login. Use a separate browser profile for each tester role. Do not save passwords in the pack.
@@ -250,15 +250,15 @@ A selling menu item is the identity used for sales. A final recipe is how that i
 2. Choose Dining Room, sales channel Takeaway, selling price **6000**, the effective date and a price-source note.
 3. For this fictional arithmetic test only, choose **No tax applied**. This is not a recommendation about the restaurant's actual tax obligations. Real onboarding must use its approved tax treatment and rate.
 4. Save the price. Add separate Dine in or Delivery prices only where the restaurant sells through those channels, with corresponding recipe/packaging assumptions reviewed.
-5. Open **Menu profitability**, choose the matching outlet, channel and estimate date, then check the results below.
+5. Open **Menu & prices**: profitability now appears first. Use **Filters** to choose the matching outlet, channel and estimate date. The catalogue remains available on its own tab. Check the results below; open a menu row for supporting recipe and price details.
 
 | Check | Expected training result |
 | --- | --- |
 | Estimated recipe/packaging cost per serving | NGN 1,680 |
 | Selling price / net revenue in this no-tax example | NGN 6,000 |
 | Estimated food cost percentage | 28.00% |
-| Estimated food gross profit per serving | NGN 4,320 |
-| Estimated food gross margin percentage | 72.00% |
+| Est. Contribution Margin (ingredients/packaging basis) | NGN 4,320 |
+| Gross Profit Margin (estimated food basis) | 72.00% |
 
 These are recipe-based food margin estimates, not actual net profit or a complete contribution margin after every variable cost. Labour, operating expenses, service charges, delivery commissions and other adjustments are not silently included. When tax is included/excluded in a real price, compare food cost with the appropriate net revenue basis shown by the system.
 
@@ -376,3 +376,12 @@ Use the following checklist as the restaurant's acceptance record. Add tester na
 - All required manual-entry tests passed; working import routes passed; missing master-data importers explicitly tracked as blocked.
 
 The previous stock-only guide remains useful as a focused operational exercise. This complete guide adds the master-data and selling-menu setup that must precede a full restaurant pilot.
+
+
+## 18. Owner menu review and issued-PO price warnings
+
+Menu & prices starts with profitability, target exceptions and missing-cost coverage. Food-cost percentages below or equal to the maximum target are favourable; higher percentages are exceptions. Configure a Food target of 30% for the sample dish: 28% food cost is within target; 4320 is the estimated contribution from ingredients/packaging and 72% is Gross Profit Margin on that basis. Other variable costs are not included. Filters and source details are expandable. Counts use the full searched scope; risk sorting and status filtering happen before pagination. The Back action retains comparison filters.
+
+Run optional CEO-PO-01 and CEO-PO-02 after the core arithmetic checks. For example, 2 KG Rice quoted at 1980/KG against a saved 1800/KG baseline creates a 360 NGN potential warning when issued. A draft is not an executive alert. An active GRN updates received quantity; a valid invoice for 1 KG reduces the unbilled potential to 180 NGN. Invoice recording updates monthly weighted costs; the PO and GRN do not. Do not add this warning to the invoice-period price comparison. These optional transactions change later core totals, so use separate references and record the additional activity.
+
+PO warnings select orders by their actual issue day in the business timezone, and show live delivery/billing progress. The baseline is pinned at issue. Corrected invoice links need review; approved voids update progress. Existing issued orders have a historical baseline reconstructed only from evidence recorded by issue time, or show no comparison baseline. No prices or stock are changed by this historical backfill.
