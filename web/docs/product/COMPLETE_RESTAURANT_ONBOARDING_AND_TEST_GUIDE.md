@@ -1,6 +1,6 @@
 # Complete Restaurant Onboarding & Test Guide
 
-ProfitPlate Insight | Updated 20 November 2026 / multi-centre production update 050 / migrations through 050 | Includes the full master-data setup and daily operational test sequence.
+ProfitPlate Insight | Updated 20 November 2026 / centre material plans update 051 / migrations through 051 | Includes the full master-data setup and daily operational test sequence.
 
 This replaces the stock-only walkthrough as the main onboarding guide. Use a fresh training restaurant; preserve the existing demo restaurant and its historical records. The examples are fictional training data, not recommended recipes, prices or operating defaults.
 
@@ -8,7 +8,7 @@ This replaces the stock-only walkthrough as the main onboarding guide. Use a fre
 
 Use this guide with **profitplate-complete-test-data-2026-11-20.zip**. It supersedes earlier test-pack instructions. The example transaction date is **19 November 2026**, aligned across prices, recipes, openings and imports. Use that date in the app filters. Record your actual execution date separately in the workbook. If starting later, update the sample dates together before entry. Receiver acceptance posts on its actual business date; subsequent processing/waste must use that date or later. If the test spans days, use the current operational date for later stock activity and widen report filters; keep master versions effective on or before that date.
 
-1. Use the deployed site at https://profit-plate-insight.vercel.app/ and confirm migrations through **050** are applied and the matching app is deployed. Do not rerun applied migrations.
+1. Use the deployed site at https://profit-plate-insight.vercel.app/ and confirm migrations through **051** are applied and the matching app is deployed. Do not rerun applied migrations.
 2. During initial setup, add the Food/Drink subcategories in **menu-categories.csv**. Standard pricing is automatic; additional channels are optional.
 3. Create a fresh training restaurant, for example **Training Restaurant - Run 041**. Keep the earlier demo and its histories intact.
 4. Open **ProfitPlate_Complete_Test_Data.xlsx**. Complete **run-details**, then use **test-results** to record Not run, Pass, Fail, Blocked or Not available, actual result and evidence. Run the sections in order.
@@ -425,3 +425,12 @@ A baseline can contain several material inputs and exactly one output. In the da
 Front Kitchen can request raw materials from Central Inventory and prepared SKUs from Central Kitchen using separate configured routes. Prepared items must be real tracked output SKUs. Receiver acceptance remains the stock-movement posting point. There is no new automatic production-order planner: the producing centre records any required production before dispatching the prepared stock.
 
 Run PROD-CENTRE-01 through PROD-CENTRE-03 in a separate scenario after the original numeric checks. The core sample still uses only Kitchen production so its expected balances and costs remain unchanged.
+
+
+## 22. Generate a centre material plan
+
+Open Daily operations > Material Plan as a centre user with stock-request access or an authorised stock manager. Select the centre and plan date. Choose Training Snapper Rice Plate (final recipe) with target 10 PCS and Training Stew Base with target 10 L, then generate. Target quantities are output units, not number of batches. In the core sample the consolidated requirements are Rice 2 KG, Tomato 6 KG, Onion 1.2 KG, Oil 1.2 L, Snapper Cut 10 PCS and Takeaway Box 10 PCS. Stew Base has no stocked output binding in this sample, so its ingredients expand automatically.
+
+Keep stocked preparations as SKUs uses a permitted baseline's pinned inputs where available. Other saved recipes retain bound sub-recipe outputs as prepared stock; unstocked sub-recipes expand. Expand saved sub-recipe ingredients expands those pinned child recipe versions instead. Direct material SKUs, including processed materials explicitly listed as components, remain materials in either basis. Do not select a child separately unless its target is additional demand beyond its parent's requirement.
+
+Available now is current on-hand minus reservations at the selected centre. It is not a stock forecast for the plan date. Zero availability or shortages do not block generation. Plans never create requisitions, production, reservations, stock movements or cost postings. Download CSV or print to keep the generated snapshot; changing inputs requires regeneration. Operational records remain separate. Test PLAN-01 through PLAN-03 with separate targets.

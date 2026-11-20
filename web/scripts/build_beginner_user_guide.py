@@ -7,7 +7,7 @@ import json
 import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / 'docs/exports/ProfitPlate_Insights_Beginner_Setup_and_Daily_Operations_Guide_050.docx'
+OUT = ROOT / 'docs/exports/ProfitPlate_Insights_Beginner_Setup_and_Daily_Operations_Guide_051.docx'
 PAGES = []
 
 def page(title, text):
@@ -16,7 +16,7 @@ def page(title, text):
 page('ProfitPlate Insights', '''
 ### Your beginner guide
 From restaurant setup to daily operations
-Current application: 20 November 2026 | Includes multi-centre production and daily waste accountability
+Current application: 20 November 2026 | Includes material planning, multi-centre production and daily waste accountability
 
 ### What the product does
 ProfitPlate Insights helps restaurant owners and their teams understand how everyday operating decisions affect estimated profitability and accountability. It connects material prices, recipe costs, selling menus, purchases, stock movements, processing, waste, sales and operating expenses in one restaurant workspace.
@@ -582,6 +582,25 @@ For an unexpected stock balance, suspected duplicate, inaccessible accepted invi
 
 ### Your first successful operating day
 You have succeeded when the correct team can receive/transfer stock, process available inputs, record independent waste, confirm every expected centre's day, and explain the owner/Finance results from the underlying records. Expand gradually from that complete, repeatable routine.
+''')
+
+page('23. Plan materials before requesting or producing', '''
+Who: an authorised centre user with stock-request access, or a stock manager.
+
+1. Open Daily operations > Material Plan and select the stock centre.
+2. Choose the plan date. The available stock comparison remains current, not a prediction for that date.
+3. Select a saved recipe/baseline and enter the target output quantity in the displayed output unit. For a recipe yielding 10 PCS, a target of 20 means 20 PCS, not 20 batches.
+4. Use Add recipe for additional output targets. Do not add a sub-recipe separately unless you want extra output beyond the amount already used by a selected parent.
+5. Choose Keep stocked preparations as SKUs when you intend to use/request stocked preparations. Choose Expand saved sub-recipe ingredients to see those child recipes' material requirements. Unstocked sub-recipes expand automatically; direct material SKUs remain as listed.
+6. Select Generate material plan. Review the consolidated required quantity, current available quantity and shortage for each material in its own base unit.
+7. Expand the recipe breakdown to check saved versions and targets. A shortage does not prevent planning.
+8. Download plan CSV or Print plan to retain the generated snapshot. Changing targets, centre, date or basis requires regeneration. Regenerate when recipes or stock change.
+9. Use the existing requisition and production workflows to act on the plan. The plan itself creates no stock, reservation, requisition or production record.
+
+### Worked example
+If one selected recipe requires 2 KG Rice and another requires 3 KG, the plan shows 5 KG Rice. With 1 KG currently available, the shortage is 4 KG. Litres and pieces stay on separate material rows; they are not added to a KG total.
+
+! Any centre may plan within its user's permitted access. Actual production still needs an enabled centre, a permitted baseline and available inputs. Finance-only access does not grant operational planning. Plans are generated snapshots, not a stored planning-history module.
 ''')
 
 W = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'

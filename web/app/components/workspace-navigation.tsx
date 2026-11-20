@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";import {useEffect,useRef,type ReactNode} from "react";
-import {LayoutDashboard,Boxes,ShoppingCart,ChartNoAxesCombined,FileSpreadsheet,BookOpen,Users,Settings2,ChevronDown} from "lucide-react";
+import {LayoutDashboard,Boxes,ShoppingCart,ChartNoAxesCombined,FileSpreadsheet,BookOpen,Users,Settings2,ChevronDown,ClipboardList} from "lucide-react";
 import {contextQuery,type NavigationAccess,type ReportingContext} from "@/lib/overview";
 import "./workspace-navigation.css";
 function NavGroup({name,active,initial,storageKey,pathname,children}:{name:string;active:boolean;initial:boolean;storageKey:string;pathname:string;children:ReactNode}){
@@ -24,6 +24,7 @@ export function WorkspaceNavigation({organisation,email,roles,access,pathname,co
   {(access.sales||access.inventory||access.expenses)&&group(financeOnly?"Finance records":"Daily operations",pathname.startsWith("/workspace/sales")||pathname.startsWith("/workspace/inventory")||pathname.startsWith("/workspace/expenses"),<>
    {access.sales&&<Link href={`/workspace/sales?${contextQuery(organisation,context)}`} title="Sales & summary" aria-current={pathname.startsWith("/workspace/sales")?"page":undefined} onClick={onNavigate}><ChartNoAxesCombined size={18}/><span>Sales & summary</span></Link>}
    {access.inventory&&!financeOnly&&item("Inventory & movements","/workspace/inventory",Boxes,pathname==="/workspace/inventory")}
+   {access.inventory&&roles.some(r=>['restaurant_admin','inventory_manager','inventory','operations','stock_department','kitchen_manager','bar_lead'].includes(r))&&item("Material Plan","/workspace/inventory/plans",ClipboardList,pathname.startsWith("/workspace/inventory/plans"))}
    {access.inventory&&!financeOnly&&item("Material Processing Log","/workspace/inventory/processing",Boxes,pathname.startsWith("/workspace/inventory/processing"))}
    {access.inventory&&item(financeOnly?"Waste across centres":"Waste Log",financeOnly?"/workspace/inventory/waste?kind=WASTE":"/workspace/inventory/waste",Boxes,pathname.startsWith("/workspace/inventory/waste"))}
    {access.expenses&&<Link href={`/workspace/expenses?${contextQuery(organisation,context)}`} title="Labour & expenses" aria-current={pathname.startsWith("/workspace/expenses")?"page":undefined} onClick={onNavigate}><FileSpreadsheet size={18}/><span>Labour & expenses</span></Link>}

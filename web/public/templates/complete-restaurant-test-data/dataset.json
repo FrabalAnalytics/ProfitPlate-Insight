@@ -1,7 +1,7 @@
 {
   "pack_date": "2026-11-20",
-  "app_release": "050-multi-centre-single-output-production",
-  "required_migration": "050",
+  "app_release": "051-centre-material-plans",
+  "required_migration": "051",
   "test_date": "2026-11-19",
   "source_org": "TRAINING",
   "sheets": {
@@ -1230,12 +1230,12 @@
         ],
         [
           "App release",
-          "050-multi-centre-single-output-production",
+          "051-centre-material-plans",
           "Deployment checked before executing"
         ],
         [
           "Required migration",
-          "050",
+          "051",
           "Verify required migration; do not rerun applied migrations"
         ],
         [
@@ -2074,6 +2074,48 @@
           "Routes and physical stock available",
           "Front Kitchen requests raw stock from Central Store and prepared stock from Central Kitchen. Approve, dispatch and accept each separately.",
           "Dispatch reserves only. Acceptance moves the accepted quantity between the correct centres. Recipe definitions alone never appear as physical stock.",
+          "Not run",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "PLAN-01",
+          "Consolidated requirements",
+          "Centre user",
+          "Published recipes and usable yields",
+          "Choose a centre, select final recipe target 10 PCS and Stew Base target 10 L. Generate, inspect material quantities and download CSV.",
+          "Shared materials consolidate in base units; source recipe versions and target units are visible. Packaging is counted once. No stock document or reservation is created.",
+          "Not run",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "PLAN-02",
+          "Sub-recipes and shortage visibility",
+          "Centre user",
+          "A recipe with a stocked sub-recipe",
+          "Compare Keep stocked preparations with Expand saved sub-recipe ingredients. Generate with zero stock and change a target afterwards.",
+          "Prepared output and its raw components are never counted together for the same requirement. Shortages do not block generation. Changed targets hide the old result until regenerated.",
+          "Not run",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "PLAN-03",
+          "Centre scope and permissions",
+          "Kitchen / Bar / Inventory / Finance",
+          "Scoped users and centres",
+          "Open Material Plan for assigned and unassigned centres; try Finance-only access. Print/download one permitted plan.",
+          "Only operationally permitted centres can generate plans. Finance-only cannot generate. Export/print uses only the generated scope, with dates and current-stock basis visible.",
           "Not run",
           "",
           "",

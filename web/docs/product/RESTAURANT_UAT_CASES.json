@@ -446,5 +446,29 @@
     "prerequisite": "Routes and physical stock available",
     "steps": "Front Kitchen requests raw stock from Central Store and prepared stock from Central Kitchen. Approve, dispatch and accept each separately.",
     "expected": "Dispatch reserves only. Acceptance moves the accepted quantity between the correct centres. Recipe definitions alone never appear as physical stock."
+  },
+  {
+    "id": "PLAN-01",
+    "area": "Consolidated requirements",
+    "role": "Centre user",
+    "prerequisite": "Published recipes and usable yields",
+    "steps": "Choose a centre, select final recipe target 10 PCS and Stew Base target 10 L. Generate, inspect material quantities and download CSV.",
+    "expected": "Shared materials consolidate in base units; source recipe versions and target units are visible. Packaging is counted once. No stock document or reservation is created."
+  },
+  {
+    "id": "PLAN-02",
+    "area": "Sub-recipes and shortage visibility",
+    "role": "Centre user",
+    "prerequisite": "A recipe with a stocked sub-recipe",
+    "steps": "Compare Keep stocked preparations with Expand saved sub-recipe ingredients. Generate with zero stock and change a target afterwards.",
+    "expected": "Prepared output and its raw components are never counted together for the same requirement. Shortages do not block generation. Changed targets hide the old result until regenerated."
+  },
+  {
+    "id": "PLAN-03",
+    "area": "Centre scope and permissions",
+    "role": "Kitchen / Bar / Inventory / Finance",
+    "prerequisite": "Scoped users and centres",
+    "steps": "Open Material Plan for assigned and unassigned centres; try Finance-only access. Print/download one permitted plan.",
+    "expected": "Only operationally permitted centres can generate plans. Finance-only cannot generate. Export/print uses only the generated scope, with dates and current-stock basis visible."
   }
 ]

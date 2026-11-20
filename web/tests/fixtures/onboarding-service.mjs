@@ -220,6 +220,8 @@ createServer(async (request, response) => {
         invite_named_team_member: ["p_organisation_id","p_request_id","p_email","p_name","p_assignments"],
         set_processing_unit: ["p_organisation_id","p_centre_id"],
         save_processing_centres: ["p_organisation_id","p_centre_ids","p_revision"],
+        material_plan_options: ["p_organisation_id","p_site_id","p_date"],
+        generate_material_plan: ["p_organisation_id","p_site_id","p_date","p_rows","p_basis"],
         save_material_processing_baseline: ["p_organisation_id","p_request_id","p_value"],
         team_access: ["p_organisation_id"],
         team_directory: ["p_organisation_id","p_search","p_page","p_invite_page"],
