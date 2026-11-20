@@ -1,4 +1,2 @@
 ﻿channel_code,channel_name,is_active
-TAKEAWAY,Takeaway,true
-DINE_IN,Dine in,true
-DELIVERY,Delivery,true
+STANDARD,Standard selling price,true

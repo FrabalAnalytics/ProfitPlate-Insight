@@ -1,0 +1,8 @@
+"use client";
+import {useId} from 'react';
+import type {MenuCategory} from '@/lib/menu-categories';
+export function MenuCategoryPicker({value,onChange,locked=[]}:{value:string;onChange:(value:string)=>void;locked?:MenuCategory[]}){
+ const id=useId();let rows:MenuCategory[]=[];try{rows=JSON.parse(value);}catch{}
+ const set=(n:number,patch:Partial<MenuCategory>)=>onChange(JSON.stringify(rows.map((r,i)=>i===n?{...r,...patch}:r)));
+ return <div><p className="setup-help">Group your selling menu under Food or Drink, then name your subcategories.</p>{rows.map((r,n)=>{const fixed=locked.some(a=>a.major===r.major&&a.name===r.name);return <div className="setup-field-grid" key={n}><div className="setup-field"><label htmlFor={`${id}-major-${n}`}>Major category {n+1}</label><select id={`${id}-major-${n}`} value={r.major} disabled={fixed} onChange={e=>set(n,{major:e.target.value as MenuCategory['major']})}><option value="FOOD">Food</option><option value="DRINK">Drink</option></select></div><div className="setup-field"><label htmlFor={`${id}-name-${n}`}>Subcategory {n+1}</label><input id={`${id}-name-${n}`} value={r.name} readOnly={fixed} maxLength={60} placeholder="Mains, Sides, Cocktails..." onChange={e=>set(n,{name:e.target.value})}/></div>{fixed?<label><input type="checkbox" checked={r.is_active} onChange={e=>set(n,{is_active:e.target.checked})}/>Active: {r.name}</label>:<button type="button" className="inline-link" onClick={()=>onChange(JSON.stringify(rows.filter((_,i)=>i!==n)))}>Remove subcategory {n+1}</button>}</div>;})}<button type="button" className="secondary-button" disabled={rows.length>=100} onClick={()=>onChange(JSON.stringify([...rows,{major:'FOOD',name:'',is_active:true}]))}>Add subcategory</button></div>;
+}

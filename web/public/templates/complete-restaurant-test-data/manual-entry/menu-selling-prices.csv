@@ -1,2 +1,2 @@
 ﻿menu_code,outlet_code,channel_code,selling_price,tax_setting,tax_percent,effective_from,source_note
-SNAPPER_RICE_MENU,PRIMARY,TAKEAWAY,6000,NONE,0,2026-11-19,Fictional no-tax arithmetic example; use approved tax rules for real data
+SNAPPER_RICE_MENU,PRIMARY,STANDARD,6000,NONE,0,2026-11-19,Fictional no-tax arithmetic example; use approved tax rules for real data

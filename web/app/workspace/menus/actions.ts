@@ -30,7 +30,7 @@ export async function publishMenu(_state: MenuState, form: FormData): Promise<Me
  if (!/^[A-Z0-9][A-Z0-9_-]{0,39}$/.test(code) || !get("name") || get("name").length > 120 || get("category").length > 60 || get("notes").length > 1000) return { error: "Check the menu code, name, category and notes." };
  if (get("recipe_version_id")&&(!positiveDecimal(get("recipe_quantity")) || !validBusinessDate(get("effective_from")))) return { error: "Enter a positive recipe quantity with up to six decimals and a valid effective date." };
  const values=Object.fromEntries([...form.entries()].map(([key,value])=>[key,String(value).trim()]));values.code=code;
- const {data:id,error}=await client.rpc("save_menu_setup",{p_organisation_id:org,p_request_id:get("request_id"),p_value:values});
+ const {data:id,error}=await client.rpc("save_menu_entry",{p_organisation_id:org,p_request_id:get("request_id"),p_value:values});
  if(error)return failure(error);
  revalidatePath("/workspace/setup");revalidatePath("/workspace/setup/standards");revalidatePath("/admin");
  revalidatePath("/workspace/menus");revalidatePath("/workspace/menus/profitability");

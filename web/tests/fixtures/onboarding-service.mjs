@@ -61,6 +61,7 @@ const catalogueOwner = users.find(user => user.email === "catalogue@example.test
 await asUser(catalogueOwner, async tx => {
   await tx.query("select public.save_restaurant_setup('Catalogue Test Restaurant','QSR','NG','NGN','Catalogue Brand','Main outlet','Africa/Lagos','',3)");
   const org = (await tx.query("select public.complete_restaurant_setup() as id")).rows[0].id;
+  await tx.query("select public.save_menu_categories($1,0,$2)",[org,JSON.stringify([{major:'FOOD',name:'Mains',is_active:true},{major:'FOOD',name:'Sides',is_active:true},{major:'DRINK',name:'Soft drinks',is_active:true}])]);
   await tx.query("select public.save_catalogue_supplier($1,null,'SUP-IMPORT','Import Test Foods','','','',true)", [org]);
   const kg = (await tx.query("select id from public.units_of_measure where organisation_id=$1 and code='KG'", [org])).rows[0].id;
   for (let index = 1; index <= 26; index++) await tx.query("select public.save_catalogue_material($1,null,$2,$3,'RAW','Core',$4,true,true)", [org, `SAMPLE${index}`, `Ingredient ${String(index).padStart(2, "0")}`, kg]);
@@ -247,6 +248,9 @@ createServer(async (request, response) => {
         save_setup_sales_channels: ["p_channels"],
         complete_restaurant_setup_with_channels: [],
         menu_profitability_scope: ["p_organisation_id","p_location_id","p_channel","p_as_of"],
+        menu_categories:['p_organisation_id'],save_menu_categories:['p_organisation_id','p_revision','p_categories'],save_setup_menu_categories:['p_categories'],complete_restaurant_setup_with_categories:[],
+        selling_menu_profitability:['p_organisation_id','p_location_id','p_channel','p_as_of','p_search','p_page','p_status','p_major','p_subcategory'],menu_margin_for_scope:['p_organisation_id','p_version_id','p_location_id','p_channel','p_as_of'],save_menu_entry:['p_organisation_id','p_request_id','p_value'],
+        preview_menu_catalogue_import:['p_organisation_id','p_location_id','p_rows'],post_menu_catalogue_import:['p_organisation_id','p_location_id','p_request_id','p_rows','p_preview'],
         profitability_items_dashboard: ["p_organisation_id","p_location_id","p_channel","p_as_of","p_search","p_page","p_status","p_kind"],
         menu_profitability_dashboard: ["p_organisation_id","p_location_id","p_channel","p_as_of","p_search","p_page","p_status"],
         menu_profitability: ["p_organisation_id","p_location_id","p_channel","p_as_of","p_search","p_page"],
@@ -284,7 +288,7 @@ createServer(async (request, response) => {
       membership_roles: ["id", "organisation_id", "membership_id", "role_code", "location_id"],
       brands: ["id", "name", "organisation_id"],
       locations: ["id", "name", "code", "timezone", "address", "is_active", "brand_id", "organisation_id"],
-      restaurant_setup_drafts: ["user_id", "business_name", "concept", "country_code", "currency_code", "brand_name", "location_name", "timezone", "address", "reporting_week_start", "count_day", "count_cutoff", "sales_channels", "step", "completed_organisation_id"],
+      restaurant_setup_drafts: ["user_id", "business_name", "concept", "country_code", "currency_code", "brand_name", "location_name", "timezone", "address", "reporting_week_start", "count_day", "count_cutoff", "sales_channels", "menu_categories", "step", "completed_organisation_id"],
       units_of_measure: ["id", "organisation_id", "code", "name", "dimension"],
       item_categories: ["id", "organisation_id", "name"],
       items: ["id", "organisation_id", "code", "name", "item_type", "category_id", "base_uom_id", "stock_tracked", "is_active", "location_id", "weekly_count_required", "supply_class", "requires_processing"],

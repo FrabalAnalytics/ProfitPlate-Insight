@@ -9,8 +9,8 @@ ROOT=Path(__file__).resolve().parents[1]
 DEST=ROOT/'public/templates/complete-restaurant-test-data'
 DATE='2026-11-19'
 PACK_DATE='2026-11-20'
-APP_RELEASE='046-restaurant-sales-channels'
-MIGRATION='046'
+APP_RELEASE='048-category-first-menu'
+MIGRATION='048'
 DATA={}
 def sheet(name,header,rows,folder='manual-entry'):
     DATA[name]={'columns':header.split(','),'rows':rows,'folder':folder}
@@ -19,7 +19,8 @@ sheet('business','business_name,concept,country,currency,time_zone,brand_code,br
  ['Training Restaurant - Run 041','FINE_DINING','NG','NGN','Africa/Lagos','PRIMARY','Training Kitchen','PRIMARY','Dining Room','Wednesday','Tuesday','23:30']])
 sheet('users','display_name,email_to_replace,role_code,outlet_scope,stock_centre_scope',[
  ['Francis','owner@example.test','restaurant_admin','ALL','ALL'],['Francis','owner@example.test','ceo','ALL','ALL'],['Emeka','inventory@example.test','inventory_manager','ALL','ALL'],['Ada','kitchen@example.test','kitchen_manager','ALL','KITCHEN'],['Bola','bar@example.test','bar_lead','ALL','BAR'],['Tomi','procurement@example.test','procurement','ALL',''],['Chioma','finance@example.test','finance','ALL','']])
-sheet('sales-channels','channel_code,channel_name,is_active',[['TAKEAWAY','Takeaway','true'],['DINE_IN','Dine in','true'],['DELIVERY','Delivery','true']])
+sheet('sales-channels','channel_code,channel_name,is_active',[['STANDARD','Standard selling price','true']])
+sheet('menu-categories','major_category,subcategory,is_active',[['FOOD','Mains','true'],['FOOD','Sides','true'],['DRINK','Soft drinks','true']])
 sheet('stock-centres','centre_code,centre_name,kind,outlet_code,responsible_name,is_processing_unit',[
  ['MAIN_STORE','Main Store','STORE','','Emeka','false'],['KITCHEN','Kitchen','KITCHEN','PRIMARY','Ada','true'],['BAR','Bar','BAR','PRIMARY','Bola','false']])
 sheet('movement-routes','source_centre,destination_centre,movement_type,source_approval_role',[[a,b,'TRANSFER','inventory_manager'] for a,b in [('MAIN_STORE','KITCHEN'),('KITCHEN','MAIN_STORE'),('MAIN_STORE','BAR'),('BAR','MAIN_STORE')]])
@@ -39,7 +40,9 @@ sheet('recipe-components','recipe_code,line_number,component_type,component_code
 sheet('menu-items','menu_code,menu_name,brand_code,primary_category,subcategory,final_recipe_code,final_recipe_version,recipe_quantity_per_sale,effective_from',[
  ['SNAPPER_RICE_MENU','Training Snapper Rice Plate','PRIMARY','FOOD','Mains','SNAPPER_RICE_RECIPE','1','1',DATE]])
 sheet('menu-selling-prices','menu_code,outlet_code,channel_code,selling_price,tax_setting,tax_percent,effective_from,source_note',[
- ['SNAPPER_RICE_MENU','PRIMARY','TAKEAWAY','6000','NONE','0',DATE,'Fictional no-tax arithmetic example; use approved tax rules for real data']])
+ ['SNAPPER_RICE_MENU','PRIMARY','STANDARD','6000','NONE','0',DATE,'Fictional no-tax arithmetic example; use approved tax rules for real data']])
+sheet('menu-catalogue-import','action,menu_code,menu_name,major_category,subcategory,recipe_code,recipe_version,recipe_quantity,selling_price,tax_setting,tax_percent,effective_from',[[
+ 'CREATE','SNAPPER_RICE_MENU','Training Snapper Rice Plate','FOOD','Mains','SNAPPER_RICE_RECIPE','1','1','6000','NONE','0',DATE]],'upload-ready')
 materials=DATA['materials']['rows']
 sheet('opening-stock','stock_centre,material_code,quantity,base_unit,opening_date,entry_method',[
  [site,m[0],({'WHOLE_SNAPPER':'40','RICE':'20','TOMATO':'10','ONION':'5','OIL':'10','BOX':'100'}.get(m[0],'0') if site=='MAIN_STORE' else '0'),m[4],DATE,('OPENING_REQUEST' if site=='MAIN_STORE' and m[0]!='SNAPPER_CUT' else 'ZERO_OPENING_CONFIRMATION')] for site in ['MAIN_STORE','KITCHEN','BAR'] for m in materials])
@@ -51,7 +54,7 @@ sheet('waste-log','waste_reference,date,centre,material_code,quantity,unit,submi
 headers={key:(ROOT/f'public/templates/{key}.csv').read_text(encoding='utf-8-sig').splitlines()[0] for key in ['purchases-import','sales-import','expense-import']}
 sheet('purchases-import',headers['purchases-import'],[
  ['TRAINING','TRAINING_CSV',DATE,'TRAIN-INV-FISH','1','FISH_SUP','WHOLE_SNAPPER','10','KG','3000','0','0','PRIMARY','NGN','RECEIVED'],['TRAINING','TRAINING_CSV',DATE,'TRAIN-INV-RICE','1','DRY_SUP','RICE','5','KG','1800','0','0','PRIMARY','NGN','RECEIVED']],'upload-ready')
-sheet('sales-import',headers['sales-import'],[['TRAINING','TRAINING_POS','PRIMARY',DATE,'TRAIN-SALE-001','1','SNAPPER_RICE_MENU','3','18000','0','0','18000','TAKEAWAY','NORMAL','','PAID']],'upload-ready')
+sheet('sales-import',headers['sales-import'],[['TRAINING','TRAINING_POS','PRIMARY',DATE,'TRAIN-SALE-001','1','SNAPPER_RICE_MENU','3','18000','0','0','18000','STANDARD','NORMAL','','PAID']],'upload-ready')
 sheet('expense-import',headers['expense-import'],[
  ['TRAINING','TRAINING_EXP','TRAIN-WAGES-001','1','WAGES','LOCATION','PRIMARY',DATE,DATE,'ON_DATE',DATE,'600','NGN','Fictional training labour'],['TRAINING','TRAINING_EXP','TRAIN-RENT-001','1','RENT','LOCATION','PRIMARY',DATE,DATE,'ON_DATE',DATE,'500','NGN','Fictional training operating expense']],'upload-ready')
 sheet('expected-results','checkpoint,expected_value,unit_or_basis',[
@@ -65,10 +68,10 @@ README='''# Complete fictional restaurant test data - updated 19 November 2026
 
 Start with the Excel workbook for the whole dataset. Use the Word guide for the step-by-step walkthrough. All figures and people are fictional. Use a separate training restaurant.
 
-IMPORTANT: This is a testing pack, not a universal master-data importer. The XLSX workbook is for review/manual entry; do not upload it to a CSV screen. Files in manual-entry/ are populated collection sheets, not application upload formats. Only the four CSVs in upload-ready/ match implemented import screens, and they still need their prerequisite masters created first.
+IMPORTANT: This is a testing pack, not a universal master-data importer. The XLSX workbook is for review/manual entry; do not upload it to a CSV screen. Files in manual-entry/ are populated collection sheets, not application upload formats. Only the five CSVs in upload-ready/ match implemented import screens, and they still need their prerequisite masters created first.
 
 ## Before testing
-- Pack revision 20 November 2026; updated for restaurant sales channels release 046 and migrations through 046. The core example transaction date remains 19 November. Do not rerun applied migrations.
+- Pack revision 20 November 2026; updated for category-first menu release 048 and migrations through 048. The core example transaction date remains 19 November. Do not rerun applied migrations.
 - Complete run-details and test-results in the workbook. This replaces the earlier stock-only/v2 testing instructions.
 - Create Training Restaurant, brand Training Kitchen and first outlet Dining Room. Fresh onboarding assigns brand and outlet code PRIMARY; verify these codes in the actual workspace before uploading. Map/replace PRIMARY explicitly if using a different outlet.
 - Owner rows in users.csv represent the same existing owner with two roles; do not invite or create the owner twice.
@@ -83,12 +86,13 @@ IMPORTANT: This is a testing pack, not a universal master-data importer. The XLS
 4. Starting prices (manual OR import the six initial-price rows).
 5. SNAPPER_CUTTING processing baseline (40 KG whole fish -> 120 PCS cuts).
 6. STEW_BASE sub-recipe, then SNAPPER_RICE_RECIPE final recipe and its component lines.
-7. SNAPPER_RICE_MENU selling item, final recipe link and 1 PCS of recipe output per sale; set TAKEAWAY price 6000, NONE tax for this fictional arithmetic test only.
+7. SNAPPER_RICE_MENU selling item, final recipe link and 1 PCS of recipe output per sale; set standard selling price 6000, NONE tax for this fictional arithmetic test only.
 8. Opening stock. Positive rows need reviewed opening requests and posting. Zero rows need explicit zero-opening readiness confirmation, not zero-quantity stock requests. Opening quantities are per centre, not business-wide totals.
 9. Transfer 40 KG whole fish Main Store -> Kitchen; manager approves/dispatches and Ada accepts before stock changes.
 10. Emeka records 1 KG Main Store rice spoilage with submitter name Emeka (20 -> 19 KG); no approval. Ada records the processing batch and its 4 KG trim once; enter submitter Ada and select Submit processing; stock updates immediately without approval. Ada then records separate 2 PCS spoilage with her name; it posts immediately without waste approval (110 -> 108 PCS).
 
-## Upload the four working CSVs
+## Upload the five working CSVs
+- menu-catalogue-import.csv: Menu & prices > Import menu CSV. Set up Food / Mains first. Select PRIMARY outlet, review CREATE and standard price 6000, then save. Use this instead of manually creating/pricing the same menu. UPDATE must be deliberate; unchanged rows are skipped.
 - initial-material-prices.csv: Initial material prices screen. Six rows; no Snapper Cut purchase price. Reference prices do not add stock.
 - purchases-import.csv: Purchase imports screen. Source organisation code TRAINING; source unit-price tax basis EXCLUSIVE; NGN. Separate FISH_SUP and DRY_SUP invoices. Check totals 30000 and 9000 (39000 combined). File Status RECEIVED follows the source contract; invoice import does NOT create a GRN or receive/post physical stock. These invoices must not be posted again manually. If testing a manual PO/GRN/invoice cycle, use a separate reference/delivery.
 - sales-import.csv: Sales CSV screen. Source organisation code TRAINING; EXCLUSIVE source tax format; NGN. This fictional file has zero tax/discount and one paid normal receipt: 3 servings, net/customer total 18000. The menu/final recipe versions and selling price must be effective first. Sales imports are not automatic ingredient-stock consumption postings.
@@ -101,7 +105,7 @@ Use checks/expected-results.csv. The expected menu cost is 1680 per plate and fo
 
 The sample sales and expense files test financial records; they do not automatically reduce Kitchen stock to reflect the sold plates. Test recorded consumption/counts separately. Do not sum KG and PCS into one loss quantity. These food margins are estimates, not actual net profit or a complete contribution margin.
 
-Suppliers, materials, conversions, recipe headers/components, menu items/prices, processing baselines and opening stock currently have no bulk upload screen. Their manual-entry sheets must remain labelled as such until the relevant importers are built.
+Suppliers, materials, conversions, recipe headers/components, processing baselines and opening stock currently have no bulk upload screen. Their manual-entry sheets must remain labelled as such until the relevant importers are built.
 '''
 README+='''
 ## Updated role checks
@@ -112,7 +116,7 @@ README+='''
 - Inventory waste: own responsible centres only, including direct links and exports. Kitchen/Bar: assigned centres only. Test with single-role accounts.
 - Invoice: bill and material summary first; unreviewed matching exceptions and pending correction decisions visible; source/resolved history collapsed. PO approval remains excluded.
 - Weekly stock-count flag: verify Include in weekly stock counts on each material; do not claim missing weekly count automation is implemented.
-- This revision requires migration 046 and the matching app deployment. The four CSV upload formats remain unchanged.
+- This revision requires migration 048 and the matching app deployment. The menu CSV is now the fifth supported upload format.
 '''
 DEST.mkdir(parents=True,exist_ok=True)
 for name,data in DATA.items():
@@ -155,7 +159,7 @@ word_guide(guide,DEST/'Complete_Restaurant_Onboarding_and_Test_Guide.docx')
 shutil.copyfile(DEST/'Complete_Restaurant_Onboarding_and_Test_Guide.docx',ROOT/'docs/exports/Complete_Restaurant_Onboarding_and_Test_Guide.docx')
 for name in ['CENTRES_AND_TEAM_ACCESS_GUIDE.md','CENTRE_WASTE_REVIEW_GUIDE.md','TEAM_INVITATIONS_AND_EMAIL_SETUP.md']:
     shutil.copyfile(ROOT/'docs/product'/name,DEST/name)
-(DEST/'CHANGES-2026-11-20.md').write_text('Updated for restaurant sales channels release 046. Owners choose channels during onboarding and can manage names/retirement later. Menu profitability supports All channels and individual channels, with one separate row per menu/channel; sales imports validate the restaurant configuration. Menu profitability is the default view with target exceptions and concise ingredient/packaging margin labels. Issued POs expose potential price pressure before GRNs and invoices; valid billing reduces unbilled potential. Existing processing and waste controls remain. Processing submits with a named recorder and no approval; multiple material lines, automatic output/variance and stock-shortage checks. Centre and owner tasks save together. Waste requires a submitter and posts without approval. Finance reads combined centre waste and exports filtered results, without setup or waste entry. Inventory retains own-centre waste. Invoice materials and pending decisions remain prominent; supporting history collapses. Added executable test-results and run-details sheets. Master setup coverage and four upload schemas are retained. Example transaction dates are 2026-11-19. Use this pack in place of older instructions. Requires migration 046 and the matching app deployment.\n',encoding='utf-8')
+(DEST/'CHANGES-2026-11-20.md').write_text('Release 048: Menu profitability shows selling items only, one row per item. Food/Drink and restaurant-defined subcategories are the core filters. Recipes stay in Recipes & scaling. Onboarding includes menu categories and automatic standard pricing; extra channels are optional price exceptions. Menu CSV imports support categories, recipe links and standard prices together, with explicit CREATE/UPDATE, review and safe retries. The workbook contains five uploadable CSV schemas; other master sheets remain manual. Requires migration 048 and matching app deployment. Existing prices and history remain.\n',encoding='utf-8')
 
 # XLSX workbook: all cells are text to preserve codes, phone numbers and source decimals.
 def col(n):
@@ -192,4 +196,4 @@ archive=DEST.parent/f'profitplate-complete-test-data-{PACK_DATE}.zip'
 with ZipFile(archive,'w',ZIP_DEFLATED) as z:
  for path in sorted(DEST.rglob('*')):
   if path.is_file():z.write(path,path.relative_to(DEST))
-print(f'Built {archive.name}: {len(sheets)} workbook sheets, {len(DATA)} populated CSVs, 4 implemented upload formats.')
+print(f'Built {archive.name}: {len(sheets)} workbook sheets, {len(DATA)} populated CSVs, 5 implemented upload formats.')

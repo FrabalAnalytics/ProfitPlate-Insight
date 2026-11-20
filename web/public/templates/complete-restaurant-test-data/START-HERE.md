@@ -2,10 +2,10 @@
 
 Start with the Excel workbook for the whole dataset. Use the Word guide for the step-by-step walkthrough. All figures and people are fictional. Use a separate training restaurant.
 
-IMPORTANT: This is a testing pack, not a universal master-data importer. The XLSX workbook is for review/manual entry; do not upload it to a CSV screen. Files in manual-entry/ are populated collection sheets, not application upload formats. Only the four CSVs in upload-ready/ match implemented import screens, and they still need their prerequisite masters created first.
+IMPORTANT: This is a testing pack, not a universal master-data importer. The XLSX workbook is for review/manual entry; do not upload it to a CSV screen. Files in manual-entry/ are populated collection sheets, not application upload formats. Only the five CSVs in upload-ready/ match implemented import screens, and they still need their prerequisite masters created first.
 
 ## Before testing
-- Pack revision 20 November 2026; updated for restaurant sales channels release 046 and migrations through 046. The core example transaction date remains 19 November. Do not rerun applied migrations.
+- Pack revision 20 November 2026; updated for category-first menu release 048 and migrations through 048. The core example transaction date remains 19 November. Do not rerun applied migrations.
 - Complete run-details and test-results in the workbook. This replaces the earlier stock-only/v2 testing instructions.
 - Create Training Restaurant, brand Training Kitchen and first outlet Dining Room. Fresh onboarding assigns brand and outlet code PRIMARY; verify these codes in the actual workspace before uploading. Map/replace PRIMARY explicitly if using a different outlet.
 - Owner rows in users.csv represent the same existing owner with two roles; do not invite or create the owner twice.
@@ -20,12 +20,13 @@ IMPORTANT: This is a testing pack, not a universal master-data importer. The XLS
 4. Starting prices (manual OR import the six initial-price rows).
 5. SNAPPER_CUTTING processing baseline (40 KG whole fish -> 120 PCS cuts).
 6. STEW_BASE sub-recipe, then SNAPPER_RICE_RECIPE final recipe and its component lines.
-7. SNAPPER_RICE_MENU selling item, final recipe link and 1 PCS of recipe output per sale; set TAKEAWAY price 6000, NONE tax for this fictional arithmetic test only.
+7. SNAPPER_RICE_MENU selling item, final recipe link and 1 PCS of recipe output per sale; set standard selling price 6000, NONE tax for this fictional arithmetic test only.
 8. Opening stock. Positive rows need reviewed opening requests and posting. Zero rows need explicit zero-opening readiness confirmation, not zero-quantity stock requests. Opening quantities are per centre, not business-wide totals.
 9. Transfer 40 KG whole fish Main Store -> Kitchen; manager approves/dispatches and Ada accepts before stock changes.
 10. Emeka records 1 KG Main Store rice spoilage with submitter name Emeka (20 -> 19 KG); no approval. Ada records the processing batch and its 4 KG trim once; enter submitter Ada and select Submit processing; stock updates immediately without approval. Ada then records separate 2 PCS spoilage with her name; it posts immediately without waste approval (110 -> 108 PCS).
 
-## Upload the four working CSVs
+## Upload the five working CSVs
+- menu-catalogue-import.csv: Menu & prices > Import menu CSV. Set up Food / Mains first. Select PRIMARY outlet, review CREATE and standard price 6000, then save. Use this instead of manually creating/pricing the same menu. UPDATE must be deliberate; unchanged rows are skipped.
 - initial-material-prices.csv: Initial material prices screen. Six rows; no Snapper Cut purchase price. Reference prices do not add stock.
 - purchases-import.csv: Purchase imports screen. Source organisation code TRAINING; source unit-price tax basis EXCLUSIVE; NGN. Separate FISH_SUP and DRY_SUP invoices. Check totals 30000 and 9000 (39000 combined). File Status RECEIVED follows the source contract; invoice import does NOT create a GRN or receive/post physical stock. These invoices must not be posted again manually. If testing a manual PO/GRN/invoice cycle, use a separate reference/delivery.
 - sales-import.csv: Sales CSV screen. Source organisation code TRAINING; EXCLUSIVE source tax format; NGN. This fictional file has zero tax/discount and one paid normal receipt: 3 servings, net/customer total 18000. The menu/final recipe versions and selling price must be effective first. Sales imports are not automatic ingredient-stock consumption postings.
@@ -38,7 +39,7 @@ Use checks/expected-results.csv. The expected menu cost is 1680 per plate and fo
 
 The sample sales and expense files test financial records; they do not automatically reduce Kitchen stock to reflect the sold plates. Test recorded consumption/counts separately. Do not sum KG and PCS into one loss quantity. These food margins are estimates, not actual net profit or a complete contribution margin.
 
-Suppliers, materials, conversions, recipe headers/components, menu items/prices, processing baselines and opening stock currently have no bulk upload screen. Their manual-entry sheets must remain labelled as such until the relevant importers are built.
+Suppliers, materials, conversions, recipe headers/components, processing baselines and opening stock currently have no bulk upload screen. Their manual-entry sheets must remain labelled as such until the relevant importers are built.
 
 ## Updated role checks
 - Inviting requests a Supabase email sign-in link; copyable backup and resend remain available. Custom SMTP is needed for unrestricted staff delivery.
@@ -48,4 +49,4 @@ Suppliers, materials, conversions, recipe headers/components, menu items/prices,
 - Inventory waste: own responsible centres only, including direct links and exports. Kitchen/Bar: assigned centres only. Test with single-role accounts.
 - Invoice: bill and material summary first; unreviewed matching exceptions and pending correction decisions visible; source/resolved history collapsed. PO approval remains excluded.
 - Weekly stock-count flag: verify Include in weekly stock counts on each material; do not claim missing weekly count automation is implemented.
-- This revision requires migration 046 and the matching app deployment. The four CSV upload formats remain unchanged.
+- This revision requires migration 048 and the matching app deployment. The menu CSV is now the fifth supported upload format.

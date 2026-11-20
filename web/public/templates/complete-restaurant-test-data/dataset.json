@@ -1,7 +1,7 @@
 {
   "pack_date": "2026-11-20",
-  "app_release": "046-restaurant-sales-channels",
-  "required_migration": "046",
+  "app_release": "048-category-first-menu",
+  "required_migration": "048",
   "test_date": "2026-11-19",
   "source_org": "TRAINING",
   "sheets": {
@@ -107,18 +107,33 @@
       ],
       "rows": [
         [
-          "TAKEAWAY",
-          "Takeaway",
+          "STANDARD",
+          "Standard selling price",
+          "true"
+        ]
+      ],
+      "folder": "manual-entry"
+    },
+    "menu-categories": {
+      "columns": [
+        "major_category",
+        "subcategory",
+        "is_active"
+      ],
+      "rows": [
+        [
+          "FOOD",
+          "Mains",
           "true"
         ],
         [
-          "DINE_IN",
-          "Dine in",
+          "FOOD",
+          "Sides",
           "true"
         ],
         [
-          "DELIVERY",
-          "Delivery",
+          "DRINK",
+          "Soft drinks",
           "true"
         ]
       ],
@@ -587,7 +602,7 @@
         [
           "SNAPPER_RICE_MENU",
           "PRIMARY",
-          "TAKEAWAY",
+          "STANDARD",
           "6000",
           "NONE",
           "0",
@@ -596,6 +611,39 @@
         ]
       ],
       "folder": "manual-entry"
+    },
+    "menu-catalogue-import": {
+      "columns": [
+        "action",
+        "menu_code",
+        "menu_name",
+        "major_category",
+        "subcategory",
+        "recipe_code",
+        "recipe_version",
+        "recipe_quantity",
+        "selling_price",
+        "tax_setting",
+        "tax_percent",
+        "effective_from"
+      ],
+      "rows": [
+        [
+          "CREATE",
+          "SNAPPER_RICE_MENU",
+          "Training Snapper Rice Plate",
+          "FOOD",
+          "Mains",
+          "SNAPPER_RICE_RECIPE",
+          "1",
+          "1",
+          "6000",
+          "NONE",
+          "0",
+          "2026-11-19"
+        ]
+      ],
+      "folder": "upload-ready"
     },
     "opening-stock": {
       "columns": [
@@ -944,7 +992,7 @@
           "0",
           "0",
           "18000",
-          "TAKEAWAY",
+          "STANDARD",
           "NORMAL",
           "",
           "PAID"
@@ -1149,12 +1197,12 @@
         ],
         [
           "App release",
-          "046-restaurant-sales-channels",
+          "048-category-first-menu",
           "Deployment checked before executing"
         ],
         [
           "Required migration",
-          "046",
+          "048",
           "Verify required migration; do not rerun applied migrations"
         ],
         [
@@ -1862,11 +1910,11 @@
         ],
         [
           "CHANNEL-01",
-          "Restaurant channel choices",
+          "Menu categories and standard pricing",
           "Admin owner",
           "SET-01",
-          "Choose the sample sales channels during onboarding. In Data & Setup > Sales channels, add a custom channel with its own name/code; rename it and save again. Use a separate optional channel for later retirement.",
-          "The workspace has exactly the channels selected at onboarding. No forced three-channel list. Codes are fixed after saving, name edits work, and at least one active channel is required. Other roles cannot edit configuration.",
+          "At onboarding create Food / Mains and Drink / Soft drinks. Create or import a menu with its category, recipe link and standard price; use only one method per code.",
+          "Chosen categories are saved. No channel choices are required. A standard price is saved with the menu. Menu import previews CREATE/UPDATE and blocks invalid categories.",
           "Not run",
           "",
           "",
@@ -1876,11 +1924,11 @@
         ],
         [
           "CHANNEL-02",
-          "All-channel menu comparison and history",
+          "One-row category profitability",
           "Admin / CEO / Finance",
           "MENU-01 / CHANNEL-01",
-          "Open Menu & prices > Filters. Select All channels, then Takeaway. Add a separate custom-channel selling price and compare it with Takeaway. Retire that optional channel and select it individually. Map a source sales channel to a configured code during import review.",
-          "All channels shows separate menu/channel rows and comparison counts without averaging or borrowing prices. Individual filtering shows only that channel. Retired-channel prices and sales remain readable; new pricing/sales cannot use it. Custom sales mappings validate against this restaurant.",
+          "Open menu profitability. Filter Food, then Mains; select Drink and its subcategory. Add an optional channel price and select it under pricing exceptions.",
+          "Each selling item appears once, counts follow category filters, recipes are absent, standard prices are used by default and channel exceptions do not add duplicate rows.",
           "Not run",
           "",
           "",

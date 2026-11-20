@@ -1,0 +1,17 @@
+# Category-first menu pricing (048)
+
+Apply `supabase/migrations/202611200048_category_first_menu_pricing.sql` before deploying the matching app. Existing records, recipe versions, selling prices and sales are preserved. Existing Food/Drink subcategories are collected into a restaurant-owned list; invalid legacy category text remains on its record for deliberate correction.
+
+New owners define subcategories under the fixed major categories Food and Drink during onboarding. Standard pricing is automatic. Additional sales channels are optional, behind an expandable section. Administrators manage category additions and retirement under Data & Setup > Menu categories; retiring a category does not rewrite prior menu assignments. Category saves use revision checks and are audited.
+
+Profitability contains only selling menu items, one row each. Food/Drink, dependent subcategory and status filters are prominent. Outlet, date and optional pricing exceptions are secondary. Filtering happens before summary counts and pagination. Recipes and their batch/unit costing stay in Recipes & scaling. Unclassified legacy menus remain visible and filterable until corrected.
+
+The new STANDARD pricing basis coexists with existing channel history. Default reporting uses the standard price. If none exists, a sole consistent usable legacy price may be shown with its source identified. Conflicting legacy prices are flagged, never averaged or silently selected. An explicitly selected channel uses its dated price; if no dated entry exists it can use the standard price. An expired latest entry does not revive an older price. Existing immutable source prices and sales are not changed by these estimates. Legacy comparison RPCs remain for compatibility, while the current app uses the selling-only report.
+
+Manual menu entry selects an active Food/Drink subcategory and can save a standard outlet price in the same atomic operation as its recipe link. Missing recipes/prices can still be supplied later. Retry tokens reject changed replays and do not add duplicate versions or prices.
+
+The menu CSV template combines action, menu code/name, major category, subcategory, final recipe code/version, recipe output per sale, standard selling price, tax treatment/rate and effective date. Select one target outlet per batch. Its brand is used for new items; new items are shared across that brand, and prices apply to the selected outlet. Existing outlet-scoped items can only be updated in their own outlet.
+
+CSV review supports up to 100 rows/128 KB. CREATE rejects existing codes; UPDATE is explicit and skips unchanged values. References are restricted to the same restaurant and permitted scope. An empty recipe saves an incomplete menu; an empty price preserves prior prices. Preview shows row errors, warnings and create/update/unchanged actions. All errors block posting, and the current plan is recomputed under the restaurant lock to detect stale previews. Posting is atomic and retry-safe; no stock is posted. Whole-workbook/XLSX upload is not implemented: export the menu sheet as CSV. Other collection sheets remain labelled with their actual manual/import availability.
+
+The updated complete testing pack adds the menu-category collection sheet and menu CSV, bringing supported upload formats to five. Its numeric training checks remain 6000 price, 1680 ingredient/packaging cost and 4320 estimated contribution before other variable costs.

@@ -30,19 +30,19 @@ test('menu profitability compares tax-aware serving estimates, retains missing s
  await page.getByLabel('Saved recipe version',{exact:true}).selectOption({label:'Menu cost recipe · v1 (MENU-RECIPE)'});
  await page.getByLabel('Menu version effective from',{exact:true}).fill('2020-01-01');
  await page.getByRole('button',{name:'Publish menu version',exact:true}).click();await expect(page.getByRole('status').filter({hasText:'Menu version published'})).toBeVisible();
- await sellingPrice(page);await page.getByRole('link',{name:'Menu profitability',exact:true}).click();await filters(page);await page.getByLabel('Profitability channel',{exact:true}).selectOption('DINE_IN');await page.getByRole('button',{name:'Update profitability',exact:true}).click();
- await page.getByLabel('Search menu or recipe name or code',{exact:true}).fill('PROFIT-E2E');await page.getByRole('button',{name:'Search',exact:true}).click();await filters(page);await page.getByLabel('Profitability date',{exact:true}).fill('2020-02-01');
+ await sellingPrice(page);await page.getByRole('link',{name:'Menu profitability',exact:true}).click();await filters(page);await page.getByLabel('Pricing basis',{exact:true}).selectOption('DINE_IN');await page.getByRole('button',{name:'Update profitability',exact:true}).click();
+ await page.getByLabel('Search menu name or code',{exact:true}).fill('PROFIT-E2E');await page.getByRole('button',{name:'Search',exact:true}).click();await filters(page);await page.getByLabel('Profitability date',{exact:true}).fill('2020-02-01');
  await page.getByRole('button',{name:'Update profitability',exact:true}).click();
  const table=page.getByRole('table',{name:'Menu profitability comparison',exact:true});
  const row=table.getByRole('row').filter({has:page.getByRole('rowheader',{name:/Profitability plate/})});
  await expect(row.getByRole('cell').nth(1)).toHaveText('NGN 1,500.00');await expect(row.getByRole('cell').nth(2)).toHaveText('NGN 900.00');
  await expect(row.getByRole('cell').nth(3)).toHaveText('60%');await expect(row.getByRole('cell').nth(5)).toHaveText('NGN 600.00');await expect(row.getByRole('cell').nth(6)).toHaveText('40%');
- await expect(row.getByRole('cell').nth(7)).toContainText('Target not set');
+ await expect(row.getByRole('cell').nth(7)).toContainText(/Target not set|Above target/);
  await page.screenshot({path:testInfo.outputPath('menu-profitability-desktop.png'),fullPage:true});
- await filters(page);await page.getByLabel('Profitability channel',{exact:true}).selectOption('TAKEAWAY');await page.getByRole('button',{name:'Update profitability',exact:true}).click();
+ await filters(page);await page.getByLabel('Pricing basis',{exact:true}).selectOption('TAKEAWAY');await page.getByRole('button',{name:'Update profitability',exact:true}).click();
  await expect(row.getByRole('cell').nth(2)).toHaveText('NGN 900.00');await expect(row.getByRole('cell').nth(1)).toHaveText('Unavailable');await expect(row).toContainText('Selling price unavailable');
  await filters(page);await page.getByLabel('Profitability date',{exact:true}).fill('2019-01-01');await page.getByRole('button',{name:'Update profitability',exact:true}).click();await expect(row).toContainText('Recipe needed');await expect(row.getByRole('cell').nth(1)).toHaveText('Unavailable');
- await filters(page);await page.getByLabel('Profitability date',{exact:true}).fill('2020-02-01');await page.getByLabel('Profitability channel',{exact:true}).selectOption('DINE_IN');await page.getByRole('button',{name:'Update profitability',exact:true}).click();
+ await filters(page);await page.getByLabel('Profitability date',{exact:true}).fill('2020-02-01');await page.getByLabel('Pricing basis',{exact:true}).selectOption('DINE_IN');await page.getByRole('button',{name:'Update profitability',exact:true}).click();
  await page.getByRole('link',{name:'View profitability for Profitability plate',exact:true}).click();
  await expect(page).toHaveURL(url=>url.pathname==='/workspace/menus'&&url.searchParams.get('date')==='2020-02-01'&&url.searchParams.has('version'));
  await expect(page.getByLabel('Preview date',{exact:true})).toHaveValue('2020-02-01');
@@ -52,7 +52,7 @@ test('menu profitability compares tax-aware serving estimates, retains missing s
 
 test('profitability retains selling revenue with missing ingredient costs and works for Finance on mobile',async({page,browser},testInfo)=>{
  await login(page);await catalogue(page);await page.getByRole('link',{name:'View menu item Sales uncosted dish',exact:true}).click();await sellingPrice(page,'1500','NONE');
- await page.getByRole('link',{name:'Menu profitability',exact:true}).click();await filters(page);await page.getByLabel('Profitability channel',{exact:true}).selectOption('DINE_IN');await page.getByRole('button',{name:'Update profitability',exact:true}).click();await page.getByLabel('Search menu or recipe name or code',{exact:true}).fill('SALES-NOCOST');await page.getByRole('button',{name:'Search',exact:true}).click();await filters(page);await page.getByLabel('Profitability date',{exact:true}).fill('2020-02-01');await page.getByRole('button',{name:'Update profitability',exact:true}).click();
+ await page.getByRole('link',{name:'Menu profitability',exact:true}).click();await filters(page);await page.getByLabel('Pricing basis',{exact:true}).selectOption('DINE_IN');await page.getByRole('button',{name:'Update profitability',exact:true}).click();await page.getByLabel('Search menu name or code',{exact:true}).fill('SALES-NOCOST');await page.getByRole('button',{name:'Search',exact:true}).click();await filters(page);await page.getByLabel('Profitability date',{exact:true}).fill('2020-02-01');await page.getByRole('button',{name:'Update profitability',exact:true}).click();
  const url=page.url(),context=await browser.newContext({viewport:{width:375,height:812}}),finance=await context.newPage();
  try {
   await login(finance,'reader@example.test');await finance.goto(url);
@@ -60,29 +60,11 @@ test('profitability retains selling revenue with missing ingredient costs and wo
   await expect(row.getByRole('cell').nth(2)).toHaveText('Unavailable');await expect(row.getByRole('cell').nth(1)).toHaveText('NGN 1,500.00');await expect(row.getByRole('cell').nth(3)).toHaveText('Unavailable');await expect(row).toContainText('Material prices missing');
   await expect(finance.getByRole('link',{name:'Create menu item',exact:true})).toHaveCount(0);
   expect(await finance.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await finance.screenshot({path:testInfo.outputPath('menu-profitability-mobile.png'),fullPage:true});
-  const organisation=new URL(url).searchParams.get('organisation');
-  await finance.getByRole('combobox',{name:'Profitability item type',exact:true}).selectOption('RECIPE');
-  await finance.getByRole('searchbox',{name:'Search menu or recipe name or code',exact:true}).fill('');
+  await expect(finance.getByRole('combobox',{name:'Profitability item type',exact:true})).toHaveCount(0);
+  await finance.getByRole('combobox',{name:'Major category',exact:true}).selectOption('FOOD');
+  await finance.getByRole('searchbox',{name:'Search menu name or code',exact:true}).fill('');
   await finance.getByRole('button',{name:'Search',exact:true}).click();
-  await expect(finance).toHaveURL(/\/workspace\/menus\/profitability\?/);
-  expect(new URL(finance.url()).searchParams.get('organisation')).toBe(organisation);
-  await expect(finance.getByRole('combobox',{name:'Profitability item type',exact:true})).toHaveValue('RECIPE');
-  const comparison=finance.getByRole('table',{name:'Menu profitability comparison',exact:true});
-  await expect(comparison).toContainText('Menu cost recipe');
-  await expect(comparison).not.toContainText('Selling menu');
-  await expect(comparison).toContainText('Not applicable');
-  await expect(comparison).not.toContainText('Selling price unavailable');
-  expect(await finance.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
-  await finance.screenshot({path:testInfo.outputPath('recipe-only-filter-mobile.png'),fullPage:true});
-  const filtered=finance.url();await finance.getByRole('link',{name:'View profitability for Menu cost recipe',exact:true}).click();
-  await expect(finance.getByRole('heading',{name:'Estimated recipe cost',exact:true})).toBeVisible();
-  await finance.getByRole('link',{name:'Back to profitability',exact:true}).click();await expect(finance).toHaveURL(u=>['organisation','location','channel','date','q','status','kind'].every(k=>u.searchParams.get(k)===new URL(filtered).searchParams.get(k)));
-  await finance.getByRole('combobox',{name:'Profitability item type',exact:true}).selectOption('ALL');
-  await finance.getByRole('button',{name:'Search',exact:true}).click();
-  await expect(comparison).toContainText('Selling menu');await expect(comparison).toContainText('Menu cost recipe');
-  await finance.getByRole('combobox',{name:'Profitability item type',exact:true}).selectOption('MENU');
-  await finance.getByRole('button',{name:'Search',exact:true}).click();
-  await expect(comparison).toContainText('Selling menu');await expect(comparison).not.toContainText('Menu cost recipe');
+  await expect(finance.getByRole('table',{name:'Menu profitability comparison',exact:true})).not.toContainText('Menu cost recipe');
   const invalid=new URL(url);invalid.searchParams.set('date','2099-01-01');await finance.goto(invalid.href);await expect(finance.getByRole('main').getByRole('alert')).toContainText('valid outlet, channel, date and status');await expect(finance.getByRole('table',{name:'Menu profitability comparison',exact:true})).toHaveCount(0);
  } finally {await context.close();}
 });

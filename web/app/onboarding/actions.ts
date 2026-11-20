@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { getPlatformAccess, requireUser, workspacePath } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
+import {parseMenuCategories} from "@/lib/menu-categories";
 import {parseChannelRows} from "@/lib/channels";
 import { setupValues, validateSetup, type SetupValues } from "@/lib/onboarding";
 
@@ -20,6 +21,7 @@ export async function saveSetup(_state: SetupState, form: FormData): Promise<Set
   const errors = validateSetup(values, finishing, ["save", "back"].includes(String(form.get("intent"))));
   if (Object.keys(errors).length) return { errors, values };
 
+  let categories;try{categories=parseMenuCategories(values.menu_categories,!finishing);}catch(e){return {values,errors:{menu_categories:e instanceof Error?e.message:"Check menu categories."}};}
   let channels;try{channels=parseChannelRows(values.sales_channels,!finishing);}catch(error){return {values,errors:{sales_channels:error instanceof Error?error.message:'Check sales channels.'}};}
   const supabase = await createClient();
   const { error } = await supabase.rpc("save_restaurant_setup", {
@@ -36,9 +38,10 @@ export async function saveSetup(_state: SetupState, form: FormData): Promise<Set
   const calendar = await supabase.rpc("save_setup_calendar", {p_week_start: values.reporting_week_start === "" ? null : Number(values.reporting_week_start), p_count_day: values.count_day === "" ? null : Number(values.count_day), p_cutoff: values.count_cutoff || null});
   if (calendar.error) return {values, error: "We could not save the reporting calendar. Check the setup update and try again."};
   const channelSave=await supabase.rpc("save_setup_sales_channels",{p_channels:channels});if(channelSave.error)return {values,error:"Sales channels could not be saved. Check database update 046 and try again."};
+  const categorySave=await supabase.rpc("save_setup_menu_categories",{p_categories:categories});if(categorySave.error)return {values,error:"Menu categories could not be saved. Check database update 048."};
   if (!finishing) return { saved: true, values: { ...values, step: nextStep } };
 
-  const { data: organisationId, error: completeError } = await supabase.rpc("complete_restaurant_setup_with_channels");
+  const { data: organisationId, error: completeError } = await supabase.rpc("complete_restaurant_setup_with_categories");
   if (completeError || typeof organisationId !== "string") {
     return { values, error: "Your details are saved, but we couldn’t finish setup. Please try again." };
   }

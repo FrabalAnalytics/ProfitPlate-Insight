@@ -1,6 +1,6 @@
 # Complete Restaurant Onboarding & Test Guide
 
-ProfitPlate Insight | Updated 20 November 2026 / restaurant sales channels update 046 / migrations through 046 | Includes the full master-data setup and daily operational test sequence.
+ProfitPlate Insight | Updated 20 November 2026 / category-first menu update 048 / migrations through 048 | Includes the full master-data setup and daily operational test sequence.
 
 This replaces the stock-only walkthrough as the main onboarding guide. Use a fresh training restaurant; preserve the existing demo restaurant and its historical records. The examples are fictional training data, not recommended recipes, prices or operating defaults.
 
@@ -8,19 +8,19 @@ This replaces the stock-only walkthrough as the main onboarding guide. Use a fre
 
 Use this guide with **profitplate-complete-test-data-2026-11-20.zip**. It supersedes earlier test-pack instructions. The example transaction date is **19 November 2026**, aligned across prices, recipes, openings and imports. Use that date in the app filters. Record your actual execution date separately in the workbook. If starting later, update the sample dates together before entry. Receiver acceptance posts on its actual business date; subsequent processing/waste must use that date or later. If the test spans days, use the current operational date for later stock activity and widen report filters; keep master versions effective on or before that date.
 
-1. Use the deployed site at https://profit-plate-insight.vercel.app/ and confirm migrations through **046** are applied and the matching app is deployed. Do not rerun applied migrations.
-2. During initial setup, choose the channels in **sales-channels.csv** for this sample. Suggestions are optional; real restaurants can create their own names and codes. At least one active channel is required.
+1. Use the deployed site at https://profit-plate-insight.vercel.app/ and confirm migrations through **048** are applied and the matching app is deployed. Do not rerun applied migrations.
+2. During initial setup, add the Food/Drink subcategories in **menu-categories.csv**. Standard pricing is automatic; additional channels are optional.
 3. Create a fresh training restaurant, for example **Training Restaurant - Run 041**. Keep the earlier demo and its histories intact.
 4. Open **ProfitPlate_Complete_Test_Data.xlsx**. Complete **run-details**, then use **test-results** to record Not run, Pass, Fail, Blocked or Not available, actual result and evidence. Run the sections in order.
 5. Replace example emails with verified accounts or aliases you control. For a Gmail account, a plus alias such as `yourname+finance@gmail.com` goes to the same inbox but is registered as a separate app login. Use a separate browser profile for each tester role. Do not save passwords in the pack.
-6. Keep the four **upload-ready** CSVs separate from the manual-entry/checklist files. The full Excel workbook is a reference and test record, not an app upload.
+6. Keep the five **upload-ready** CSVs separate from the manual-entry/checklist files. The full Excel workbook is a reference and test record, not an app upload.
 7. Stop at a failed stock balance, duplicate posting or access restriction. Record the reference and screenshot; resolve it before continuing with dependent tests. An expected access denial is a Pass.
 
 Changes in this revision: one-save centre/owner tasks; standalone waste without approval and with a submitter; Inventory own-centre waste restrictions; Finance combined waste reporting/export; Finance setup restrictions; concise role navigation and invoice layouts. Existing master data, pricing and recipe tests remain included.
 
 ## 1. What this guide covers
 
-Set up the restaurant profile and reporting calendar; brands and outlets; named users and roles; stock centres, ownership and movement routes; suppliers; materials and packaging; unit conversions; starting material prices; processing baselines and processed SKUs; sub-recipes; final recipes; selling menu items; channel/outlet selling prices; cost targets; opening stock; and trial transactions, processing, waste and reports.
+Set up the restaurant profile and reporting calendar; brands and outlets; named users and roles; stock centres, ownership and movement routes; suppliers; materials and packaging; unit conversions; starting material prices; processing baselines and processed SKUs; sub-recipes; final recipes; selling menu categories and items; standard outlet prices and optional channel exceptions; cost targets; opening stock; and trial transactions, processing, waste and reports.
 
 **Both manual entry and bulk import are the required end state for master data. They are not both implemented for every dataset today.** A CSV collection sheet is not evidence of a working importer. The table below records the current application, checked against its source code on the preparation date.
 
@@ -35,8 +35,9 @@ Set up the restaurant profile and reporting calendar; brands and outlets; named 
 | Dated starting material prices | Available | Available: initial-material-prices.csv |
 | Material processing baselines | Available | Not implemented |
 | Sub-recipes, final recipes and their components | Available | Not implemented |
-| Selling menu items and final-recipe links | Available | Not implemented |
-| Outlet/channel selling prices | Available | Not implemented |
+| Selling menu items, categories and final-recipe links | Available | Available: menu-catalogue-import.csv |
+| Standard selling prices | Available with menu entry or in details | Available with menu-catalogue-import.csv |
+| Optional channel price exceptions | Available | Not in the menu CSV |
 | Opening stock by material and centre | Available through reviewed stock requests | No dedicated opening-stock CSV importer |
 | Supplier invoices | Available | Available: purchases-import.csv |
 | Sales records | CSV import route | Available: sales-import.csv |
@@ -53,7 +54,7 @@ Do not mark full dual-route onboarding as passed until the missing master-data i
 5. Collect named storage centres, their actual responsible users, the chosen processing unit and permitted movement routes, including returns.
 6. Collect supplier codes/names/contact details; material and packaging codes/names/types/base units; conversion factors; processing flags; and known last purchase prices with real dates and evidence.
 7. Collect processing input/output standards, usable batch yields, sub-recipes, final recipes and component quantities for the whole batch.
-8. Collect selling menu codes/names, brand, category, linked final recipe, recipe output per serving, outlet, channel, price, tax treatment and effective dates.
+8. Collect selling menu codes/names, brand, Food/Drink major category, restaurant-defined subcategory, linked final recipe, recipe output per serving, outlet, standard price, tax treatment and effective dates. Collect optional channel exceptions only where used.
 9. Count opening stock separately for each material at each stock centre. Include processed stock already physically held at cutover.
 10. Check duplicate codes and spelling. Use the same code consistently across every sheet. Do not invent unknown prices, yields, tax rates or conversion factors.
 
@@ -240,18 +241,18 @@ Expected result: the final recipe combines direct materials, the correct share o
 3. Set the restaurant/outlet scope correctly.
 4. Select the saved **SNAPPER_RICE_RECIPE** final-recipe version.
 5. Set **Recipe output per menu item = 1 PCS**. The final recipe yields 10 PCS; one sold plate uses one of those servings, not all 10.
-6. Enter an effective date consistent with the recipe and publish the menu version.
+6. Enter an effective date consistent with the recipe. In Standard selling price, enter 6000, Dining Room outlet, the effective date and No tax applied for this fictional example; then publish. If the price is unavailable, leave it blank for now.
 7. Verify the item appears once and its published final-recipe link is correct.
 
-A selling menu item is the identity used for sales. A final recipe is how that item is composed. A sub-recipe is a preparation component. Keep their codes and responsibilities clear. An incomplete menu draft is allowed but must not be mistaken for a fully costed, priced item. Bulk selling-menu import is not currently implemented.
+A selling menu item is the identity used for sales. A final recipe is how that item is composed. A sub-recipe is a preparation component. Keep their codes and responsibilities clear. An incomplete menu draft is allowed but must not be mistaken for a fully costed, priced item. Alternatively, use Import menu CSV with menu-catalogue-import.csv after setting up the categories and recipes. Review CREATE/UPDATE and save; do not create the same code manually and then import CREATE.
 
-## 14. Enter outlet/channel selling prices and verify menu profitability
+## 14. Verify standard selling prices and menu profitability
 
-1. Open the menu item's **Recipe, prices & margin** details and select **Add selling price**.
-2. Choose Dining Room, sales channel Takeaway, selling price **6000**, the effective date and a price-source note.
+1. If the price was saved with menu creation or CSV import, skip to step 5. Otherwise open the menu item details and select **Add selling price**.
+2. Choose Dining Room, **Standard selling price**, selling price **6000**, the effective date and a price-source note.
 3. For this fictional arithmetic test only, choose **No tax applied**. This is not a recommendation about the restaurant's actual tax obligations. Real onboarding must use its approved tax treatment and rate.
-4. Save the price. Add separate Dine in or Delivery prices only where the restaurant sells through those channels, with corresponding recipe/packaging assumptions reviewed.
-5. Open **Menu & prices**: profitability now appears first. Use **Filters** to choose the matching outlet, channel and estimate date. The catalogue remains available on its own tab. Check the results below; open a menu row for supporting recipe and price details.
+4. Save the standard price. Add channel-specific exceptions only when the restaurant charges a different price through that channel.
+5. Open **Menu & prices**: profitability now appears first. Filter Food, then Mains. Use **Outlet, date & pricing exceptions** to check the outlet and date. Each selling item appears once; recipes stay in Recipes & scaling. The catalogue remains available on its own tab. Check the results below; open a menu row for supporting recipe and price details.
 
 | Check | Expected training result |
 | --- | --- |
@@ -388,10 +389,12 @@ Run optional CEO-PO-01 and CEO-PO-02 after the core arithmetic checks. For examp
 PO warnings select orders by their actual issue day in the business timezone, and show live delivery/billing progress. The baseline is pinned at issue. Corrected invoice links need review; approved voids update progress. Existing issued orders have a historical baseline reconstructed only from evidence recorded by issue time, or show no comparison baseline. No prices or stock are changed by this historical backfill.
 
 
-## 19. Restaurant sales channels
+## 19. Menu categories and standard prices
 
-The initial Brand & first location step includes channel choices. For this dataset select Takeaway, Dine in and Delivery; they are sample values, not a system restriction. A real restaurant may instead choose Room service, Catering, Counter sales or any other suitable channel with its own import code. Onboarding saves exactly those choices. Edit names or retire channels under Data & Setup > Sales channels. Saved codes remain fixed so imports and history retain their identity.
+During onboarding, add your own subcategories under Food or Drink. For this training restaurant add Food / Mains, Food / Sides and Drink / Soft drinks. You can manage them later under Data & Setup > Menu categories. Retiring a subcategory preserves existing assignments. Extra sales channels are optional; a standard selling price is available without configuring Dine in, Takeaway or Delivery.
 
-Menu & prices defaults to All channels. There is one row per active menu item and active channel; summary counts refer to comparisons, not unique dishes. Filter one channel to reproduce the core Takeaway 6000 / 1680 / 4320 / 72% scenario. Missing prices in another channel remain visibly incomplete; values are not borrowed or averaged. Select a retired channel individually for a historical comparison. New prices and new sales cannot use retired channels, while recorded history remains accessible.
+Create the selling menu manually with its major category, subcategory, recipe link and optional standard price in the same form, OR upload menu-catalogue-import.csv through Menu & prices > Import menu CSV. Choose the PRIMARY outlet. Review the CREATE action and price 6000, check the confirmation and save. Do not manually create the item and then import CREATE for the same code. Use UPDATE deliberately for existing items; unchanged rows and retries do not duplicate saved versions. A blank recipe saves an incomplete item. A blank imported price keeps existing prices. Food/Drink subcategories and any supplied recipe code/version must already exist. Export the relevant workbook sheet as CSV; the menu importer accepts CSV, not the whole workbook or XLSX file.
 
-Use CHANNEL-01 and CHANNEL-02 after the core data checks. The sales import Channel_Code must match a configured business code, or be mapped to an active channel in the review screen. The full workbook and sales-channel collection sheet are not uploadable master-data files; channel configuration currently uses the manual setup form.
+Menu profitability has one row per selling menu item. Filter Food/Drink, then subcategory, status, outlet and date. Recipes and their costs stay in Recipes & scaling. At the standard price of 6000 the training plate costs 1680, contributes an estimated 4320 and has a 72% Gross Profit Margin, before unconnected variable costs. Channel exceptions can be chosen under Outlet, date & pricing exceptions without duplicating rows. A missing standard price may use a sole consistent legacy price; conflicting legacy prices require choosing a pricing basis or saving a standard price. Prices are never averaged across channels.
+
+The menu CSV is the fifth uploadable format in this pack. Suppliers, material masters, recipe definitions and opening-stock collection sheets remain manual-entry/reference sheets unless their specific screen offers an importer. Use the CHANNEL-01/02 cases to check category setup, one-row reporting and optional channel overrides.

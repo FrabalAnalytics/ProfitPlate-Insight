@@ -369,18 +369,18 @@
   },
   {
     "id": "CHANNEL-01",
-    "area": "Restaurant channel choices",
+    "area": "Menu categories and standard pricing",
     "role": "Admin owner",
     "prerequisite": "SET-01",
-    "steps": "Choose the sample sales channels during onboarding. In Data & Setup > Sales channels, add a custom channel with its own name/code; rename it and save again. Use a separate optional channel for later retirement.",
-    "expected": "The workspace has exactly the channels selected at onboarding. No forced three-channel list. Codes are fixed after saving, name edits work, and at least one active channel is required. Other roles cannot edit configuration."
+    "steps": "At onboarding create Food / Mains and Drink / Soft drinks. Create or import a menu with its category, recipe link and standard price; use only one method per code.",
+    "expected": "Chosen categories are saved. No channel choices are required. A standard price is saved with the menu. Menu import previews CREATE/UPDATE and blocks invalid categories."
   },
   {
     "id": "CHANNEL-02",
-    "area": "All-channel menu comparison and history",
+    "area": "One-row category profitability",
     "role": "Admin / CEO / Finance",
     "prerequisite": "MENU-01 / CHANNEL-01",
-    "steps": "Open Menu & prices > Filters. Select All channels, then Takeaway. Add a separate custom-channel selling price and compare it with Takeaway. Retire that optional channel and select it individually. Map a source sales channel to a configured code during import review.",
-    "expected": "All channels shows separate menu/channel rows and comparison counts without averaging or borrowing prices. Individual filtering shows only that channel. Retired-channel prices and sales remain readable; new pricing/sales cannot use it. Custom sales mappings validate against this restaurant."
+    "steps": "Open menu profitability. Filter Food, then Mains; select Drink and its subcategory. Add an optional channel price and select it under pricing exceptions.",
+    "expected": "Each selling item appears once, counts follow category filters, recipes are absent, standard prices are used by default and channel exceptions do not add duplicate rows."
   }
 ]

@@ -1,0 +1,2 @@
+﻿action,menu_code,menu_name,major_category,subcategory,recipe_code,recipe_version,recipe_quantity,selling_price,tax_setting,tax_percent,effective_from
+CREATE,SNAPPER_RICE_MENU,Training Snapper Rice Plate,FOOD,Mains,SNAPPER_RICE_RECIPE,1,1,6000,NONE,0,2026-11-19

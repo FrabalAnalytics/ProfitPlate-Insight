@@ -59,6 +59,4 @@
 
 .menu-profitability-toolbar>input[type="search"],.menu-profitability-toolbar>select{border:1px solid var(--border);border-radius:8px;min-height:44px;padding:10px 14px;background:white;color:var(--foreground);font:inherit;font-size:14px}.menu-profitability-toolbar>input[type="search"]:focus,.menu-profitability-toolbar>select:focus{outline:2px solid var(--brand);outline-offset:2px}
 
-.menu-profitability-kpis-all{grid-template-columns:repeat(5,minmax(0,1fr))}@media(max-width:900px){.menu-profitability-kpis-all{grid-template-columns:repeat(2,minmax(0,1fr))}}
-
-.menu-profitability-kpis-recipes{grid-template-columns:repeat(2,minmax(0,1fr))}
+.menu-setup-actions{display:flex;gap:18px;flex-wrap:wrap;margin:12px 0}.menu-profitability-register .data-table .record-status{white-space:nowrap}

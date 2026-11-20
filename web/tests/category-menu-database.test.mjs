@@ -1,0 +1,62 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';import {readFile,readdir} from 'node:fs/promises';import {randomUUID} from 'node:crypto';import {PGlite} from '@electric-sql/pglite';
+test('category-first menus use one row, standard pricing and reviewed imports',async t=>{
+ const db=new PGlite(),[owner,procurement,finance,other,scoped,inventory,inventoryScoped]=Array.from({length:7},()=>randomUUID());
+ const value=async(sql,args=[])=>Object.values((await db.query(sql,args)).rows[0])[0];
+ const login=async id=>{await db.exec('reset role');await db.query("select set_config('request.jwt.claim.sub',$1,false)",[id]);await db.exec('set role authenticated');};
+ const deny=(work,code='42501')=>assert.rejects(work,e=>e.code===code);
+ let org,otherOrg,supplier,location,item,kg,pcs,recipe,menu,version;
+ const today=new Date().toISOString().slice(0,10),save=(rows,revision)=>value('select public.save_sales_channels($1,$2,$3)',[org,revision,rows]);
+ const configured=[{code:'COUNTER',name:'Counter sales',is_active:true},{code:'ROOM_SERVICE',name:'Room service',is_active:true}];
+ const dash=(channel='ALL')=>value("select public.menu_profitability_dashboard($1,$2,$3,$4,'',1,'ALL')",[org,location,channel,today]);
+ const price=(channel,amount)=>value("select public.save_menu_selling_price($1,$2,$3,$4,$5,$6,'NONE',0,$7,null,'Training')",[org,menu,randomUUID(),location,channel,amount,today]);
+ try{
+  await db.exec(`create role anon;create role authenticated;create schema auth;create table auth.users(id uuid primary key,email_confirmed_at timestamptz,email text);create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;grant usage on schema public,auth to authenticated,anon;grant execute on function auth.uid() to authenticated,anon;`);
+  for(const id of[owner,procurement,finance,other,scoped,inventory,inventoryScoped])await db.query('insert into auth.users values($1,now(),$2)',[id,`${id}@example.test`]);
+  for(const name of(await readdir(new URL('../supabase/migrations/',import.meta.url))).filter(n=>n.endsWith('.sql')).sort())await db.exec(await readFile(new URL(`../supabase/migrations/${name}`,import.meta.url),'utf8'));
+  for(const id of[other,owner]){await login(id);await value("select public.save_restaurant_setup('Procurement Test','QSR','NG','NGN','Brand','Outlet','Africa/Lagos','',3)");const result=await value('select public.complete_restaurant_setup()');if(id===owner)org=result;else otherOrg=result;}
+  location=await value('select id from public.locations where organisation_id=$1',[org]);kg=await value("select id from public.units_of_measure where organisation_id=$1 and code='KG'",[org]);item=await value("select public.save_catalogue_material($1,null,'RICE','Rice','RAW','',$2,true,true)",[org,kg]);supplier=await value("select public.save_catalogue_supplier($1,null,'SUP','Supplier','','','',true)",[org]);
+  await db.exec('reset role');for(const[id,role,scope]of[[procurement,'procurement',null],[finance,'finance',null],[scoped,'procurement',location],[inventory,'inventory',null],[inventoryScoped,'inventory',location]]){const m=await value('insert into public.organisation_memberships(organisation_id,user_id) values($1,$2) returning id',[org,id]);await db.query('insert into public.membership_roles(organisation_id,membership_id,role_code,location_id) values($1,$2,$3,$4)',[org,m,role,scope]);}await login(procurement);
+
+ await login(owner);
+
+ await save(configured,0);pcs=await value("select id from public.units_of_measure where organisation_id=$1 and code='PCS'",[org]);
+ const brand=await value('select brand_id from public.locations where id=$1',[location]);
+ const prices=[{material_code:'RICE',quantity:'1',unit_code:'KG',total_price:'1000',price_date:today,source_note:'Starting price'}],preview=await value('select public.preview_material_reference_prices($1,$2)',[org,prices]);await value("select public.save_material_reference_prices($1,$2,'MANUAL',$3,$4)",[org,randomUUID(),prices,preview]);
+ recipe=await value("select public.publish_recipe_version($1,null,$2,'CHANNEL-RECIPE','Channel recipe','FINAL',$3,1,$4,'',$5)",[org,randomUUID(),today,pcs,[{kind:'ITEM',target_id:item,quantity:'1',uom_id:kg}]]);
+ version=await value("select public.publish_menu_item_version($1,null,$2,'CHANNEL-MENU','Channel plate',$3,'Mains',$4,1,$5,'')",[org,randomUUID(),brand,recipe,today]);menu=await value('select menu_item_id from public.menu_item_versions where id=$1',[version]);await value("select public.save_setup_profile($1,'MENU',$2,null,'FOOD','Mains',false,'PURCHASED')",[org,menu]);await value('select public.save_cost_targets($1,null,40,25)',[org]);await price('COUNTER','2000');await price('ROOM_SERVICE','4000');
+
+ const cats=[{major:'FOOD',name:'Mains',is_active:true},{major:'FOOD',name:'Sides',is_active:true},{major:'DRINK',name:'Soft drinks',is_active:true}];
+ const categories=()=>value('select public.menu_categories($1)',[org]);await value('select public.save_menu_categories($1,0,$2)',[org,cats]);
+ const compare=(major='ALL',sub='',page=1,channel='STANDARD',search='')=>value("select public.selling_menu_profitability($1,$2,$3,$4,$5,$6,'ALL',$7,$8)",[org,location,channel,today,search,page,major,sub]);
+ const entry=(code,name='Menu '+code,major='FOOD',category='Mains',amount='2000')=>({code,name,brand_id:brand,menu_id:'',location_id:'',primary_category:major,category,recipe_version_id:recipe,recipe_quantity:'1',effective_from:today,price:amount,price_location_id:location,tax_setting:'NONE',tax_percent:'0',price_date:today});
+ await t.test('one row per item; conflicting legacy prices are explicit, not averaged or counted twice',async()=>{
+  const p=await compare();assert.equal(p.total,1);assert.equal(p.rows[0].estimate.price_issue,'CHANNEL_PRICES_DIFFER');assert.equal(p.rows[0].estimate.net_revenue,null);assert.equal(p.summary.incomplete,1);
+  await value("select public.save_menu_selling_price($1,$2,$3,$4,'STANDARD',2500,'NONE',0,$5,null,'Standard')",[org,menu,randomUUID(),location,today]);
+  const a=await compare();assert.equal(a.total,1);assert.equal(a.summary.within_target,1);assert.equal(Number(a.rows[0].estimate.net_revenue),2500);assert.equal(a.rows[0].estimate.price_basis,'STANDARD');assert.equal(Number((await compare('ALL','',1,'ROOM_SERVICE')).rows[0].estimate.net_revenue),4000);
+ });
+ await t.test('manual menu save includes standard price atomically and retries do not add versions',async()=>{
+  const token=randomUUID(),data=entry('MANUAL');const id=await value('select public.save_menu_entry($1,$2,$3)',[org,token,data]);assert.equal(await value('select public.save_menu_entry($1,$2,$3)',[org,token,data]),id);assert.equal(await value('select count(*)::int from public.menu_price_versions where organisation_id=$1 and menu_item_id=$2',[org,id]),1);await deny(value('select public.save_menu_entry($1,$2,$3)',[org,token,{...data,price:'2100'}]),'22023');
+  await deny(value('select public.save_menu_entry($1,$2,$3)',[org,randomUUID(),entry('BAD','Bad','FOOD','Unknown')]),'22023');assert.equal(await value("select count(*)::int from public.menu_items where organisation_id=$1 and code='BAD'",[org]),0);
+  await value('select public.save_menu_entry($1,$2,$3)',[org,randomUUID(),entry('DRINK','Fresh drink','DRINK','Soft drinks')]);const r=await compare('DRINK');assert.equal(r.total,1);assert.equal(r.rows[0].name,'Fresh drink');assert.equal(r.rows[0].target,'25.000000');
+ });
+ await t.test('category filters are applied before totals and pagination with 60+ menus; recipes never appear',async()=>{
+  await db.exec('reset role');for(let n=0;n<61;n++)await db.query("insert into public.menu_items(organisation_id,brand_id,code,name,primary_category,subcategory) values($1,$2,$3,$4,'FOOD','Sides')",[org,brand,'SIDE-'+n,'Side '+String(n).padStart(2,'0')]);await login(owner);assert.equal((await compare('FOOD','Sides',2)).total,61);assert.equal((await compare('FOOD','Sides',2)).rows.length,25);assert.equal((await compare('FOOD','Sides',3)).rows.length,11);assert.equal((await compare('DRINK','Mains')).total,0);assert.equal((await compare('ALL','',1,'STANDARD','CHANNEL-RECIPE')).total,0);
+ });
+ const csvRow={action:'CREATE',menu_code:'BULK1',menu_name:'Bulk plate',major_category:'FOOD',subcategory:'Mains',recipe_code:'CHANNEL-RECIPE',recipe_version:'1',recipe_quantity:'1',selling_price:'2400',tax_setting:'NONE',tax_percent:'0',effective_from:today};
+ const importPreview=rows=>value('select public.preview_menu_catalogue_import($1,$2,$3)',[org,location,rows]),post=(rows,plan,token=randomUUID())=>value('select public.post_menu_catalogue_import($1,$2,$3,$4,$5)',[org,location,token,rows,plan]);
+ await t.test('imports review create/update/unchanged actions, preserve duplicate safety and save prices',async()=>{
+  const rows=[csvRow],p=await importPreview(rows);assert.equal(p.valid,true,JSON.stringify(p));assert.equal(p.rows[0].action,'CREATE');const token=randomUUID();assert.equal(await post(rows,p,token),1);assert.equal(await post(rows,p,token),0);assert.equal((await importPreview(rows)).valid,false);const update=[{...csvRow,action:'UPDATE'}],same=await importPreview(update);assert.equal(same.rows[0].action,'UNCHANGED',JSON.stringify(same));assert.equal(await post(update,same),0);assert.equal(Number((await compare('ALL','',1,'STANDARD','BULK1')).rows[0].estimate.net_revenue),2400);
+ });
+ await t.test('invalid or stale imports cannot leave partial data; omissions remain visible',async()=>{
+  const rows=[{...csvRow,menu_code:'GOOD'},{...csvRow,menu_code:'BADROW',subcategory:'Unknown'}],p=await importPreview(rows);assert.equal(p.valid,false);assert.equal(p.rows[1].action,'ERROR');await deny(post(rows,p),'22023');assert.equal(await value("select count(*)::int from public.menu_items where organisation_id=$1 and code='GOOD'",[org]),0);
+  const change=[{...csvRow,action:'UPDATE',selling_price:'2500'}],stale=await importPreview(change);await value("select public.save_menu_selling_price($1,(select id from public.menu_items where organisation_id=$1 and code='BULK1'),$2,$3,'STANDARD',2600,'NONE',0,$4,null,'Changed')",[org,randomUUID(),location,today]);await deny(post(change,stale),'22023');
+  const draft=[{...csvRow,menu_code:'DRAFT',recipe_code:'',recipe_version:'',recipe_quantity:'',selling_price:'',tax_setting:'',tax_percent:''}],plan=await importPreview(draft);assert.equal(plan.valid,true);assert.ok(plan.rows[0].warning);await post(draft,plan);assert.equal((await compare('ALL','',1,'STANDARD','DRAFT')).rows[0].version_id,null);
+ });
+ await t.test('category changes, imports and financial reports retain tenant and role boundaries',async()=>{
+  const p=await categories();await deny(value('select public.save_menu_categories($1,0,$2)',[org,cats]),'22023');for(const actor of [finance,inventory,scoped,other]){await login(actor);await deny(value('select public.save_menu_categories($1,$2,$3)',[org,p.revision,cats]));await deny(importPreview([csvRow]));}await login(inventory);await deny(compare());await login(other);await deny(compare());await login(owner);assert.ok(supplier&&otherOrg);assert.ok((await dash()).rows.length);const c=await value('select public.sales_channels($1)',[org]);assert.ok(c.channels.find(r=>r.code==='STANDARD'&&r.is_active));
+ });
+ await t.test('fresh onboarding saves chosen Food/Drink subcategories, with standard pricing and no forced channel choices',async()=>{
+  const fresh=randomUUID();await db.exec('reset role');await db.query('insert into auth.users values($1,now(),$2)',[fresh,'new-category@example.test']);await login(fresh);await value("select public.save_restaurant_setup('Category Restaurant','QSR','NG','NGN','Brand','Outlet','Africa/Lagos','',3)");await value("select public.save_setup_calendar(1,0,'23:30')");await value('select public.save_setup_sales_channels($1)',[[{code:'STANDARD',name:'Standard selling price',is_active:true}]]);await deny(value('select public.complete_restaurant_setup_with_categories()'),'22023');await value('select public.save_setup_menu_categories($1)',[cats]);const id=await value('select public.complete_restaurant_setup_with_categories()');assert.equal((await value('select public.menu_categories($1)',[id])).categories.length,3);assert.deepEqual((await value('select public.sales_channels($1)',[id])).channels.map(c=>c.code),['STANDARD']);assert.equal(await value('select public.complete_restaurant_setup_with_categories()'),id);
+ });
+ }finally{await db.close();}
+});

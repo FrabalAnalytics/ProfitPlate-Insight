@@ -1,3 +1,4 @@
+import {standardChannels,parseMenuCategories} from "./menu-categories";
 export const concepts = [
   ["QSR", "Quick service restaurant"], ["CASUAL_DINING", "Casual dining"],
   ["FINE_DINING", "Fine dining"], ["BAKERY", "Bakery"], ["CAFE", "Café"],
@@ -7,12 +8,12 @@ export const concepts = [
 
 export type SetupValues = {
   business_name: string; concept: string; country_code: string; currency_code: string;
-  brand_name: string; location_name: string; timezone: string; address: string; reporting_week_start: string; count_day: string; count_cutoff: string; sales_channels:string; step: number;
+  brand_name: string; location_name: string; timezone: string; address: string; reporting_week_start: string; count_day: string; count_cutoff: string; sales_channels:string; menu_categories:string; step: number;
 };
 
 export const emptySetup: SetupValues = {
   business_name: "", concept: "", country_code: "NG", currency_code: "NGN",
-  brand_name: "", location_name: "", timezone: "Africa/Lagos", address: "", reporting_week_start: "", count_day: "", count_cutoff: "", sales_channels:"[]", step: 1,
+  brand_name: "", location_name: "", timezone: "Africa/Lagos", address: "", reporting_week_start: "", count_day: "", count_cutoff: "", sales_channels:standardChannels, menu_categories:"[]", step: 1,
 };
 
 // Database rows include nullable completion metadata. Keep only editable fields
@@ -28,7 +29,7 @@ export function normaliseSetup(raw: unknown): SetupValues {
     business_name: text("business_name"), concept: text("concept"),
     country_code: text("country_code"), currency_code: text("currency_code"),
     brand_name: text("brand_name"), location_name: text("location_name"),
-    timezone: text("timezone"), address: text("address"), reporting_week_start: text("reporting_week_start"), count_day: text("count_day"), count_cutoff: text("count_cutoff").slice(0,5), sales_channels:text("sales_channels"), step,
+    timezone: text("timezone"), address: text("address"), reporting_week_start: text("reporting_week_start"), count_day: text("count_day"), count_cutoff: text("count_cutoff").slice(0,5), sales_channels:text("sales_channels"), menu_categories:text("menu_categories"), step,
   };
 }
 
@@ -37,7 +38,7 @@ export function setupValues(form: FormData): SetupValues {
   return {
     business_name: text("business_name"), concept: text("concept"), country_code: text("country_code"),
     currency_code: text("currency_code"), brand_name: text("brand_name"), location_name: text("location_name"),
-    timezone: text("timezone"), address: text("address"), reporting_week_start: text("reporting_week_start"), count_day: text("count_day"), count_cutoff: text("count_cutoff"), sales_channels:text("sales_channels")||"[]", step: Number(form.get("step")),
+    timezone: text("timezone"), address: text("address"), reporting_week_start: text("reporting_week_start"), count_day: text("count_day"), count_cutoff: text("count_cutoff"), sales_channels:text("sales_channels")||standardChannels, menu_categories:text("menu_categories")||"[]", step: Number(form.get("step")),
   };
 }
 
@@ -63,5 +64,6 @@ export function validateSetup(values: SetupValues, full = false, draft = false):
   }
   if ((values.count_cutoff || (!draft && (full || values.step > 1))) && !/^([01][0-9]|2[0-3]):[0-5][0-9]$/.test(values.count_cutoff)) errors.count_cutoff = "Choose a physical count cutoff time.";
   try{const rows=JSON.parse(values.sales_channels);if(!Array.isArray(rows)||rows.length>30)throw new Error();if(!draft&&(full||values.step>1)&&!rows.some((r:{is_active?:boolean})=>r.is_active!==false))errors.sales_channels="Choose at least one sales channel.";}catch{errors.sales_channels="Check your sales channels.";}
+  try{parseMenuCategories(values.menu_categories,draft||(!full&&values.step===1));}catch(e){errors.menu_categories=e instanceof Error?e.message:"Check menu categories.";}
   return errors;
 }

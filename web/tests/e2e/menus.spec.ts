@@ -23,7 +23,8 @@ async function createMenu(page: Page, code: string, name: string, recipe: string
  await page.getByRole("link", { name: "Create menu item", exact: true }).click();
  await page.getByLabel("Menu code", { exact: true }).fill(code);
  await page.getByLabel("Menu item name", { exact: true }).fill(name);
- await page.getByLabel("Subcategory (optional)", { exact: true }).fill("Mains");
+ await page.getByLabel("Primary category",{exact:true}).selectOption("FOOD");
+ await page.getByLabel("Subcategory", { exact: true }).selectOption("Mains");
  await page.getByLabel("Search saved final recipes", { exact: true }).fill(recipe);
  await page.getByLabel("Saved recipe version", { exact: true }).selectOption({ label: recipe === "Menu cost recipe" ? "Menu cost recipe · v1 (MENU-RECIPE)" : "Menu unpriced recipe · v1 (MENU-MISSING-RECIPE)" });
  await page.getByLabel("Menu version effective from", { exact: true }).fill("2020-01-01");
@@ -52,10 +53,12 @@ test("menu prices calculate declared tax and preserve recipe bindings, versions 
  await page.getByLabel("Menu version effective from", { exact: true }).fill("2020-01-01");
  await page.getByRole("button", { name: "Publish menu version", exact: true }).click();
  await expect(page.getByRole("status").filter({ hasText: "Menu version published" })).toContainText("Menu version published");
+ await page.getByLabel("Preview sales channel",{exact:true}).selectOption("TAKEAWAY");
  await expect(page.locator(".menu-negative")).toContainText("NGN -300.00");
  await openDetails(page);
  await page.getByLabel("Saved menu version", { exact: true }).selectOption({ label: "Version 1 · 2020-01-01" });
  await page.getByRole("button", { name: "View version", exact: true }).click();
+ await page.getByLabel("Preview sales channel",{exact:true}).selectOption("TAKEAWAY");
  await expect(page.locator(".menu-margin-cards article").filter({ hasText: "Est. Contribution Margin" })).toContainText("NGN 600.00");
  await expect(page.getByText("Preparing your workspace…", { exact: true })).toHaveCount(0);
  await expect(page.locator(".menu-margin-preview")).toBeVisible();
@@ -108,7 +111,7 @@ test("finance can inspect menu food margins but cannot publish menu versions or 
 
 test('preview automatically applies channel changes and reuses a saved Takeaway price without duplication',async({page},info)=>{
  await openMenus(page);await createMenu(page,'MENU-PREVIEW-SCOPE','Scope preview plate','Menu cost recipe');await addPrice(page,{value:'6000',channel:'TAKEAWAY'});const url=new URL(page.url());url.searchParams.set('channel','DINE_IN');await page.goto(url.href);await expect(page.getByText(/No selling price is available for this location/)).toBeVisible();await openPrices(page);await expect(page.getByRole('table',{name:'Selling price history',exact:true})).toContainText('NGN 6,000.00');await page.getByLabel('Preview sales channel',{exact:true}).selectOption('TAKEAWAY');await expect(page).toHaveURL(/channel=TAKEAWAY/);await expect(page.getByText(/No selling price is available for this location/)).toHaveCount(0);await expect(page.locator('.menu-margin-cards article').filter({has:page.getByText('Net selling revenue',{exact:true})})).toBeVisible();await expect(page.locator('.menu-margin-cards article').filter({has:page.getByText('Net selling revenue',{exact:true})})).toContainText('NGN 6,000.00');await expect(page.locator('.menu-margin-cards article').filter({has:page.getByText('Est. Contribution Margin',{exact:true})})).toContainText('NGN 5,100.00');await openPrices(page);await expect(page.getByRole('table',{name:'Selling price history',exact:true}).getByRole('row')).toHaveCount(2);
- url.searchParams.delete('channel');url.searchParams.delete('location');url.searchParams.delete('saved');await page.goto(url.href);await expect(page.getByLabel('Preview sales channel',{exact:true})).toHaveValue('TAKEAWAY');await expect(page.locator('.menu-preview-basis')).toContainText('Takeaway');await expect(page.locator('.menu-margin-cards')).toContainText('NGN 6,000.00');await expect(page.locator('.menu-margin-preview')).toBeVisible();await page.screenshot({path:info.outputPath('saved-takeaway-preview.png'),fullPage:true});
+ url.searchParams.delete('channel');url.searchParams.delete('location');url.searchParams.delete('saved');await page.goto(url.href);await expect(page.getByLabel('Preview sales channel',{exact:true})).toHaveValue('STANDARD');await expect(page.locator('.menu-preview-basis')).toContainText('Takeaway');await expect(page.locator('.menu-margin-cards')).toContainText('NGN 6,000.00');await expect(page.locator('.menu-margin-preview')).toBeVisible();await page.screenshot({path:info.outputPath('saved-takeaway-preview.png'),fullPage:true});
  const date=page.getByLabel('Preview date',{exact:true});await date.fill('2019-01-01');await expect(page.locator('.menu-margin-cards')).toBeHidden();await expect(page.getByRole('status').filter({hasText:'Choose valid preview values'})).toBeVisible();await date.fill('2020-01-01');await expect(page).toHaveURL(/date=2020-01-01/);await expect(page.locator('.menu-margin-cards')).toContainText('NGN 6,000.00');await page.setViewportSize({width:375,height:812});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
 });
 
