@@ -26,7 +26,7 @@ test("nullable or malformed draft fields become safe form values", () => {
 test('reporting calendar must be explicit before completion, but incomplete drafts can be saved',()=>{
  const values={...emptySetup,business_name:'Restaurant',concept:'QSR',brand_name:'Brand',location_name:'Outlet',step:2};
  const incomplete=validateSetup(values,true);assert.ok(incomplete.reporting_week_start);assert.ok(incomplete.count_day);assert.ok(incomplete.count_cutoff);assert.deepEqual(validateSetup(values,false,true),{});
- assert.deepEqual(validateSetup({...values,reporting_week_start:'0',count_day:'6',count_cutoff:'00:00'},true),{});
+ assert.deepEqual(validateSetup({...values,reporting_week_start:'0',count_day:'6',count_cutoff:'00:00',sales_channels:'[{"code":"COUNTER","name":"Counter"}]'},true),{});
  for(const cutoff of ['24:00','12:60','12:00:30','9:00'])assert.ok(validateSetup({...values,reporting_week_start:'3',count_day:'2',count_cutoff:cutoff},true).count_cutoff);
  assert.ok(validateSetup({...values,reporting_week_start:'7',count_day:'-1',count_cutoff:'23:30'},true).reporting_week_start);
 });

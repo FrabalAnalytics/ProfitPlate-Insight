@@ -1,5 +1,4 @@
 import type { RecipeOption } from "./recipes";
-export const menuChannels = [["DINE_IN", "Dine in"], ["TAKEAWAY", "Takeaway"], ["DELIVERY", "Delivery"]] as const;
 export const menuTaxSettings = [["NONE", "No tax applied"], ["EXCLUSIVE", "Selling price excludes tax"], ["INCLUSIVE", "Selling price includes tax"]] as const;
 export type MenuRecipe = RecipeOption & { effective_from: string };
 export type MenuPacket = {
@@ -20,19 +19,19 @@ export type MenuProfitability = {
  total: number; currency_code: string; unassigned_menu_count: number;
  summary?:{total:number;at_risk:number;within_target:number;incomplete:number;target_not_set:number};
  rows: { id: string; code: string; name: string; version_id: string | null;
-  target_state?:string;target_gap_pp?:string|null;primary_category?:string|null; target?:string|null; version: number | null; effective_from: string | null; recipe_quantity: string | null; estimate: MenuEstimate | null }[];
+  channel_code?:string;channel_name?:string;target_state?:string;target_gap_pp?:string|null;primary_category?:string|null; target?:string|null; version: number | null; effective_from: string | null; recipe_quantity: string | null; estimate: MenuEstimate | null }[];
 };
 export function validMenuTaxRate(value: string) {
  return /^(?:0|[1-9]\d{0,2})(?:\.\d{1,6})?$/.test(value) && Number(value) <= 100;
 }
 
 // Choose a useful initial preview; never override an explicitly selected scope.
-export function menuPreviewScope(requested:{location?:string;channel?:string},locations:{id:string}[],prices:MenuPacket["prices"],date:string){
+export function menuPreviewScope(requested:{location?:string;channel?:string},locations:{id:string}[],prices:MenuPacket["prices"],date:string,defaultChannel=""){
  const ids=new Set(locations.map(l=>l.id)),latest=new Map<string,MenuPacket["prices"][number]>();
  for(const price of [...prices].filter(p=>ids.has(p.location_id)&&p.effective_from<=date).sort((a,b)=>b.effective_from.localeCompare(a.effective_from)||b.version-a.version)){
   const key=price.location_id+":"+price.channel_code;if(!latest.has(key))latest.set(key,price);
  }
  const usable=[...latest.values()].filter(p=>!p.effective_to||p.effective_to>=date),preferred=usable.find(p=>!requested.channel||p.channel_code===requested.channel);
  const locationId=requested.location??preferred?.location_id??locations[0]?.id??"";
- return {locationId,channel:requested.channel??usable.find(p=>p.location_id===locationId)?.channel_code??"DINE_IN"};
+ return {locationId,channel:requested.channel??usable.find(p=>p.location_id===locationId)?.channel_code??defaultChannel};
 }

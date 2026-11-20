@@ -4,7 +4,7 @@
     "area": "Preparation",
     "role": "Administrator",
     "prerequisite": "None",
-    "steps": "Record deployed URL, executive menu and PO exposure release 045, migrations through 045, actual execution date, browser and tester in run-details. Use this revision, not earlier v2 instructions.",
+    "steps": "Record deployed URL, restaurant sales channels release 046, migrations through 046, actual execution date, browser and tester in run-details. Use this revision, not earlier v2 instructions.",
     "expected": "Correct app and pack selected; no need to rerun applied migrations."
   },
   {
@@ -366,5 +366,21 @@
     "prerequisite": "CEO-PO-01",
     "steps": "Record a partial GRN for 1 KG on that optional PO. Record a linked invoice for 1 KG. Refresh CEO briefing. Finish receiving and billing. Separately test a corrected invoice requiring renewed links and an approved void.",
     "expected": "GRNs update delivery quantities without changing recipe prices. Valid billed quantity reduces unbilled quote exposure; when fully billed it reaches zero. Invoice price evidence updates monthly recipe estimates. Corrected stale links are visibly flagged, approved voids restore the appropriate progress. PO potential and invoice comparisons are never combined as a profit total. Optional extra transactions change the earlier core expected totals."
+  },
+  {
+    "id": "CHANNEL-01",
+    "area": "Restaurant channel choices",
+    "role": "Admin owner",
+    "prerequisite": "SET-01",
+    "steps": "Choose the sample sales channels during onboarding. In Data & Setup > Sales channels, add a custom channel with its own name/code; rename it and save again. Use a separate optional channel for later retirement.",
+    "expected": "The workspace has exactly the channels selected at onboarding. No forced three-channel list. Codes are fixed after saving, name edits work, and at least one active channel is required. Other roles cannot edit configuration."
+  },
+  {
+    "id": "CHANNEL-02",
+    "area": "All-channel menu comparison and history",
+    "role": "Admin / CEO / Finance",
+    "prerequisite": "MENU-01 / CHANNEL-01",
+    "steps": "Open Menu & prices > Filters. Select All channels, then Takeaway. Add a separate custom-channel selling price and compare it with Takeaway. Retire that optional channel and select it individually. Map a source sales channel to a configured code during import review.",
+    "expected": "All channels shows separate menu/channel rows and comparison counts without averaging or borrowing prices. Individual filtering shows only that channel. Retired-channel prices and sales remain readable; new pricing/sales cannot use it. Custom sales mappings validate against this restaurant."
   }
 ]

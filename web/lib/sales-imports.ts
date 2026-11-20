@@ -15,7 +15,7 @@ export function parseSalesMappings(text: string): SalesMappings {
   if (!entries || typeof entries !== "object" || Array.isArray(entries) || Object.keys(entries).length > 100) throw new Error("Use at most 100 mappings per category.");
   for (const [source, target] of Object.entries(entries)) {
    if (!source || source.length > 100 || typeof target !== "string" || target.trim().length > 40) throw new Error("Map source codes to existing business codes (up to 40 characters).");
-   if (type === "channels" && target.trim() && !["DINE_IN", "TAKEAWAY", "DELIVERY"].includes(target.trim())) throw new Error("Map channels to DINE_IN, TAKEAWAY or DELIVERY.");
+   if (type === "channels" && target.trim() && (!/^[A-Z0-9][A-Z0-9_-]{0,39}$/.test(target.trim())||target.trim()==="ALL")) throw new Error("Map channels to configured business channel codes.");
    if (target.trim()) Object.defineProperty(result[type], source, { value: target.trim(), enumerable: true, configurable: true, writable: true });
   }
  }

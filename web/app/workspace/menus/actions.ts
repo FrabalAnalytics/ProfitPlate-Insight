@@ -5,7 +5,7 @@ import { requireUser, getPlatformAccess, workspacePath } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { isUuid } from "@/lib/catalogue";
 import { positiveDecimal, validBusinessDate } from "@/lib/recipes";
-import { menuChannels, menuTaxSettings, validMenuTaxRate, type MenuRecipe } from "@/lib/menus";
+import { menuTaxSettings, validMenuTaxRate, type MenuRecipe } from "@/lib/menus";
 
 export type MenuState = { error?: string };
 async function session() {
@@ -40,7 +40,7 @@ export async function saveMenuPrice(_state: MenuState, form: FormData): Promise<
  const client = await session(), get = (key: string) => String(form.get(key) ?? "").trim();
  const org = get("organisation_id"), menuId = get("menu_id"), tax = get("tax_setting");
  if (![org, menuId, get("request_id"), get("location_id")].every(isUuid)) return { error: "Choose an available menu item and location." };
- if (!menuChannels.some(([code]) => code === get("channel")) || !menuTaxSettings.some(([code]) => code === tax) || !validMenuTaxRate(get("tax_percent")) || (tax === "NONE" && get("tax_percent") !== "0")) return { error: "Choose a sales channel and explicit tax setting. Tax rates must be from 0 to 100 with up to six decimal places." };
+ if (!(/^[A-Z0-9][A-Z0-9_-]{0,39}$/.test(get("channel"))) || !menuTaxSettings.some(([code]) => code === tax) || !validMenuTaxRate(get("tax_percent")) || (tax === "NONE" && get("tax_percent") !== "0")) return { error: "Choose a sales channel and explicit tax setting. Tax rates must be from 0 to 100 with up to six decimal places." };
  if (!positiveDecimal(get("price")) || !validBusinessDate(get("effective_from")) || (get("effective_to") && (!validBusinessDate(get("effective_to")) || get("effective_to") < get("effective_from"))) || !get("notes") || get("notes").length > 300) return { error: "Enter a positive selling price, valid dates and a source note of up to 300 characters." };
  const { error } = await client.rpc("save_menu_selling_price", { p_organisation_id: org, p_menu_id: menuId, p_request_id: get("request_id"), p_location_id: get("location_id"), p_channel: get("channel"), p_price: get("price"), p_tax_setting: tax, p_tax_percent: get("tax_percent"), p_effective_from: get("effective_from"), p_effective_to: get("effective_to") || null, p_notes: get("notes") });
  if (error) return failure(error);

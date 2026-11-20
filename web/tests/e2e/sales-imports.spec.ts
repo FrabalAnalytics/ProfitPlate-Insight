@@ -58,7 +58,7 @@ test('sales receipts reconcile and produce discounted period revenue without dup
 test('external menu, location and channel codes can be reviewed and mapped on mobile',async({page},testInfo)=>{
  await page.setViewportSize({width:375,height:812}); await openSales(page);
  await upload(page,headers+'ORG001,POS_TEST,EXT-LOC,2020-06-02,MAPPED,L1,EXT-MENU,1,1500,0,0,1500,EAT-IN,NORMAL,,PAID','mapped-sales.csv');
- await expect(page.getByText(/Unknown sales channel/)).toBeVisible(); await expect(page.getByRole('button',{name:'Save reviewed sales',exact:true})).toHaveCount(0);
+ await expect(page.getByText(/Unknown or retired sales channel/)).toBeVisible(); await expect(page.getByRole('button',{name:'Save reviewed sales',exact:true})).toHaveCount(0);
  await page.getByRole('link',{name:'Correct sales file or map codes',exact:true}).click();
  await page.getByText('Map source menu codes (1)',{exact:true}).click(); await page.getByLabel('Map menu EXT-MENU',{exact:true}).fill('SALES-MENU');
  await page.getByText('Map source location codes (1)',{exact:true}).click(); await page.getByLabel('Map location EXT-LOC',{exact:true}).fill('PRIMARY');

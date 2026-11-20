@@ -9,8 +9,8 @@ ROOT=Path(__file__).resolve().parents[1]
 DEST=ROOT/'public/templates/complete-restaurant-test-data'
 DATE='2026-11-19'
 PACK_DATE='2026-11-20'
-APP_RELEASE='045-executive-menu-and-po-exposure'
-MIGRATION='045'
+APP_RELEASE='046-restaurant-sales-channels'
+MIGRATION='046'
 DATA={}
 def sheet(name,header,rows,folder='manual-entry'):
     DATA[name]={'columns':header.split(','),'rows':rows,'folder':folder}
@@ -19,6 +19,7 @@ sheet('business','business_name,concept,country,currency,time_zone,brand_code,br
  ['Training Restaurant - Run 041','FINE_DINING','NG','NGN','Africa/Lagos','PRIMARY','Training Kitchen','PRIMARY','Dining Room','Wednesday','Tuesday','23:30']])
 sheet('users','display_name,email_to_replace,role_code,outlet_scope,stock_centre_scope',[
  ['Francis','owner@example.test','restaurant_admin','ALL','ALL'],['Francis','owner@example.test','ceo','ALL','ALL'],['Emeka','inventory@example.test','inventory_manager','ALL','ALL'],['Ada','kitchen@example.test','kitchen_manager','ALL','KITCHEN'],['Bola','bar@example.test','bar_lead','ALL','BAR'],['Tomi','procurement@example.test','procurement','ALL',''],['Chioma','finance@example.test','finance','ALL','']])
+sheet('sales-channels','channel_code,channel_name,is_active',[['TAKEAWAY','Takeaway','true'],['DINE_IN','Dine in','true'],['DELIVERY','Delivery','true']])
 sheet('stock-centres','centre_code,centre_name,kind,outlet_code,responsible_name,is_processing_unit',[
  ['MAIN_STORE','Main Store','STORE','','Emeka','false'],['KITCHEN','Kitchen','KITCHEN','PRIMARY','Ada','true'],['BAR','Bar','BAR','PRIMARY','Bola','false']])
 sheet('movement-routes','source_centre,destination_centre,movement_type,source_approval_role',[[a,b,'TRANSFER','inventory_manager'] for a,b in [('MAIN_STORE','KITCHEN'),('KITCHEN','MAIN_STORE'),('MAIN_STORE','BAR'),('BAR','MAIN_STORE')]])
@@ -67,7 +68,7 @@ Start with the Excel workbook for the whole dataset. Use the Word guide for the 
 IMPORTANT: This is a testing pack, not a universal master-data importer. The XLSX workbook is for review/manual entry; do not upload it to a CSV screen. Files in manual-entry/ are populated collection sheets, not application upload formats. Only the four CSVs in upload-ready/ match implemented import screens, and they still need their prerequisite masters created first.
 
 ## Before testing
-- Pack revision 20 November 2026; updated for executive menu and PO exposure release 045 and migrations through 045. The core example transaction date remains 19 November. Do not rerun applied migrations.
+- Pack revision 20 November 2026; updated for restaurant sales channels release 046 and migrations through 046. The core example transaction date remains 19 November. Do not rerun applied migrations.
 - Complete run-details and test-results in the workbook. This replaces the earlier stock-only/v2 testing instructions.
 - Create Training Restaurant, brand Training Kitchen and first outlet Dining Room. Fresh onboarding assigns brand and outlet code PRIMARY; verify these codes in the actual workspace before uploading. Map/replace PRIMARY explicitly if using a different outlet.
 - Owner rows in users.csv represent the same existing owner with two roles; do not invite or create the owner twice.
@@ -111,7 +112,7 @@ README+='''
 - Inventory waste: own responsible centres only, including direct links and exports. Kitchen/Bar: assigned centres only. Test with single-role accounts.
 - Invoice: bill and material summary first; unreviewed matching exceptions and pending correction decisions visible; source/resolved history collapsed. PO approval remains excluded.
 - Weekly stock-count flag: verify Include in weekly stock counts on each material; do not claim missing weekly count automation is implemented.
-- This revision requires migration 045 and the matching app deployment. The four CSV upload formats remain unchanged.
+- This revision requires migration 046 and the matching app deployment. The four CSV upload formats remain unchanged.
 '''
 DEST.mkdir(parents=True,exist_ok=True)
 for name,data in DATA.items():
@@ -154,7 +155,7 @@ word_guide(guide,DEST/'Complete_Restaurant_Onboarding_and_Test_Guide.docx')
 shutil.copyfile(DEST/'Complete_Restaurant_Onboarding_and_Test_Guide.docx',ROOT/'docs/exports/Complete_Restaurant_Onboarding_and_Test_Guide.docx')
 for name in ['CENTRES_AND_TEAM_ACCESS_GUIDE.md','CENTRE_WASTE_REVIEW_GUIDE.md','TEAM_INVITATIONS_AND_EMAIL_SETUP.md']:
     shutil.copyfile(ROOT/'docs/product'/name,DEST/name)
-(DEST/'CHANGES-2026-11-20.md').write_text('Updated for executive menu and PO exposure release 045. Menu profitability is the default view with target exceptions and concise ingredient/packaging margin labels. Issued POs expose potential price pressure before GRNs and invoices; valid billing reduces unbilled potential. Existing processing and waste controls remain. Processing submits with a named recorder and no approval; multiple material lines, automatic output/variance and stock-shortage checks. Centre and owner tasks save together. Waste requires a submitter and posts without approval. Finance reads combined centre waste and exports filtered results, without setup or waste entry. Inventory retains own-centre waste. Invoice materials and pending decisions remain prominent; supporting history collapses. Added executable test-results and run-details sheets. Master setup coverage and four upload schemas are retained. Example transaction dates are 2026-11-19. Use this pack in place of older instructions. Requires migration 045 and the matching app deployment.\n',encoding='utf-8')
+(DEST/'CHANGES-2026-11-20.md').write_text('Updated for restaurant sales channels release 046. Owners choose channels during onboarding and can manage names/retirement later. Menu profitability supports All channels and individual channels, with one separate row per menu/channel; sales imports validate the restaurant configuration. Menu profitability is the default view with target exceptions and concise ingredient/packaging margin labels. Issued POs expose potential price pressure before GRNs and invoices; valid billing reduces unbilled potential. Existing processing and waste controls remain. Processing submits with a named recorder and no approval; multiple material lines, automatic output/variance and stock-shortage checks. Centre and owner tasks save together. Waste requires a submitter and posts without approval. Finance reads combined centre waste and exports filtered results, without setup or waste entry. Inventory retains own-centre waste. Invoice materials and pending decisions remain prominent; supporting history collapses. Added executable test-results and run-details sheets. Master setup coverage and four upload schemas are retained. Example transaction dates are 2026-11-19. Use this pack in place of older instructions. Requires migration 046 and the matching app deployment.\n',encoding='utf-8')
 
 # XLSX workbook: all cells are text to preserve codes, phone numbers and source decimals.
 def col(n):

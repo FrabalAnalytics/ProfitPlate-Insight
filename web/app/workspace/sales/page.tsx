@@ -1,3 +1,4 @@
+import {restaurantChannels} from "@/lib/channels-server";
 import {DataTable,StatusBadge} from "@/app/components/data-table";
 import type { Metadata } from "next";
 import { randomUUID } from "node:crypto";
@@ -53,6 +54,7 @@ export default async function SalesPage({ searchParams }: { searchParams: Promis
   } else batchError = true;
  }
  let sourceCsv: string | undefined;
+ const channels=await restaurantChannels(org.id);
  const remapping = canEdit && params.remap === "1" && batch && batch.state !== "POSTED";
  if (remapping) { const result = await client.rpc("sales_import_source", { p_organisation_id: org.id, p_batch_id: batch!.id }); if (!result.error) sourceCsv = result.data?.csv; }
  let summary: SalesSummary | null = null, summaryError = "";
@@ -70,7 +72,7 @@ export default async function SalesPage({ searchParams }: { searchParams: Promis
   <div className="page-heading-row"><div><p className="eyebrow form-eyebrow">SALES REPORTING</p><h1 className="workspace-title">Sales & margin</h1><p className="workspace-description">Recorded revenue and estimated food margins.</p></div>{canEdit && params.new !== "1" && !remapping && <Link className="auth-button catalogue-add" href={query({ new: "1" })}><Upload size={16}/> Import sales</Link>}</div>
   <p className="purchase-help">Reference-price estimates · Stock unchanged</p>
   {!canEdit && <p className="catalogue-readonly">You have read-only sales access. An organisation-wide restaurant administrator can upload and save sales.</p>}
-  {(params.new === "1" || remapping) && canEdit && <SalesUpload key={remapping ? batch!.id : "new"} organisationId={org.id} requestId={randomUUID()} currency={org.currency_code} initial={remapping && sourceCsv !== undefined ? batch! : undefined} sourceCsv={sourceCsv}/>}
+  {(params.new === "1" || remapping) && canEdit && <SalesUpload key={remapping ? batch!.id : "new"} organisationId={org.id} requestId={randomUUID()} currency={org.currency_code} initial={remapping && sourceCsv !== undefined ? batch! : undefined} sourceCsv={sourceCsv} channels={channels?.channels??[]}/>}
   {remapping && sourceCsv === undefined && <p role="alert" className="auth-alert">The original CSV could not be retrieved. Choose the corrected file again.</p>}
   {params.new === "1" && canEdit && <section className="purchase-code-help"><h2>Use your business’s menu and location codes</h2><p>File currency: <strong>{org.currency_code}</strong>. Available location codes:</p>{locationsResult.error ? <p>Location codes are unavailable.</p> : <DataTable label="Sales import location codes" columns={[{label:"Location code"},{label:"Location"},{label:"Availability"}]} rows={(locationsResult.data??[]).map(entry=>({id:entry.id,cells:[entry.code,entry.name,entry.is_active?"Active":"Inactive, historical records only"]}))}/>}<Link className="record-edit" href={`/workspace/menus?organisation=${org.id}`}>Review menu codes and effective recipe links <ArrowRight size={13}/></Link><p>One receipt must have a consistent date and channel. A menu version must be effective on the sale date. Missing ingredient prices do not prevent recording otherwise valid sales.</p></section>}
   {batchError && <p role="alert" className="auth-alert">This sales import is unavailable in this business.</p>}

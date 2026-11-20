@@ -24,6 +24,7 @@ test("owner saves, resumes and completes restaurant setup", async ({ page }, tes
   await page.getByLabel("Reporting week starts").selectOption("3");
   await page.getByLabel("Physical count day").selectOption("2");
   await page.getByLabel("Physical count cutoff time").fill("23:30");
+  await page.getByRole("button",{name:"Add Dine in",exact:true}).click();
   await page.getByLabel("Address (optional)").fill("12 Example Street, Lekki");
   await page.getByRole("button", { name: "Save for later" }).click();
   await expect(page.getByText("Progress saved to your account.")).toBeVisible();

@@ -1,6 +1,6 @@
 # Complete Restaurant Onboarding & Test Guide
 
-ProfitPlate Insight | Updated 20 November 2026 / executive menu and PO exposure update 045 / migrations through 045 | Includes the full master-data setup and daily operational test sequence.
+ProfitPlate Insight | Updated 20 November 2026 / restaurant sales channels update 046 / migrations through 046 | Includes the full master-data setup and daily operational test sequence.
 
 This replaces the stock-only walkthrough as the main onboarding guide. Use a fresh training restaurant; preserve the existing demo restaurant and its historical records. The examples are fictional training data, not recommended recipes, prices or operating defaults.
 
@@ -8,12 +8,13 @@ This replaces the stock-only walkthrough as the main onboarding guide. Use a fre
 
 Use this guide with **profitplate-complete-test-data-2026-11-20.zip**. It supersedes earlier test-pack instructions. The example transaction date is **19 November 2026**, aligned across prices, recipes, openings and imports. Use that date in the app filters. Record your actual execution date separately in the workbook. If starting later, update the sample dates together before entry. Receiver acceptance posts on its actual business date; subsequent processing/waste must use that date or later. If the test spans days, use the current operational date for later stock activity and widen report filters; keep master versions effective on or before that date.
 
-1. Use the deployed site at https://profit-plate-insight.vercel.app/ and confirm migrations through **045** are applied and the matching app is deployed. Do not rerun applied migrations.
-2. Create a fresh training restaurant, for example **Training Restaurant - Run 041**. Keep the earlier demo and its histories intact.
-3. Open **ProfitPlate_Complete_Test_Data.xlsx**. Complete **run-details**, then use **test-results** to record Not run, Pass, Fail, Blocked or Not available, actual result and evidence. Run the sections in order.
-4. Replace example emails with verified accounts or aliases you control. For a Gmail account, a plus alias such as `yourname+finance@gmail.com` goes to the same inbox but is registered as a separate app login. Use a separate browser profile for each tester role. Do not save passwords in the pack.
-5. Keep the four **upload-ready** CSVs separate from the manual-entry/checklist files. The full Excel workbook is a reference and test record, not an app upload.
-6. Stop at a failed stock balance, duplicate posting or access restriction. Record the reference and screenshot; resolve it before continuing with dependent tests. An expected access denial is a Pass.
+1. Use the deployed site at https://profit-plate-insight.vercel.app/ and confirm migrations through **046** are applied and the matching app is deployed. Do not rerun applied migrations.
+2. During initial setup, choose the channels in **sales-channels.csv** for this sample. Suggestions are optional; real restaurants can create their own names and codes. At least one active channel is required.
+3. Create a fresh training restaurant, for example **Training Restaurant - Run 041**. Keep the earlier demo and its histories intact.
+4. Open **ProfitPlate_Complete_Test_Data.xlsx**. Complete **run-details**, then use **test-results** to record Not run, Pass, Fail, Blocked or Not available, actual result and evidence. Run the sections in order.
+5. Replace example emails with verified accounts or aliases you control. For a Gmail account, a plus alias such as `yourname+finance@gmail.com` goes to the same inbox but is registered as a separate app login. Use a separate browser profile for each tester role. Do not save passwords in the pack.
+6. Keep the four **upload-ready** CSVs separate from the manual-entry/checklist files. The full Excel workbook is a reference and test record, not an app upload.
+7. Stop at a failed stock balance, duplicate posting or access restriction. Record the reference and screenshot; resolve it before continuing with dependent tests. An expected access denial is a Pass.
 
 Changes in this revision: one-save centre/owner tasks; standalone waste without approval and with a submitter; Inventory own-centre waste restrictions; Finance combined waste reporting/export; Finance setup restrictions; concise role navigation and invoice layouts. Existing master data, pricing and recipe tests remain included.
 
@@ -385,3 +386,12 @@ Menu & prices starts with profitability, target exceptions and missing-cost cove
 Run optional CEO-PO-01 and CEO-PO-02 after the core arithmetic checks. For example, 2 KG Rice quoted at 1980/KG against a saved 1800/KG baseline creates a 360 NGN potential warning when issued. A draft is not an executive alert. An active GRN updates received quantity; a valid invoice for 1 KG reduces the unbilled potential to 180 NGN. Invoice recording updates monthly weighted costs; the PO and GRN do not. Do not add this warning to the invoice-period price comparison. These optional transactions change later core totals, so use separate references and record the additional activity.
 
 PO warnings select orders by their actual issue day in the business timezone, and show live delivery/billing progress. The baseline is pinned at issue. Corrected invoice links need review; approved voids update progress. Existing issued orders have a historical baseline reconstructed only from evidence recorded by issue time, or show no comparison baseline. No prices or stock are changed by this historical backfill.
+
+
+## 19. Restaurant sales channels
+
+The initial Brand & first location step includes channel choices. For this dataset select Takeaway, Dine in and Delivery; they are sample values, not a system restriction. A real restaurant may instead choose Room service, Catering, Counter sales or any other suitable channel with its own import code. Onboarding saves exactly those choices. Edit names or retire channels under Data & Setup > Sales channels. Saved codes remain fixed so imports and history retain their identity.
+
+Menu & prices defaults to All channels. There is one row per active menu item and active channel; summary counts refer to comparisons, not unique dishes. Filter one channel to reproduce the core Takeaway 6000 / 1680 / 4320 / 72% scenario. Missing prices in another channel remain visibly incomplete; values are not borrowed or averaged. Select a retired channel individually for a historical comparison. New prices and new sales cannot use retired channels, while recorded history remains accessible.
+
+Use CHANNEL-01 and CHANNEL-02 after the core data checks. The sales import Channel_Code must match a configured business code, or be mapped to an active channel in the review screen. The full workbook and sales-channel collection sheet are not uploadable master-data files; channel configuration currently uses the manual setup form.

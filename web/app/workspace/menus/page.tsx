@@ -1,4 +1,5 @@
 import MenuProfitabilityPage from "./profitability/page";
+import {restaurantChannels} from "@/lib/channels-server";
 import {MenuPreviewFilters} from "./preview-filters";
 import type {SetupProfile} from "@/lib/setup";
 import {DataTable,StatusBadge} from "@/app/components/data-table";
@@ -12,7 +13,7 @@ import { createClient } from "@/lib/supabase/server";
 import { isUuid } from "@/lib/catalogue";
 import { displayQuantity, validBusinessDate } from "@/lib/recipes";
 import { referenceAmount } from "@/lib/reference-prices";
-import { menuPreviewScope, menuChannels, menuTaxSettings, type MenuPacket, type MenuEstimate } from "@/lib/menus";
+import { menuPreviewScope, menuTaxSettings, type MenuPacket, type MenuEstimate } from "@/lib/menus";
 import { displayPercent } from "@/lib/display";
 import { WorkspaceShell } from "@/app/components/workspace-shell";
 import { MenuEditor, MenuPriceEditor, MenuStatusButton } from "./menu-forms";
@@ -21,7 +22,7 @@ import "./menus.css";
 
 export const metadata: Metadata = { title: "Menu & selling prices | ProfitPlate Insight" };
 export const instant = false;
-type Params = { organisation?: string; item?: string; version?: string; new?: string; edit?: string; price?: string; saved?: string; q?: string; page?: string; location?: string; channel?: string; date?: string; view?:string; status?:string };
+type Params = { organisation?: string; item?: string; version?: string; new?: string; edit?: string; price?: string; saved?: string; q?: string; page?: string; location?: string; channel?: string; date?: string; view?:string; return_channel?:string; status?:string };
 
 export default async function MenusPage({ searchParams }: { searchParams: Promise<Params> }) {
  const params=await searchParams;
@@ -36,10 +37,12 @@ export default async function MenusPage({ searchParams }: { searchParams: Promis
  if (!org || orgError) return <WorkspaceShell email={user.email}><h1 className="workspace-title">This business is unavailable.</h1><Link href="/workspace" className="auth-back">Return to workspace</Link></WorkspaceShell>;
  const shell = { email: user.email, restaurantName: org.name, organisationId: org.id, sectionLabel: "Menu & selling prices" };
  const query = (values: Record<string, string> = {}) => `/workspace/menus?${new URLSearchParams({ organisation: org.id, view:"catalogue", ...Object.fromEntries(Object.entries(params).filter(([k,v])=>["location","channel","date","q","page","status"].includes(k)&&v!==undefined)), ...values })}`;
- const comparison = `/workspace/menus/profitability?${new URLSearchParams({organisation:org.id,...Object.fromEntries(Object.entries(params).filter(([k,v])=>["location","channel","date","q","page","status"].includes(k)&&v!==undefined))} as Record<string,string>)}`;
+ const comparison = `/workspace/menus/profitability?${new URLSearchParams({organisation:org.id,...Object.fromEntries(Object.entries(params).filter(([k,v])=>["location","channel","date","q","page","status"].includes(k)&&v!==undefined)),...(params.return_channel?{channel:params.return_channel}:{})} as Record<string,string>)}`;
  const { data: permission, error: permissionError } = await client.rpc("menu_access", { p_organisation_id: org.id });
  if (permissionError) return <WorkspaceShell {...shell}><h1 className="workspace-title">Menu setup is not available yet.</h1><p className="workspace-description">The platform administrator may need to finish the menu update, or access is temporarily unavailable.</p><Link className="auth-back" href={`/workspace?organisation=${org.id}`}>Return to business setup</Link></WorkspaceShell>;
  if (permission?.read !== true) return <WorkspaceShell {...shell}><h1 className="workspace-title">Business-wide menu pricing access is restricted.</h1><p className="workspace-description">An organisation-wide administrator, finance member, CEO or procurement manager can view this workspace.</p></WorkspaceShell>;
+ const configured=await restaurantChannels(org.id);if(!configured)return <WorkspaceShell {...shell}><p role="alert">Sales channels could not be loaded. Check database update 046.</p></WorkspaceShell>;
+ const menuChannels=configured.channels.map(c=>[c.code,c.name+(c.is_active?"":" (retired)")] as const);
  const canEdit = permission.write === true;
  const [brandsResult, locationsResult] = await Promise.all([
   client.from("brands").select("id,name").eq("organisation_id", org.id).order("name"),
@@ -59,7 +62,7 @@ export default async function MenusPage({ searchParams }: { searchParams: Promis
  const editing = canEdit && (params.new === "1" || (params.edit === "1" && packet?.item.is_active));
  const addingPrice = canEdit && params.price === "1" && packet?.item.is_active;
  const validLocations = packet ? locations.filter(location => location.is_active && location.brand_id === packet!.item.brand_id &&(!packet!.item.location_id||packet!.item.location_id===location.id)) : [];
- const date = params.date ?? day,{channel,locationId}=menuPreviewScope(params,validLocations,packet?.prices??[],date);
+ const date = params.date ?? day,{channel,locationId}=menuPreviewScope(params,validLocations,packet?.prices??[],date,configured.channels.find(c=>c.is_active)?.code??"");
  let estimate: MenuEstimate | null = null, estimateError = "";
  if (packet?.version && packet.item.is_active && !editing && !addingPrice) {
   if (!validBusinessDate(date) || !isUuid(locationId)) estimateError = "Choose a valid preview date and an active location belonging to this menu brand.";
@@ -91,8 +94,8 @@ export default async function MenusPage({ searchParams }: { searchParams: Promis
 </section>
    {!packet.version&&<p className="menu-missing">Incomplete Record: add a final recipe. Cost per serving will populate once its ingredients are priced.</p>}
    {!packet.version&&canEdit&&!addingPrice&&<Link className="secondary-button" href={query({item:packet.item.id,price:"1"})}>Add selling price</Link>}
-   {addingPrice ? <MenuPriceEditor organisationId={org.id} packet={packet} requestId={randomUUID()} businessDate={day} currency={org.currency_code} locations={validLocations}/> : packet.version && packet.item.is_active && <section className="menu-panel menu-margin-preview" aria-labelledby="menu-margin-title"><div className="menu-section-heading"><h2 id="menu-margin-title">Menu profitability</h2>{estimate && <span className="menu-badge">{estimate.cost_state === "ESTIMATED" ? "Estimated" : "Incomplete"}</span>}{canEdit && <Link className="secondary-button" href={query({ item: packet.item.id, ...(packet.version ? { version: packet.version.id } : {}), price: "1" })}>Add selling price <Plus size={14}/></Link>}</div>
-    <MenuPreviewFilters key={`${packet.version.id}-${locationId}-${channel}-${date}`}>{["q","page","status"].map(k=>params[k as keyof Params]?<input type="hidden" key={k} name={k} value={params[k as keyof Params]}/>:null)}<input type="hidden" name="organisation" value={org.id}/><input type="hidden" name="item" value={packet.item.id}/><input type="hidden" name="version" value={packet.version.id}/><div className="setup-field"><label htmlFor="preview-location">Preview location</label><select id="preview-location" name="location" defaultValue={locationId} required><option value="">Choose a location</option>{validLocations.map(location => <option key={location.id} value={location.id}>{location.name}</option>)}</select></div><div className="setup-field"><label htmlFor="preview-channel">Preview sales channel</label><select id="preview-channel" name="channel" defaultValue={channel}>{menuChannels.map(([code, label]) => <option key={code} value={code}>{label}</option>)}</select></div><div className="setup-field"><label htmlFor="menu-preview-date">Preview date</label><input id="menu-preview-date" name="date" type="date" min={String(packet.version.effective_from).slice(0,10)} max={day} defaultValue={date} required/></div><button className="secondary-button" type="submit">Update margin</button></MenuPreviewFilters>
+   {addingPrice ? <MenuPriceEditor organisationId={org.id} packet={packet} requestId={randomUUID()} businessDate={day} currency={org.currency_code} locations={validLocations} channels={configured.channels}/> : packet.version && packet.item.is_active && <section className="menu-panel menu-margin-preview" aria-labelledby="menu-margin-title"><div className="menu-section-heading"><h2 id="menu-margin-title">Menu profitability</h2>{estimate && <span className="menu-badge">{estimate.cost_state === "ESTIMATED" ? "Estimated" : "Incomplete"}</span>}{canEdit && <Link className="secondary-button" href={query({ item: packet.item.id, ...(packet.version ? { version: packet.version.id } : {}), price: "1" })}>Add selling price <Plus size={14}/></Link>}</div>
+    <MenuPreviewFilters key={`${packet.version.id}-${locationId}-${channel}-${date}`}>{["q","page","status","return_channel"].map(k=>params[k as keyof Params]?<input type="hidden" key={k} name={k} value={params[k as keyof Params]}/>:null)}<input type="hidden" name="organisation" value={org.id}/><input type="hidden" name="item" value={packet.item.id}/><input type="hidden" name="version" value={packet.version.id}/><div className="setup-field"><label htmlFor="preview-location">Preview location</label><select id="preview-location" name="location" defaultValue={locationId} required><option value="">Choose a location</option>{validLocations.map(location => <option key={location.id} value={location.id}>{location.name}</option>)}</select></div><div className="setup-field"><label htmlFor="preview-channel">Preview sales channel</label><select id="preview-channel" name="channel" defaultValue={channel}>{menuChannels.map(([code, label]) => <option key={code} value={code}>{label}</option>)}</select></div><div className="setup-field"><label htmlFor="menu-preview-date">Preview date</label><input id="menu-preview-date" name="date" type="date" min={String(packet.version.effective_from).slice(0,10)} max={day} defaultValue={date} required/></div><button className="secondary-button" type="submit">Update margin</button></MenuPreviewFilters>
     <div className="menu-margin-results"><p className="menu-preview-basis">Calculated for {validLocations.find(l=>l.id===locationId)?.name} / {menuChannels.find(([code])=>code===channel)?.[1]} / {date}</p>
     {estimateError ? <p role="alert" className="auth-alert">{estimateError}</p> : estimate && <>
      {estimate.price_issue && <p className="menu-missing" role="status">{estimate.price_issue === "EXPIRED_SELLING_PRICE" ? "The latest selling price has expired for this date." : estimate.price_issue === "PRICE_CURRENCY_MISMATCH" ? "The selling price currency does not match this business." : "No selling price is available for this location, channel and date."} Check the outlet, channel and date against the saved price history below.</p>}

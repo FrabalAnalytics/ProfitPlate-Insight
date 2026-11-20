@@ -1,7 +1,7 @@
 {
   "pack_date": "2026-11-20",
-  "app_release": "045-executive-menu-and-po-exposure",
-  "required_migration": "045",
+  "app_release": "046-restaurant-sales-channels",
+  "required_migration": "046",
   "test_date": "2026-11-19",
   "source_org": "TRAINING",
   "sheets": {
@@ -95,6 +95,31 @@
           "finance",
           "ALL",
           ""
+        ]
+      ],
+      "folder": "manual-entry"
+    },
+    "sales-channels": {
+      "columns": [
+        "channel_code",
+        "channel_name",
+        "is_active"
+      ],
+      "rows": [
+        [
+          "TAKEAWAY",
+          "Takeaway",
+          "true"
+        ],
+        [
+          "DINE_IN",
+          "Dine in",
+          "true"
+        ],
+        [
+          "DELIVERY",
+          "Delivery",
+          "true"
         ]
       ],
       "folder": "manual-entry"
@@ -1124,12 +1149,12 @@
         ],
         [
           "App release",
-          "045-executive-menu-and-po-exposure",
+          "046-restaurant-sales-channels",
           "Deployment checked before executing"
         ],
         [
           "Required migration",
-          "045",
+          "046",
           "Verify required migration; do not rerun applied migrations"
         ],
         [
@@ -1196,7 +1221,7 @@
           "Preparation",
           "Administrator",
           "None",
-          "Record deployed URL, executive menu and PO exposure release 045, migrations through 045, actual execution date, browser and tester in run-details. Use this revision, not earlier v2 instructions.",
+          "Record deployed URL, restaurant sales channels release 046, migrations through 046, actual execution date, browser and tester in run-details. Use this revision, not earlier v2 instructions.",
           "Correct app and pack selected; no need to rerun applied migrations.",
           "Not run",
           "",
@@ -1828,6 +1853,34 @@
           "CEO-PO-01",
           "Record a partial GRN for 1 KG on that optional PO. Record a linked invoice for 1 KG. Refresh CEO briefing. Finish receiving and billing. Separately test a corrected invoice requiring renewed links and an approved void.",
           "GRNs update delivery quantities without changing recipe prices. Valid billed quantity reduces unbilled quote exposure; when fully billed it reaches zero. Invoice price evidence updates monthly recipe estimates. Corrected stale links are visibly flagged, approved voids restore the appropriate progress. PO potential and invoice comparisons are never combined as a profit total. Optional extra transactions change the earlier core expected totals.",
+          "Not run",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "CHANNEL-01",
+          "Restaurant channel choices",
+          "Admin owner",
+          "SET-01",
+          "Choose the sample sales channels during onboarding. In Data & Setup > Sales channels, add a custom channel with its own name/code; rename it and save again. Use a separate optional channel for later retirement.",
+          "The workspace has exactly the channels selected at onboarding. No forced three-channel list. Codes are fixed after saving, name edits work, and at least one active channel is required. Other roles cannot edit configuration.",
+          "Not run",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "CHANNEL-02",
+          "All-channel menu comparison and history",
+          "Admin / CEO / Finance",
+          "MENU-01 / CHANNEL-01",
+          "Open Menu & prices > Filters. Select All channels, then Takeaway. Add a separate custom-channel selling price and compare it with Takeaway. Retire that optional channel and select it individually. Map a source sales channel to a configured code during import review.",
+          "All channels shows separate menu/channel rows and comparison counts without averaging or borrowing prices. Individual filtering shows only that channel. Retired-channel prices and sales remain readable; new pricing/sales cannot use it. Custom sales mappings validate against this restaurant.",
           "Not run",
           "",
           "",

@@ -14,6 +14,7 @@ for (const migration of (await readdir(new URL("../../supabase/migrations/", imp
   await db.exec(await readFile(new URL(`../../supabase/migrations/${migration}`, import.meta.url), "utf8"));
 const emailRequests=[];
 const users = [
+  {id:"00000000-0000-0000-0000-000000000023",email:"channels-owner@example.test"},
   {id:"00000000-0000-0000-0000-000000000020",email:"invited-kitchen@example.test"},
   {id:"00000000-0000-0000-0000-000000000021",email:"invited-verify@example.test"},
   {id:"00000000-0000-0000-0000-000000000022",email:"invited-email-failure@example.test"},
@@ -241,6 +242,10 @@ createServer(async (request, response) => {
         cancel_sales_import: ["p_organisation_id", "p_batch_id"],
         sales_period_summary: ["p_organisation_id", "p_from", "p_to", "p_location_id"],
         menu_access: ["p_organisation_id"],
+        sales_channels: ["p_organisation_id"],
+        save_sales_channels: ["p_organisation_id","p_revision","p_channels"],
+        save_setup_sales_channels: ["p_channels"],
+        complete_restaurant_setup_with_channels: [],
         menu_profitability_scope: ["p_organisation_id","p_location_id","p_channel","p_as_of"],
         menu_profitability_dashboard: ["p_organisation_id","p_location_id","p_channel","p_as_of","p_search","p_page","p_status"],
         menu_profitability: ["p_organisation_id","p_location_id","p_channel","p_as_of","p_search","p_page"],
@@ -278,7 +283,7 @@ createServer(async (request, response) => {
       membership_roles: ["id", "organisation_id", "membership_id", "role_code", "location_id"],
       brands: ["id", "name", "organisation_id"],
       locations: ["id", "name", "code", "timezone", "address", "is_active", "brand_id", "organisation_id"],
-      restaurant_setup_drafts: ["user_id", "business_name", "concept", "country_code", "currency_code", "brand_name", "location_name", "timezone", "address", "reporting_week_start", "count_day", "count_cutoff", "step", "completed_organisation_id"],
+      restaurant_setup_drafts: ["user_id", "business_name", "concept", "country_code", "currency_code", "brand_name", "location_name", "timezone", "address", "reporting_week_start", "count_day", "count_cutoff", "sales_channels", "step", "completed_organisation_id"],
       units_of_measure: ["id", "organisation_id", "code", "name", "dimension"],
       item_categories: ["id", "organisation_id", "name"],
       items: ["id", "organisation_id", "code", "name", "item_type", "category_id", "base_uom_id", "stock_tracked", "is_active", "location_id", "weekly_count_required", "supply_class", "requires_processing"],

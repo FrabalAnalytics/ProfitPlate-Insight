@@ -1,0 +1,6 @@
+"use client";
+import {useActionState,useState} from 'react';import {ChannelPicker} from '@/app/components/channel-picker';import type {SalesChannelPacket} from '@/lib/channels';import {saveChannels} from './actions';
+export function SalesChannelsForm({organisation,packet}:{organisation:string;packet:SalesChannelPacket}){
+ const [state,action,pending]=useActionState(saveChannels,{}),[rows,setRows]=useState(JSON.stringify(packet.channels)),current=state.packet??packet;
+ return <form action={action} onReset={e=>e.preventDefault()} className="menu-panel"><input name="organisation" type="hidden" value={organisation}/><input name="revision" type="hidden" value={current.revision}/><input name="channels" type="hidden" value={rows}/><fieldset disabled={pending}><legend>Your sales channels</legend><ChannelPicker value={rows} onChange={setRows} lockedCodes={current.channels.map(c=>c.code)}/><p className="menu-intro">Retire a channel by clearing Active. Its saved prices and sales remain available in history. Codes stay fixed once saved.</p>{state.error&&<p className="auth-alert" role="alert">{state.error}</p>}{state.success&&<p className="stock-success" role="status">{state.success}</p>}<button className="auth-button" disabled={pending}>{pending?'Saving...':'Save sales channels'}</button></fieldset></form>;
+}
