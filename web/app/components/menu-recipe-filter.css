@@ -1,0 +1,5 @@
+.menu-recipe-filter { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin: 18px 0; }
+.menu-recipe-filter label { font-size: 14px; font-weight: 600; color: var(--foreground); }
+.menu-recipe-filter select { min-height: 44px; width: auto; max-width: 100%; padding: 10px 36px 10px 14px; border: 1px solid var(--border); border-radius: 8px; background: white; color: var(--foreground); font: inherit; font-size: 14px; }
+.menu-recipe-filter select:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.menu-recipe-filter span { color: var(--muted-foreground); font-size: 13px; }

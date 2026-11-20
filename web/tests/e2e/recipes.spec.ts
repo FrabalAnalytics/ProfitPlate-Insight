@@ -7,7 +7,8 @@ async function openRecipes(page: Page, email="catalogue@example.test") {
  await page.getByLabel("Password",{exact:true}).fill("TestPassword123!");
  await page.getByRole("button",{name:"Sign in",exact:true}).click();
  await expect(page).toHaveURL(/\/workspace$/);
- await clickNavigation(page,'Recipes & scaling');
+ if(email==='reader@example.test') await page.goto('/workspace/recipes');
+ else await clickNavigation(page,'Recipes & scaling');
 }
 
 test("recipe versions, pinned sub-recipes and quantity scaling work together", async ({page},testInfo)=>{

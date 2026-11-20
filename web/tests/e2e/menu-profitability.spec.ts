@@ -60,6 +60,18 @@ test('profitability retains selling revenue with missing ingredient costs and wo
   await expect(row.getByRole('cell').nth(2)).toHaveText('Unavailable');await expect(row.getByRole('cell').nth(1)).toHaveText('NGN 1,500.00');await expect(row.getByRole('cell').nth(3)).toHaveText('Unavailable');await expect(row).toContainText('Material prices missing');
   await expect(finance.getByRole('link',{name:'Create menu item',exact:true})).toHaveCount(0);
   expect(await finance.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await finance.screenshot({path:testInfo.outputPath('menu-profitability-mobile.png'),fullPage:true});
+  const organisation=new URL(url).searchParams.get('organisation');
+  await finance.getByRole('combobox',{name:'Selling menu or recipes',exact:true}).selectOption('recipes');
+  await expect(finance).toHaveURL(/\/workspace\/recipes\?organisation=/);
+  expect(new URL(finance.url()).searchParams.get('organisation')).toBe(organisation);
+  await expect(finance.getByRole('table',{name:'Recipe library',exact:true})).toBeVisible();
+  await expect(finance.getByRole('table',{name:'Menu profitability comparison',exact:true})).toHaveCount(0);
+  await expect(finance.getByRole('combobox',{name:'Selling menu or recipes',exact:true})).toHaveValue('recipes');
+  expect(await finance.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+  await finance.screenshot({path:testInfo.outputPath('recipe-only-filter-mobile.png'),fullPage:true});
+  await finance.getByRole('combobox',{name:'Selling menu or recipes',exact:true}).selectOption('menu');
+  await expect(finance.getByRole('table',{name:'Menu profitability comparison',exact:true})).toBeVisible();
+  await expect(finance.getByRole('table',{name:'Recipe library',exact:true})).toHaveCount(0);
   const invalid=new URL(url);invalid.searchParams.set('date','2099-01-01');await finance.goto(invalid.href);await expect(finance.getByRole('main').getByRole('alert')).toContainText('valid outlet, channel, date and status');await expect(finance.getByRole('table',{name:'Menu profitability comparison',exact:true})).toHaveCount(0);
  } finally {await context.close();}
 });

@@ -1,3 +1,4 @@
+import { MenuRecipeFilter } from "@/app/components/menu-recipe-filter";
 import MenuProfitabilityPage from "./profitability/page";
 import {restaurantChannels} from "@/lib/channels-server";
 import {MenuPreviewFilters} from "./preview-filters";
@@ -86,6 +87,7 @@ export default async function MenusPage({ searchParams }: { searchParams: Promis
   <Link className="catalogue-back" href={`/workspace?organisation=${org.id}`}><ArrowLeft size={14}/> Back to workspace</Link>
   <div className="page-heading-row"><div><p className="eyebrow form-eyebrow">PROFITABILITY / MENU & PRICES</p><h1 className="workspace-title">Menu & prices</h1></div>{canEdit && !editing && <Link className="auth-button catalogue-add" href={query({ new: "1" })}><Plus size={16}/> Create menu item</Link>}</div>
   <nav className="catalogue-tabs" aria-label="Menu views"><Link href={query()} aria-current={!packet&&!editing?"page":undefined}>Menu catalogue</Link><Link href={`/workspace/menus/profitability?${new URLSearchParams({organisation:org.id,...(locationId?{location:locationId}:{}),channel,date})}`}>Menu profitability</Link></nav>
+  {!packet&&!editing&&!detailError&&<MenuRecipeFilter organisation={org.id} selected="menu"/>}
   {!canEdit && <p className="catalogue-readonly"><Info size={16}/> You have read-only menu access. An organisation-wide restaurant administrator can publish menu versions and selling prices.</p>}
   {params.saved && ["menu", "draft", "price", "status"].includes(params.saved) && <p className="welcome-message" role="status">{params.saved === "menu" ? "Menu version published. Its recipe link is saved." : params.saved === "draft" ? "Incomplete menu item saved. Add its recipe and selling price when available." : params.saved === "price" ? "Selling price saved. Earlier price entries remain in history." : "Menu availability updated. Saved versions and price history are preserved."}</p>}
   {packet&&!editing&&<Link className="catalogue-back" href={comparison}>Back to menu profitability</Link>}
