@@ -1,4 +1,4 @@
-﻿centre_code,centre_name,kind,outlet_code,responsible_name,is_processing_unit
+﻿centre_code,centre_name,kind,outlet_code,responsible_name,production_enabled
 MAIN_STORE,Main Store,STORE,,Emeka,false
 KITCHEN,Kitchen,KITCHEN,PRIMARY,Ada,true
 BAR,Bar,BAR,PRIMARY,Bola,false

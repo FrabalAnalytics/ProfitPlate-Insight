@@ -422,5 +422,29 @@
     "prerequisite": "Waste and processing records posted",
     "steps": "Open Waste analysis, compare centre/reason/material charts and reporting coverage. Check processing trim once, test an unpriced loss separately, and later correct its material price.",
     "expected": "No unlike-unit totals. Only posted losses are analysed. Missing reports are not zero; unpriced loss stays visible. Existing loss-price snapshots stay unchanged after price updates. Processing loss is not deducted or added twice."
+  },
+  {
+    "id": "PROD-CENTRE-01",
+    "area": "Multiple producing centres",
+    "role": "Admin / Inventory / Kitchen",
+    "prerequisite": "Owned active centres",
+    "steps": "Enable Central Store and Central Kitchen. Restrict a baseline to the intended centres. Save a normal centre edit; disable a centre with an unfinished batch and try a stale setup tab.",
+    "expected": "Existing flags/history remain. Normal edits preserve production settings. Pending-batch disable and stale configuration are rejected. Users still need centre permissions."
+  },
+  {
+    "id": "PROD-CENTRE-02",
+    "area": "Several inputs, one output",
+    "role": "Admin / Producing centre",
+    "prerequisite": "PROD-CENTRE-01; input stock posted",
+    "steps": "Save a baseline with two inputs and one output. Record actual secondary input quantities. Test combined shortage and retry with the original submission.",
+    "expected": "Every input is consumed once at the actual centre; only one output is created per batch. Shortage rolls back all rows; retries do not duplicate stock. Derived costs include all baseline inputs."
+  },
+  {
+    "id": "PROD-CENTRE-03",
+    "area": "Raw and prepared stock requests",
+    "role": "Front Kitchen / Inventory",
+    "prerequisite": "Routes and physical stock available",
+    "steps": "Front Kitchen requests raw stock from Central Store and prepared stock from Central Kitchen. Approve, dispatch and accept each separately.",
+    "expected": "Dispatch reserves only. Acceptance moves the accepted quantity between the correct centres. Recipe definitions alone never appear as physical stock."
   }
 ]

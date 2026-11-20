@@ -1,6 +1,6 @@
 # Complete Restaurant Onboarding & Test Guide
 
-ProfitPlate Insight | Updated 20 November 2026 / daily waste accountability update 049 / migrations through 049 | Includes the full master-data setup and daily operational test sequence.
+ProfitPlate Insight | Updated 20 November 2026 / multi-centre production update 050 / migrations through 050 | Includes the full master-data setup and daily operational test sequence.
 
 This replaces the stock-only walkthrough as the main onboarding guide. Use a fresh training restaurant; preserve the existing demo restaurant and its historical records. The examples are fictional training data, not recommended recipes, prices or operating defaults.
 
@@ -8,7 +8,7 @@ This replaces the stock-only walkthrough as the main onboarding guide. Use a fre
 
 Use this guide with **profitplate-complete-test-data-2026-11-20.zip**. It supersedes earlier test-pack instructions. The example transaction date is **19 November 2026**, aligned across prices, recipes, openings and imports. Use that date in the app filters. Record your actual execution date separately in the workbook. If starting later, update the sample dates together before entry. Receiver acceptance posts on its actual business date; subsequent processing/waste must use that date or later. If the test spans days, use the current operational date for later stock activity and widen report filters; keep master versions effective on or before that date.
 
-1. Use the deployed site at https://profit-plate-insight.vercel.app/ and confirm migrations through **049** are applied and the matching app is deployed. Do not rerun applied migrations.
+1. Use the deployed site at https://profit-plate-insight.vercel.app/ and confirm migrations through **050** are applied and the matching app is deployed. Do not rerun applied migrations.
 2. During initial setup, add the Food/Drink subcategories in **menu-categories.csv**. Standard pricing is automatic; additional channels are optional.
 3. Create a fresh training restaurant, for example **Training Restaurant - Run 041**. Keep the earlier demo and its histories intact.
 4. Open **ProfitPlate_Complete_Test_Data.xlsx**. Complete **run-details**, then use **test-results** to record Not run, Pass, Fail, Blocked or Not available, actual result and evidence. Run the sections in order.
@@ -28,7 +28,7 @@ Set up the restaurant profile and reporting calendar; brands and outlets; named 
 | --- | --- | --- |
 | Restaurant, reporting calendar, brand and first outlet | Available through onboarding/setup | No general master-data importer |
 | Named users and role assignments | Available through invitations/team forms | Not implemented |
-| Stock centres, owners, processing unit and routes | Available through setup forms | Not implemented |
+| Stock centres, owners, production centres and routes | Available through setup forms | Not implemented |
 | Suppliers | Available | Not implemented |
 | Materials, packaging and processing flags | Available | Not implemented |
 | Material-specific unit conversions | Available | Not implemented |
@@ -51,7 +51,7 @@ Do not mark full dual-route onboarding as passed until the missing master-data i
 2. Agree a cutover date. Keep transactions before and after cutover clearly separated so opening stock and deliveries are not counted twice.
 3. Collect restaurant name, concept, currency, country, business timezone, brand and outlet details.
 4. Collect staff names, verified email addresses, required roles and outlet/stock-centre scopes. Never put passwords in a spreadsheet.
-5. Collect named storage centres, their actual responsible users, the chosen processing unit and permitted movement routes, including returns.
+5. Collect named storage centres, their actual responsible users, enabled production centres and permitted movement routes, including returns.
 6. Collect supplier codes/names/contact details; material and packaging codes/names/types/base units; conversion factors; processing flags; and known last purchase prices with real dates and evidence.
 7. Collect processing input/output standards, usable batch yields, sub-recipes, final recipes and component quantities for the whole batch.
 8. Collect selling menu codes/names, brand, Food/Drink major category, restaurant-defined subcategory, linked final recipe, recipe output per serving, outlet, standard price, tax treatment and effective dates. Collect optional channel exceptions only where used.
@@ -102,13 +102,13 @@ See [Team invitations and email setup](TEAM_INVITATIONS_AND_EMAIL_SETUP.md) for 
 2. Enter **Main Store**, type Main store, responsible user **Emeka / Inventory Manager**. Under More centre details set code **MAIN_STORE**. Select **Save centre & access**; existing Inventory Manager role-wide permissions remain intact.
 3. Create **Kitchen**, code **KITCHEN**, type Kitchen, outlet Dining Room, responsible user **Ada / Kitchen Manager**. Enable **Request materials**, **Record waste** and **Accept transfers**, then select **Save centre & access**.
 4. Create **Bar**, code **BAR**, outlet Dining Room, responsible user **Bola / Bar Lead**. Enable the same three owner tasks and select **Save centre & access**. Add other actual centres only for a separate test scenario.
-5. Assign an active responsible person to every centre before choosing the processing unit.
-6. Under **Choose where material processing happens**, select **Kitchen** for this example and save. A restaurant that processes in Main Store chooses Main Store instead.
+5. Assign an active responsible person to every centre before enabling production centres.
+6. Under **Choose where processing & production happen**, enable **Kitchen** for this core example and save production centres. Also enable Main Store or Central Kitchen when they produce stock; a baseline separately selects which enabled centres may use it.
 7. Use **Additional staff & detailed permissions** only for other colleagues or extra controls. Confirm Ada has Kitchen only and Bola has Bar only. Waste permission is independent of requesting materials; no waste approver is needed.
 8. In **Inventory & movements > Locations & routes**, configure Main Store to Kitchen and the reverse return route. Add Bar routes only if needed. Use Inventory Manager as source approver for the normal workflow.
-9. Check that each centre has its own ledger/balances and that only the selected processing unit is designated for processing.
+9. Check that each centre has its own ledger/balances and that the intended production centres are enabled.
 
-Expected result: stock is controlled by location and user. Transfers need destination acceptance before quantities move. A later processing-unit change does not move existing stock and is blocked while processing requests are pending. Finish/cancel those requests first and review baselines for the new unit.
+Expected result: stock is controlled by location and user. Transfers need destination acceptance before quantities move. Enabling centres does not move stock. Finish/cancel pending batches at a centre before disabling it; existing batch history is retained.
 
 ## 6. Create suppliers
 
@@ -186,7 +186,7 @@ Expected result: costs can be estimated without treating a price upload as a sto
 4. Select produced stock material Snapper Cut and expected output **120 PCS**.
 5. Enter an approved cut specification, an effective date and tolerance percentage. Use 0 for the exact training baseline.
 6. Leave optional piece weights and trim blank unless measured and agreed.
-7. Save. This publishes the versioned processing recipe, links its output SKU and saves the yield baseline together. It changes no stock.
+7. Select Kitchen under Permitted production centres, then save. This publishes the versioned processing recipe, links its output SKU and saves the yield baseline together. It changes no stock. Use Add input material when a baseline needs several ingredients; each batch still has exactly one output SKU.
 8. Verify the baseline is available at Kitchen and standard output cost is **NGN 1,000 per PCS**: 40 x 3000 / 120.
 
 If the dropdown is empty, check material active status, stock tracking, base unit and classification. The input must be marked Requires processing; the output must be a different tracked Semi-finished/Finished material with Processed/Both supply source. Existing recipe-based setup remains in expandable sections, including processes with multiple inputs. There is no processing-baseline bulk importer yet.
@@ -362,7 +362,7 @@ Use the following checklist as the restaurant's acceptance record. Add tester na
 
 - Business, brand/outlet, currency and reporting calendar verified.
 - Named users accepted invitations; role and centre restrictions tested.
-- Every centre has an active responsible user; processing unit and movement/return routes correct.
+- Every centre has an active responsible user; production centres and movement/return routes correct.
 - Suppliers, materials, packaging, conversions and processing flags reviewed.
 - Dated starting prices present; processed SKU cost derived correctly.
 - Processing baselines, lowest-level sub-recipes, parent sub-recipes and final recipes reviewed in dependency order.
@@ -414,3 +414,14 @@ Use the actual operational test date in the restaurant timezone for physical pro
 8. Inventory must still see only its own centre. Kitchen/Bar must see assigned centres. Finance reads permitted combined waste and compliance but cannot submit declarations, record stock or change schedules.
 
 The daily-waste-declarations sheet is a manual test collection sheet, not an upload schema. In-app reminders do not send emails. Missing reports, missing prices and older unclassified reasons remain visible rather than being invented as zeros or guessed categories.
+
+
+## 21. Multiple production centres and single-output batches
+
+Enable each actual producing centre under Centres & team access > Choose where processing & production happen. A five-centre restaurant can enable Central Inventory Store and Central Kitchen, leaving Front Kitchen, Back Kitchen and Bar as storage/service centres unless they also need to record stock production. Each baseline selects one or several enabled centres. Users still need stock-task access at the actual centre.
+
+A baseline can contain several material inputs and exactly one output. In the daily log, the main input scales expected output; secondary inputs start from the baseline ratio and can be edited to actual consumption. Shortages are checked across every material and every submitted line, then rechecked atomically in the database. Beef Small Cuts and Beef Big Cuts use separate batches and only their allocated raw input quantities, never the same full input twice.
+
+Front Kitchen can request raw materials from Central Inventory and prepared SKUs from Central Kitchen using separate configured routes. Prepared items must be real tracked output SKUs. Receiver acceptance remains the stock-movement posting point. There is no new automatic production-order planner: the producing centre records any required production before dispatching the prepared stock.
+
+Run PROD-CENTRE-01 through PROD-CENTRE-03 in a separate scenario after the original numeric checks. The core sample still uses only Kitchen production so its expected balances and costs remain unchanged.

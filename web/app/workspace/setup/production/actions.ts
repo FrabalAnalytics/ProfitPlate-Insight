@@ -8,20 +8,22 @@ export async function recipeInputs(org:string,version:string):Promise<{rows:Proc
 export async function saveCentre(_state:ProcessingState,form:FormData):Promise<ProcessingState>{
  await requireUser();const org=String(form.get('organisation')??'');if(!isUuid(org))return{error:'Choose a business.'};
  const value=Object.fromEntries(['id','code','name','kind','outlet_id','department','responsible'].map(k=>[k,String(form.get(k)??'').trim()]));
- const client=await createClient(),result=await client.rpc('save_stock_centre_with_access',{p_organisation_id:org,p_value:{...value,processing_enabled:['true','on'].includes(String(form.get('processing_enabled')))},p_enable_owner:form.get('enable_owner')==='on',p_revision:Number(form.get('owner_revision')??0),p_owner_tasks:{can_request:form.get('owner_request')==='on',can_record_waste:form.get('owner_waste')==='on',can_receive:form.get('owner_receive')==='on'}});
+ const client=await createClient(),result=await client.rpc('save_stock_centre_with_access',{p_organisation_id:org,p_value:value,p_enable_owner:form.get('enable_owner')==='on',p_revision:Number(form.get('owner_revision')??0),p_owner_tasks:{can_request:form.get('owner_request')==='on',can_record_waste:form.get('owner_waste')==='on',can_receive:form.get('owner_receive')==='on'}});
  if(result.error)return{error:['22023','42501'].includes(result.error.code)?result.error.message:result.error.code==='PGRST202'?'Apply migration 040 before saving centre access.':'The centre could not be saved. Please try again.'};
  refresh();revalidatePath('/workspace/inventory/waste');redirect(`/workspace/setup/centres?${new URLSearchParams({organisation:org,edit:String(result.data),saved:'1'})}#centre-editor`);
 }
 export async function saveStandard(_state:ProcessingState,form:FormData):Promise<ProcessingState>{await requireUser();const org=String(form.get('organisation')??''),request=String(form.get('request')??'');if(!isUuid(org)||!isUuid(request))return{error:'Refresh setup and choose a business.'};const value={...Object.fromEntries(['recipe_version_id','primary_item_id','output_spec','target_piece_weight_kg','expected_trim_kg','tolerance_percent'].map(k=>[k,String(form.get(k)??'').trim()])),site_ids:form.getAll('site_id').map(String)};const client=await createClient(),result=await client.rpc('save_processing_standard',{p_organisation_id:org,p_request_id:request,p_value:value});if(result.error)return{error:result.error.code==='22023'?result.error.message:'The processing standard could not be saved. Check your setup access.'};refresh();return{success:'Processing standard saved. Existing batches keep their original baseline.'};}
 
-export async function selectProcessingUnit(_state:ProcessingState,form:FormData):Promise<ProcessingState>{
- await requireUser();const org=String(form.get('organisation')??''),site=String(form.get('centre')??'');if(!isUuid(org)||!isUuid(site))return{error:'Choose a business and processing unit.'};
- const client=await createClient(),result=await client.rpc('set_processing_unit',{p_organisation_id:org,p_centre_id:site});
- if(result.error)return{error:['22023','42501'].includes(result.error.code)?result.error.message:'The processing unit could not be saved.'};refresh();return{success:'Processing unit saved. Review your baselines for this centre before recording batches.'};
+export async function selectProcessingCentres(_state:ProcessingState,form:FormData):Promise<ProcessingState>{
+ await requireUser();const org=String(form.get('organisation')??''),sites=form.getAll('centre').map(String),revision=Number(form.get('revision'));
+ if(!isUuid(org)||sites.some(id=>!isUuid(id))||!Number.isSafeInteger(revision)||revision<0)return{error:'Refresh and choose valid production centres.'};
+ const client=await createClient(),result=await client.rpc('save_processing_centres',{p_organisation_id:org,p_centre_ids:sites,p_revision:revision});
+ if(result.error)return{error:['22023','42501'].includes(result.error.code)?result.error.message:'Production centres could not be saved. Check the latest setup update.'};refresh();redirect(`/workspace/setup/centres?${new URLSearchParams({organisation:org,production_saved:'1'})}#production-centres`);
 }
 export async function saveGuidedBaseline(_state:ProcessingState,form:FormData):Promise<ProcessingState>{
  await requireUser();const org=String(form.get('organisation')??''),request=String(form.get('request')??'');if(!isUuid(org)||!isUuid(request))return{error:'Refresh processing setup.'};
  const value=Object.fromEntries(['code','name','input_item_id','input_quantity','output_item_id','output_quantity','effective_from','output_spec','tolerance_percent','target_piece_weight_kg','expected_trim_kg'].map(k=>[k,String(form.get(k)??'').trim()]));
- const client=await createClient(),result=await client.rpc('save_material_processing_baseline',{p_organisation_id:org,p_request_id:request,p_value:value});
+ let inputs:unknown;try{inputs=JSON.parse(String(form.get('inputs')??'[]'));}catch{return{error:'Check the baseline input lines.'};}
+ const client=await createClient(),result=await client.rpc('save_material_processing_baseline',{p_organisation_id:org,p_request_id:request,p_value:{...value,inputs,site_ids:form.getAll('site_id').map(String)}});
  if(result.error)return{error:['22023','42501'].includes(result.error.code)?result.error.message:'The baseline could not be saved. Check the code, materials and setup permissions.'};refresh();return{success:'Processing baseline saved. Its produced SKU now gets its estimated unit cost from this baseline.'};
 }

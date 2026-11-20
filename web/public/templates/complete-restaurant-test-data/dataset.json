@@ -1,7 +1,7 @@
 {
   "pack_date": "2026-11-20",
-  "app_release": "049-daily-waste-accountability",
-  "required_migration": "049",
+  "app_release": "050-multi-centre-single-output-production",
+  "required_migration": "050",
   "test_date": "2026-11-19",
   "source_org": "TRAINING",
   "sheets": {
@@ -146,7 +146,7 @@
         "kind",
         "outlet_code",
         "responsible_name",
-        "is_processing_unit"
+        "production_enabled"
       ],
       "rows": [
         [
@@ -1230,12 +1230,12 @@
         ],
         [
           "App release",
-          "049-daily-waste-accountability",
+          "050-multi-centre-single-output-production",
           "Deployment checked before executing"
         ],
         [
           "Required migration",
-          "049",
+          "050",
           "Verify required migration; do not rerun applied migrations"
         ],
         [
@@ -2032,6 +2032,48 @@
           "Waste and processing records posted",
           "Open Waste analysis, compare centre/reason/material charts and reporting coverage. Check processing trim once, test an unpriced loss separately, and later correct its material price.",
           "No unlike-unit totals. Only posted losses are analysed. Missing reports are not zero; unpriced loss stays visible. Existing loss-price snapshots stay unchanged after price updates. Processing loss is not deducted or added twice.",
+          "Not run",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "PROD-CENTRE-01",
+          "Multiple producing centres",
+          "Admin / Inventory / Kitchen",
+          "Owned active centres",
+          "Enable Central Store and Central Kitchen. Restrict a baseline to the intended centres. Save a normal centre edit; disable a centre with an unfinished batch and try a stale setup tab.",
+          "Existing flags/history remain. Normal edits preserve production settings. Pending-batch disable and stale configuration are rejected. Users still need centre permissions.",
+          "Not run",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "PROD-CENTRE-02",
+          "Several inputs, one output",
+          "Admin / Producing centre",
+          "PROD-CENTRE-01; input stock posted",
+          "Save a baseline with two inputs and one output. Record actual secondary input quantities. Test combined shortage and retry with the original submission.",
+          "Every input is consumed once at the actual centre; only one output is created per batch. Shortage rolls back all rows; retries do not duplicate stock. Derived costs include all baseline inputs.",
+          "Not run",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "PROD-CENTRE-03",
+          "Raw and prepared stock requests",
+          "Front Kitchen / Inventory",
+          "Routes and physical stock available",
+          "Front Kitchen requests raw stock from Central Store and prepared stock from Central Kitchen. Approve, dispatch and accept each separately.",
+          "Dispatch reserves only. Acceptance moves the accepted quantity between the correct centres. Recipe definitions alone never appear as physical stock.",
           "Not run",
           "",
           "",

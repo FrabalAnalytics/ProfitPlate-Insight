@@ -1,4 +1,4 @@
-﻿"""Build the fictional complete-restaurant test pack using only the Python standard library."""
+"""Build the fictional complete-restaurant test pack using only the Python standard library."""
 from pathlib import Path
 import csv, io, json, shutil, re
 from zipfile import ZipFile, ZIP_DEFLATED
@@ -9,8 +9,8 @@ ROOT=Path(__file__).resolve().parents[1]
 DEST=ROOT/'public/templates/complete-restaurant-test-data'
 DATE='2026-11-19'
 PACK_DATE='2026-11-20'
-APP_RELEASE='049-daily-waste-accountability'
-MIGRATION='049'
+APP_RELEASE='050-multi-centre-single-output-production'
+MIGRATION='050'
 DATA={}
 def sheet(name,header,rows,folder='manual-entry'):
     DATA[name]={'columns':header.split(','),'rows':rows,'folder':folder}
@@ -21,7 +21,7 @@ sheet('users','display_name,email_to_replace,role_code,outlet_scope,stock_centre
  ['Francis','owner@example.test','restaurant_admin','ALL','ALL'],['Francis','owner@example.test','ceo','ALL','ALL'],['Emeka','inventory@example.test','inventory_manager','ALL','ALL'],['Ada','kitchen@example.test','kitchen_manager','ALL','KITCHEN'],['Bola','bar@example.test','bar_lead','ALL','BAR'],['Tomi','procurement@example.test','procurement','ALL',''],['Chioma','finance@example.test','finance','ALL','']])
 sheet('sales-channels','channel_code,channel_name,is_active',[['STANDARD','Standard selling price','true']])
 sheet('menu-categories','major_category,subcategory,is_active',[['FOOD','Mains','true'],['FOOD','Sides','true'],['DRINK','Soft drinks','true']])
-sheet('stock-centres','centre_code,centre_name,kind,outlet_code,responsible_name,is_processing_unit',[
+sheet('stock-centres','centre_code,centre_name,kind,outlet_code,responsible_name,production_enabled',[
  ['MAIN_STORE','Main Store','STORE','','Emeka','false'],['KITCHEN','Kitchen','KITCHEN','PRIMARY','Ada','true'],['BAR','Bar','BAR','PRIMARY','Bola','false']])
 sheet('movement-routes','source_centre,destination_centre,movement_type,source_approval_role',[[a,b,'TRANSFER','inventory_manager'] for a,b in [('MAIN_STORE','KITCHEN'),('KITCHEN','MAIN_STORE'),('MAIN_STORE','BAR'),('BAR','MAIN_STORE')]])
 sheet('suppliers','supplier_code,supplier_name,email,phone,address',[
