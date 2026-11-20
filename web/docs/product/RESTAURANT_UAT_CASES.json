@@ -470,5 +470,53 @@
     "prerequisite": "Scoped users and centres",
     "steps": "Open Material Plan for assigned and unassigned centres; try Finance-only access. Print/download one permitted plan.",
     "expected": "Only operationally permitted centres can generate plans. Finance-only cannot generate. Export/print uses only the generated scope, with dates and current-stock basis visible."
+  },
+  {
+    "id": "COUNT-01",
+    "area": "Weekly count scope and reminders",
+    "role": "Administrator / centre owner / CEO",
+    "prerequisite": "Flagged materials, centre ledger and a future configured count cutoff",
+    "steps": "Check centre weekly scope; include a zero-stock SKU. Wait for cutoff. Inspect workspace due and overdue status. Change future scope/calendar.",
+    "expected": "Due sheet has the expected centre-specific SKUs. No invented historical arrears. Changes are prospective. Executive sees permitted-centre compliance and older overdue tasks."
+  },
+  {
+    "id": "COUNT-02",
+    "area": "Physical count submission",
+    "role": "Centre user",
+    "prerequisite": "Due count sheet",
+    "steps": "Start sheet; enter some quantities and save draft. Attempt submission with blanks; enter explicit zero, submitter name and variance explanation, then submit twice.",
+    "expected": "Blank remains missing; explicit zero is valid. All lines and named submitter required. Saved values persist. Retry does not duplicate submission or move stock."
+  },
+  {
+    "id": "COUNT-03",
+    "area": "Variance review and safe adjustment",
+    "role": "Different reviewer / Inventory",
+    "prerequisite": "Submitted physical count with a variance",
+    "steps": "Try self-approval. Have another authorised colleague approve; post a legitimate later movement, then post approved variance and retry.",
+    "expected": "Self-approval rejected. Approval alone does not move stock. Posting adjusts only the frozen difference once and preserves later movements. History and CSV retain source/cutoff."
+  },
+  {
+    "id": "COUNT-04",
+    "area": "Cutoff exceptions",
+    "role": "Inventory / reviewer",
+    "prerequisite": "Practice count and cross-cutoff transfer or late backdated movement",
+    "steps": "Inspect cutoff warning. Attempt adjustment after a backdated entry; refresh snapshot and recount. Reconcile a transfer crossing cutoff and review without adjustment.",
+    "expected": "Unsafe adjustment blocked. Recount clears old physical inputs and keeps prior revision. Cross-cutoff transfers cannot create a duplicate loss correction."
+  },
+  {
+    "id": "STMT-01",
+    "area": "Full movement reconciliation",
+    "role": "Inventory / Finance",
+    "prerequisite": "Posted openings, receipts, transfers, production, waste and count adjustments",
+    "steps": "Open statement by centre/date/material/category. Reconcile totals, inspect source running balances and export. Include a material with over 100 movements.",
+    "expected": "Opening + additions ? removals + adjustments equals closing. Full history contributes. No mixed-unit quantity total. Exports preserve scope."
+  },
+  {
+    "id": "STMT-02",
+    "area": "Reference estimates and access",
+    "role": "Finance / centre user / outsider",
+    "prerequisite": "Priced and unpriced balances, scoped users",
+    "steps": "Compare Finance and centre-only reports; attempt another centre and tenant. Inspect CSV and unpriced stock.",
+    "expected": "Money appears only with financial permission. Unpriced balances are disclosed, not valued as zero. No cross-centre/tenant access. Values labelled estimated, not carrying valuation."
   }
 ]

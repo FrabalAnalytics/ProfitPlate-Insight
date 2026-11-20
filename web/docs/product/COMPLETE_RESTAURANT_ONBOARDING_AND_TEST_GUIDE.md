@@ -1,6 +1,6 @@
 # Complete Restaurant Onboarding & Test Guide
 
-ProfitPlate Insight | Updated 20 November 2026 / centre material plans update 051 / migrations through 051 | Includes the full master-data setup and daily operational test sequence.
+ProfitPlate Insight | Updated 20 November 2026 / weekly counts and stock statements update 053 / migrations through 053 | Includes the full master-data setup and daily operational test sequence.
 
 This replaces the stock-only walkthrough as the main onboarding guide. Use a fresh training restaurant; preserve the existing demo restaurant and its historical records. The examples are fictional training data, not recommended recipes, prices or operating defaults.
 
@@ -8,7 +8,7 @@ This replaces the stock-only walkthrough as the main onboarding guide. Use a fre
 
 Use this guide with **profitplate-complete-test-data-2026-11-20.zip**. It supersedes earlier test-pack instructions. The example transaction date is **19 November 2026**, aligned across prices, recipes, openings and imports. Use that date in the app filters. Record your actual execution date separately in the workbook. If starting later, update the sample dates together before entry. Receiver acceptance posts on its actual business date; subsequent processing/waste must use that date or later. If the test spans days, use the current operational date for later stock activity and widen report filters; keep master versions effective on or before that date.
 
-1. Use the deployed site at https://profit-plate-insight.vercel.app/ and confirm migrations through **051** are applied and the matching app is deployed. Do not rerun applied migrations.
+1. Use the deployed site at https://profit-plate-insight.vercel.app/ and confirm migrations through **053** are applied and the matching app is deployed. Do not rerun applied migrations.
 2. During initial setup, add the Food/Drink subcategories in **menu-categories.csv**. Standard pricing is automatic; additional channels are optional.
 3. Create a fresh training restaurant, for example **Training Restaurant - Run 041**. Keep the earlier demo and its histories intact.
 4. Open **ProfitPlate_Complete_Test_Data.xlsx**. Complete **run-details**, then use **test-results** to record Not run, Pass, Fail, Blocked or Not available, actual result and evidence. Run the sections in order.
@@ -333,13 +333,19 @@ A sales CSV is not proof of automatic actual ingredient depletion. Validate the 
 
 The manual PO above changes later monthly recipe cost if its net unit price differs from the sample's reference price. Use the supplied 1,800/KG Rice price to keep the baseline arithmetic unchanged. Treat its deliveries as separate from starting counts and from imported invoice quantities; record actual stock receipt through the relevant workflow once.
 
-## 17B. Weekly-count classification check
+## 17B. Mandatory weekly stock counts and movement statements
 
-1. As Administrator, open each material and check **Include in weekly stock counts** (the material's weekly-count flag). All seven sample SKUs are included in this pack.
-2. Save, reopen and confirm the choice persists, including for the processed **SNAPPER_CUT** SKU. For a separate inactive trial SKU, disable the flag and verify it stays off; do not change the seven sample quantities to test this.
-3. Verify the reporting week starts Wednesday, physical count day Tuesday and cutoff 23:30 in Africa/Lagos for this fictional setup. Use your restaurant's own schedule for a real pilot.
-4. Record counts at the correct centre through the available count workflow; verify that an explicit zero is accepted and an omitted count is not silently interpreted as zero.
-5. A complete automatic weekly count-sheet/reminder/theoretical-usage programme remains a separate phase. Mark a missing automatic feature **Not available**; do not report it as Passed simply because the material flag saved.
+1. As Administrator, mark **Include in weekly stock counts** on each required SKU, including counted processed stock. The seven sample SKUs are flagged. Confirm the restaurant timezone, count day and local cutoff in Reporting calendar.
+2. Open **Reports ? Weekly stock counts**, select one centre and expand **Weekly-count scope & submission window**. Materials become expected when they have a ledger/opening history at that centre. Include any expected zero-stock materials manually; keep held weekly SKUs included. Scope/calendar changes apply prospectively from tomorrow. No historical arrears are invented on rollout.
+3. Default submission deadline is 24 hours after cutoff. An authorised manager may set the business-wide window to 1?168 hours. Upcoming sheets open at cutoff. In the sample Tuesday 23:30 schedule, wait for that cutoff or configure a future practice cutoff; changing the calendar does not rewrite past weeks.
+4. Open the due centre/date and choose **Start count**. The sheet freezes expected SKUs and cutoff book quantities. Measure all physical quantities in their base units. Blank is missing; enter 0 when none remains. Add your submitter name and explain discrepancies on a material line or in the overall note. Save a partial draft, then submit all lines.
+5. Verify workspace counts show not started/in progress/submitted/overdue status by centre. The executive view includes permitted centres and older overdue obligations. Submission is recorded against both the entered name and signed-in account. A late submission remains marked late.
+6. A different authorised colleague reviews the variance. **Approve variance** does not move stock. **Complete review without adjustment** requires an explanation. An authorised Inventory user can **Post approved variance** once; the system applies only the approved difference, preserving movements after cutoff. Never label all shortages as waste automatically.
+7. Backdated changes require **Refresh cutoff snapshot & recount** before adjustment. Transfers crossing cutoff block automatic adjustment; reconcile the handover and complete review without adjustment where appropriate. Prior revisions remain available in audit history. A closed count cannot be silently overwritten.
+8. Download the count/variance CSV. Quantity variance is physical minus book; percent uses book as denominator. Zero book with positive physical is unexpected stock, not an infinite percentage. Financial users see captured reference-value estimates; unpriced lines remain visible.
+9. Open **Reports ? Stock movement statement**. Select a centre, date period, material/category, then check opening + added ? removed + count adjustment = closing. Open **Movement detail** for sources and running balance; export CSV. More than 100 movements must remain included. Financial values are current reference estimates for the selected date, not carrying valuation or actual COGS.
+
+Sales-driven theoretical recipe usage and a full historical costed valuation ledger remain separate work. Weekly count reminders and physical-versus-book analysis are now available.
 
 ## 18. Bulk-import requirements still to implement and test
 
@@ -373,7 +379,7 @@ Use the following checklist as the restaurant's acceptance record. Add tester na
 - PO, GRN, invoices, permitted imports, sales, expenses and historical reports checked.
 - Finance setup restrictions, invoice readability and combined centre waste/export checked.
 - Inventory/Kitchen/Bar waste access stays centre-restricted; submitter names present without approval.
-- Weekly-count material flags saved and reporting calendar verified; unavailable automation recorded separately.
+- Weekly-count flags and centre scope checked; due submissions, variance review and stock statement reconciliation tested.
 - CEO profitability/accountability view and operational Needs Attention queues checked.
 - All required manual-entry tests passed; working import routes passed; missing master-data importers explicitly tracked as blocked.
 

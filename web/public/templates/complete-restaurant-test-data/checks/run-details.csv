@@ -1,7 +1,7 @@
 ﻿field,value,notes
 Pack revision,2026-11-20,Use this revision instead of older test packs
-App release,051-centre-material-plans,Deployment checked before executing
-Required migration,051,Verify required migration; do not rerun applied migrations
+App release,053-weekly-counts-and-stock-statements,Deployment checked before executing
+Required migration,053,Verify required migration; do not rerun applied migrations
 Website,https://profit-plate-insight.vercel.app/,
 Example transaction date,2026-11-19,Keep all dependent master/transaction dates aligned
 Actual execution date,,Date you perform the tests

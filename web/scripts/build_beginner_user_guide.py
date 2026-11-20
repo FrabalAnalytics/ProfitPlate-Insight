@@ -7,7 +7,7 @@ import json
 import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / 'docs/exports/ProfitPlate_Insights_Beginner_Setup_and_Daily_Operations_Guide_051.docx'
+OUT = ROOT / 'docs/exports/ProfitPlate_Insights_Beginner_Setup_and_Daily_Operations_Guide_053.docx'
 PAGES = []
 
 def page(title, text):
@@ -16,7 +16,7 @@ def page(title, text):
 page('ProfitPlate Insights', '''
 ### Your beginner guide
 From restaurant setup to daily operations
-Current application: 20 November 2026 | Includes material planning, multi-centre production and daily waste accountability
+Current application: 20 November 2026 | Includes weekly stock counts, movement statements, material planning and daily waste accountability
 
 ### What the product does
 ProfitPlate Insights helps restaurant owners and their teams understand how everyday operating decisions affect estimated profitability and accountability. It connects material prices, recipe costs, selling menus, purchases, stock movements, processing, waste, sales and operating expenses in one restaurant workspace.
@@ -505,14 +505,17 @@ Use the exact downloadable columns and selected restaurant/outlet scope. Preview
 
 page('20. Weekly counts and the management review', '''
 ### Physical stock count
-1. Use the agreed business count day and cutoff. Agree how receipts, transfers and production around that point will be handled.
-2. Count each included SKU separately at each relevant centre. Use the weekly-count flag to identify intended count materials, including processed stock where required.
-3. Enter the physical count through the available inventory count workflow with the correct centre, date, materials and measured quantities.
-4. Enter an explicit zero when the physical count is zero. Do not treat an omitted material as a zero count.
-5. Follow the required independent review and posting. Check the resulting ledger and balance; investigate stale counts or intervening movements before retrying.
-6. Record the cause of a variance using evidence. Do not label every unexplained shortage as waste to make the figures agree.
+1. Flag the materials that require weekly counting in Materials. Confirm count day, local cutoff and timezone in Reporting calendar.
+2. Open Reports > Weekly stock counts. Select a centre and check Weekly-count scope. Include expected zero-stock SKUs; held weekly-count materials must stay included. Changes apply prospectively from tomorrow.
+3. At cutoff, choose Start count for the due centre/date. Enter every physical quantity in its base unit; blank is missing, while 0 is a valid count. Save a draft if needed.
+4. Add your submitter name and explain variances per line or in the overall note, then Submit count. Submission does not move stock. Workspace reminders show due and overdue counts; late submissions remain identified.
+5. A different authorised colleague reviews. Approve variance leaves stock unchanged. Inventory can then Post approved variance once, or the reviewer can Complete review without adjustment with a reason. Posting preserves legitimate movements after cutoff.
+6. A late backdated movement requires a refreshed snapshot and recount. A transfer crossing cutoff blocks automatic adjustment: reconcile the handover before completing review. Download the count/variance CSV.
 
-The weekly-count flag and reporting calendar are available. A fully automated weekly count-sheet/reminder and sales-driven theoretical-usage programme is not yet a complete end-to-end feature. Maintain a controlled count checklist alongside the available workflow.
+Default deadline is 24 hours after cutoff. A manager can set a business-wide window of 1?168 hours for future schedules. No historical arrears are invented at rollout. Prior revisions are retained. Sales-driven theoretical recipe usage remains separate work.
+
+### Stock movement statement
+Open Reports > Stock movement statement. Choose centre, dates and optional material/category. Reconcile opening + additions - removals + count adjustments = closing. Movement detail shows sources and running balance; CSV includes the selected scope. Financial users see reference-price estimates and unpriced balances. These are not carrying valuation or actual COGS.
 
 ### Owner/Finance weekly review
 1. Open the executive workspace/overview and select the correct reporting period and outlet scope. Check coverage before drawing conclusions.

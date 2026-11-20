@@ -14,6 +14,8 @@ for (const migration of (await readdir(new URL("../../supabase/migrations/", imp
   await db.exec(await readFile(new URL(`../../supabase/migrations/${migration}`, import.meta.url), "utf8"));
 const emailRequests=[];
 const users = [
+ {id:"00000000-0000-0000-0000-000000000090",email:"weekly-owner@example.test"},
+ {id:"00000000-0000-0000-0000-000000000091",email:"weekly-counter@example.test"},
   {id:"00000000-0000-0000-0000-000000000023",email:"channels-owner@example.test"},
   {id:"00000000-0000-0000-0000-000000000020",email:"invited-kitchen@example.test"},
   {id:"00000000-0000-0000-0000-000000000021",email:"invited-verify@example.test"},
@@ -113,6 +115,26 @@ for(const email of ['kitchen-process@example.test','bar-process@example.test']){
  const m=(await db.query('insert into public.organisation_memberships(organisation_id,user_id) values($1,$2) returning id',[catalogueOrg,users.find(u=>u.email===email).id])).rows[0].id;
  await db.query("insert into public.membership_roles(organisation_id,membership_id,role_code,location_id) values($1,$2,'stock_department',$3)",[catalogueOrg,m,stockOutlet]);
 }
+// Isolated count fixture: simulate an existing centre activated before today's cutoff.
+const weeklyOwner=users.find(u=>u.email==='weekly-owner@example.test'),weeklyCounter=users.find(u=>u.email==='weekly-counter@example.test');
+const weeklyScalar=async(tx,sql,args=[])=>Object.values((await tx.query(sql,args)).rows[0])[0];
+const weeklyOrg=await asUser(weeklyOwner,async tx=>{await tx.query("select public.save_restaurant_setup('Weekly Test Restaurant','QSR','NG','NGN','Weekly','Dining','Africa/Lagos','',3)");return weeklyScalar(tx,'select public.complete_restaurant_setup()');});
+const weeklyMember=await weeklyScalar(db,"insert into public.organisation_memberships(organisation_id,user_id,display_name) values($1,$2,'Ada') returning id",[weeklyOrg,weeklyCounter.id]);
+await db.query("insert into public.membership_roles(organisation_id,membership_id,role_code) values($1,$2,'inventory_manager')",[weeklyOrg,weeklyMember]);
+const weeklyToday=await weeklyScalar(db,"select (now() at time zone 'Africa/Lagos')::date::text"),weeklyYesterday=new Date(Date.parse(weeklyToday+'T12:00:00Z')-86400000).toISOString().slice(0,10);
+let weeklySite,weeklyFish,weeklyZero;
+await asUser(weeklyOwner,async tx=>{
+ const kg=await weeklyScalar(tx,"select id from public.units_of_measure where organisation_id=$1 and code='KG'",[weeklyOrg]);
+ for(const [code,name]of [['COUNT_FISH','Count Fish'],['COUNT_ZERO','Zero Stock']]){const id=await weeklyScalar(tx,'select public.save_material_setup($1,$2)',[weeklyOrg,JSON.stringify({code,name,item_type:'RAW',category:'Fish',base_uom_id:kg,weekly_count_required:true,stock_tracked:true,is_active:true,supply_class:'PURCHASED'})]);if(code==='COUNT_FISH')weeklyFish=id;else weeklyZero=id;}
+ weeklySite=await weeklyScalar(tx,'select public.save_stock_centre($1,$2)',[weeklyOrg,JSON.stringify({code:'COUNT_STORE',name:'Count Store',kind:'STORE',responsible:weeklyMember})]);
+ await tx.query('select public.confirm_zero_opening($1,$2,$3,$4,$5)',[weeklyOrg,weeklyZero,weeklySite,weeklyYesterday,'Verified zero stock']);
+});
+const weeklyOpening=await asUser(weeklyCounter,tx=>weeklyScalar(tx,'select public.request_stock_document($1,$2,$3,$4)',[weeklyOrg,crypto.randomUUID(),JSON.stringify({kind:'OPENING',destination_id:weeklySite,date:weeklyYesterday,note:'Signed opening count'}),JSON.stringify([{item_id:weeklyFish,quantity:'80'}])]));
+await asUser(weeklyOwner,tx=>tx.query("select public.stock_document_action($1,$2,'APPROVE','Verified opening',null)",[weeklyOrg,weeklyOpening]));
+await asUser(weeklyCounter,tx=>tx.query("select public.stock_document_action($1,$2,'POST','Verified opening',null)",[weeklyOrg,weeklyOpening]));
+await db.query("update public.organisations set count_day=extract(dow from $2::date),count_cutoff='00:00' where id=$1",[weeklyOrg,weeklyToday]);
+await db.query('delete from private.weekly_count_programmes where organisation_id=$1',[weeklyOrg]);await db.query('select private.pp_weekly_programme($1,$2,$3)',[weeklyOrg,weeklySite,weeklyToday]);
+await db.query('delete from private.weekly_count_scope where organisation_id=$1',[weeklyOrg]);for(const id of[weeklyFish,weeklyZero])await db.query('select private.pp_count_scope_seed($1,$2,$3,$4,true)',[weeklyOrg,weeklySite,id,weeklyToday]);
 createServer(async (request, response) => {
   const send = (status, data, headers = {}) => { response.writeHead(status, { "Content-Type": "application/json", "Cache-Control": "no-store", ...headers }); response.end(JSON.stringify(data)); };
   try {
@@ -220,6 +242,17 @@ createServer(async (request, response) => {
         invite_named_team_member: ["p_organisation_id","p_request_id","p_email","p_name","p_assignments"],
         set_processing_unit: ["p_organisation_id","p_centre_id"],
         save_processing_centres: ["p_organisation_id","p_centre_ids","p_revision"],
+        inventory_report_options: ["p_organisation_id", "p_site_id"],
+        inventory_movement_statement: ["p_organisation_id", "p_site_id", "p_from", "p_to", "p_item_id", "p_page", "p_export", "p_category"],
+        weekly_counts_report: ["p_organisation_id", "p_site_id", "p_from", "p_to", "p_page"],
+        weekly_counts_workspace: ["p_organisation_id"],
+        weekly_count_detail: ["p_organisation_id", "p_count_id"],
+        weekly_count_history: ["p_organisation_id", "p_count_id", "p_revision"],
+        start_weekly_count: ["p_organisation_id", "p_site_id", "p_day"],
+        save_weekly_count: ["p_organisation_id", "p_count_id", "p_revision", "p_request_id", "p_rows", "p_submit", "p_submitter", "p_note"],
+        weekly_count_action: ["p_organisation_id", "p_count_id", "p_revision", "p_request_id", "p_action", "p_reason"],
+        weekly_count_scope: ["p_organisation_id", "p_site_id"],
+        save_weekly_count_scope: ["p_organisation_id", "p_site_id", "p_item_ids", "p_submission_hours", "p_evidence"],
         material_plan_options: ["p_organisation_id","p_site_id","p_date"],
         generate_material_plan: ["p_organisation_id","p_site_id","p_date","p_rows","p_basis"],
         save_material_processing_baseline: ["p_organisation_id","p_request_id","p_value"],
