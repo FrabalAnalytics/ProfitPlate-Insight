@@ -16,10 +16,12 @@ test("homepage explains availability and its cost example responds to keyboard i
   await page.getByText("Why are my food costs rising?", { exact: true }).click();
   await expect(page.getByText(/See which ingredient prices changed/)).toBeVisible();
   await expect(page.locator(".marketing-capabilities article")).toHaveCount(6);
+  await expect(page.getByLabel("Illustrative daily waste reporting")).toContainText("2 of 3");
+  await expect(page.getByLabel("Illustrative daily waste reporting")).toContainText("Overdue");
   await page.getByText("Planning a pilot? Start with sample data", {exact:true}).click();
   const onboardingPack = page.getByRole("link", { name: "Download test data pack" });
   await expect(onboardingPack).toHaveAttribute("download", "");
-  await expect(onboardingPack).toHaveAttribute("href", "/templates/profitplate-complete-test-data-2026-11-19.zip");
+  await expect(onboardingPack).toHaveAttribute("href", "/templates/profitplate-complete-test-data-2026-11-20.zip");
   const templateResponse = await page.request.get(await onboardingPack.getAttribute("href") as string);
   expect(templateResponse.ok()).toBe(true);
   expect((await templateResponse.body()).subarray(0, 2).toString()).toBe("PK");

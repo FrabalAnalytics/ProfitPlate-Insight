@@ -273,3 +273,18 @@
 @media(max-width:600px){.marketing-clarity{grid-template-columns:minmax(0,1fr);padding-block:24px;gap:22px}.marketing-team-tabs{gap:7px}.marketing-team-tabs button{padding:10px 12px;font-size:12px}.marketing-team-panel{padding:20px;gap:24px}.marketing-team-copy h3{font-size:26px}.marketing-team-example{padding:16px}.marketing-team-example li{flex-wrap:wrap}.marketing-team-example li>span{margin-left:27px}.marketing-team-example li>div{flex-basis:calc(100% - 28px)}.marketing-hero h1{font-size:39px;letter-spacing:-1.6px}.marketing-hero-description{font-size:16px}.marketing-hero-context{font-size:13px}.marketing-availability{font-size:11px}}
 
 .marketing-capabilities article{padding:24px}.marketing-capabilities h3{margin-top:20px}.marketing-capabilities article>p{margin-bottom:0}.marketing-capabilities .capability-top{gap:16px;align-items:center}.marketing-capabilities .capability-top>span{font-size:10px;text-align:right;line-height:1.6;max-width:185px}
+
+/* Daily reporting preview uses fictional records, separate from live workspace data. */
+.marketing-waste-grid{display:grid;grid-template-columns:1fr 1fr;gap:70px;align-items:center;border-top:1px solid var(--border)}
+.marketing-waste-copy h2{font-size:clamp(28px,3vw,40px);line-height:1.2;letter-spacing:-1px;margin:18px 0;font-weight:600}
+.marketing-waste-copy>p:not(.marketing-eyebrow){max-width:420px;font-size:15px;line-height:1.8;color:var(--muted-foreground)}
+.marketing-waste-copy ul{list-style:none;padding:0;margin:24px 0;display:grid;gap:14px}
+.marketing-waste-copy li{display:flex;gap:10px;align-items:flex-start;font-size:13px;line-height:1.7}.marketing-waste-copy li svg{flex-shrink:0;margin-top:3px;color:var(--brand)}
+.marketing-waste-preview{padding:28px;background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:0 15px 45px #174c3d08;min-width:0}
+.marketing-waste-preview-top{display:flex;justify-content:space-between;gap:12px;font-size:9px;color:var(--muted-foreground);padding-bottom:20px;border-bottom:1px solid var(--border)}
+.marketing-waste-preview h3{font-size:23px;font-weight:600;letter-spacing:-.5px;margin:24px 0 8px}.marketing-waste-preview>p{font-size:13px;color:var(--muted-foreground)}.marketing-waste-preview>p strong{color:var(--brand);font-size:24px;margin-right:5px}
+.marketing-waste-preview ul{list-style:none;margin:22px 0;padding:0}.marketing-waste-preview li{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:17px 0;border-top:1px solid var(--border)}.marketing-waste-preview li>div{display:grid;gap:6px}.marketing-waste-preview li strong{font-size:13px;font-weight:600}.marketing-waste-preview li>div>span{font-size:11px;color:var(--muted-foreground)}
+.marketing-waste-status{font-size:10px;padding:7px 9px;border-radius:5px;white-space:nowrap}.marketing-waste-status-complete{background:#edf5ef;color:#174c3d}.marketing-waste-status-overdue{background:#fff3dc;color:#885b11}
+.marketing-waste-insight{display:flex;gap:11px;background:#f0f5f1;padding:16px;border-radius:8px}.marketing-waste-insight>svg{flex-shrink:0;color:var(--brand)}.marketing-waste-insight p{display:grid;gap:6px;font-size:12px;line-height:1.7}.marketing-waste-insight strong{font-weight:600}.marketing-waste-insight span{font-size:11px;color:var(--muted-foreground)}
+@media(max-width:850px){.marketing-waste-grid{grid-template-columns:minmax(0,1fr);gap:30px}.marketing-waste-copy>p:not(.marketing-eyebrow){max-width:600px}}
+@media(max-width:600px){.marketing-waste-preview{padding:20px}.marketing-waste-preview h3{font-size:22px}.marketing-waste-copy li{font-size:12px}.marketing-waste-preview-top{font-size:8px}}
