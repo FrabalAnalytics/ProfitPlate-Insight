@@ -247,6 +247,7 @@ createServer(async (request, response) => {
         save_setup_sales_channels: ["p_channels"],
         complete_restaurant_setup_with_channels: [],
         menu_profitability_scope: ["p_organisation_id","p_location_id","p_channel","p_as_of"],
+        profitability_items_dashboard: ["p_organisation_id","p_location_id","p_channel","p_as_of","p_search","p_page","p_status","p_kind"],
         menu_profitability_dashboard: ["p_organisation_id","p_location_id","p_channel","p_as_of","p_search","p_page","p_status"],
         menu_profitability: ["p_organisation_id","p_location_id","p_channel","p_as_of","p_search","p_page"],
         search_menu_recipes: ["p_organisation_id", "p_search", "p_page"],
