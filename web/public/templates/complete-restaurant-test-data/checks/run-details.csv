@@ -1,7 +1,7 @@
 ﻿field,value,notes
 Pack revision,2026-11-20,Use this revision instead of older test packs
-App release,048-category-first-menu,Deployment checked before executing
-Required migration,048,Verify required migration; do not rerun applied migrations
+App release,049-daily-waste-accountability,Deployment checked before executing
+Required migration,049,Verify required migration; do not rerun applied migrations
 Website,https://profit-plate-insight.vercel.app/,
 Example transaction date,2026-11-19,Keep all dependent master/transaction dates aligned
 Actual execution date,,Date you perform the tests

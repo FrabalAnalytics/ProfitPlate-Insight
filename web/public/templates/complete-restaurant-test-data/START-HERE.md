@@ -5,7 +5,7 @@ Start with the Excel workbook for the whole dataset. Use the Word guide for the 
 IMPORTANT: This is a testing pack, not a universal master-data importer. The XLSX workbook is for review/manual entry; do not upload it to a CSV screen. Files in manual-entry/ are populated collection sheets, not application upload formats. Only the five CSVs in upload-ready/ match implemented import screens, and they still need their prerequisite masters created first.
 
 ## Before testing
-- Pack revision 20 November 2026; updated for category-first menu release 048 and migrations through 048. The core example transaction date remains 19 November. Do not rerun applied migrations.
+- Pack revision 20 November 2026; updated for daily waste accountability release 049 and migrations through 049. The core example transaction date remains 19 November. Do not rerun applied migrations.
 - Complete run-details and test-results in the workbook. This replaces the earlier stock-only/v2 testing instructions.
 - Create Training Restaurant, brand Training Kitchen and first outlet Dining Room. Fresh onboarding assigns brand and outlet code PRIMARY; verify these codes in the actual workspace before uploading. Map/replace PRIMARY explicitly if using a different outlet.
 - Owner rows in users.csv represent the same existing owner with two roles; do not invite or create the owner twice.
@@ -41,6 +41,9 @@ The sample sales and expense files test financial records; they do not automatic
 
 Suppliers, materials, conversions, recipe headers/components, processing baselines and opening stock currently have no bulk upload screen. Their manual-entry sheets must remain labelled as such until the relevant importers are built.
 
+## Daily waste accountability
+Every active centre requires a daily declaration on its operating days. Use the actual operational date, not a date before reporting started. Main Store and Kitchen confirm their recorded waste; Bar explicitly confirms no waste. New loss reopens a completed day. CEO/Finance review compliance and waste analysis; Inventory retains own-centre scope. Declarations do not move stock. On-time compliance uses passed deadlines; closed days require a reason and retain history. Missing reports/prices are not zero waste.
+
 ## Updated role checks
 - Inviting requests a Supabase email sign-in link; copyable backup and resend remain available. Custom SMTP is needed for unrestricted staff delivery.
 - Existing centres/tasks can be selected on the invitation. If none exist yet, assign them after joining. Verified pending invitations recover at /join across browsers; staff must not create a restaurant.
@@ -49,4 +52,4 @@ Suppliers, materials, conversions, recipe headers/components, processing baselin
 - Inventory waste: own responsible centres only, including direct links and exports. Kitchen/Bar: assigned centres only. Test with single-role accounts.
 - Invoice: bill and material summary first; unreviewed matching exceptions and pending correction decisions visible; source/resolved history collapsed. PO approval remains excluded.
 - Weekly stock-count flag: verify Include in weekly stock counts on each material; do not claim missing weekly count automation is implemented.
-- This revision requires migration 048 and the matching app deployment. The menu CSV is now the fifth supported upload format.
+- This revision requires migration 049 and the matching app deployment. The menu CSV is now the fifth supported upload format.

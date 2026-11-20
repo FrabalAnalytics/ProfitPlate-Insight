@@ -36,10 +36,11 @@ export async function requestStock(_state:StockActionState,form:FormData):Promis
    const category=String(form.get("waste_category")??"");
    if(!['Spoilage','Expiry','Damage','Bad production','Other loss'].includes(category))throw new Error("Choose a waste category.");
    if(!document.submitter_name||document.submitter_name.length>120)throw new Error("Enter the submitter name (up to 120 characters).");
+   document.waste_reason_code=({Spoilage:"SPOILAGE",Expiry:"EXPIRY",Damage:"DAMAGE","Bad production":"BAD_PRODUCTION","Other loss":"OTHER"} as Record<string,string>)[category];
    document.note=document.note?`${category}: ${document.note}`:category;
   }
   const result=await auth.client.rpc("request_stock_document",{p_organisation_id:org,p_request_id:request,p_document:{...document,...(document.kind==="PRODUCTION"?{processing_waste:parsed(form,"processing_waste"),waste_confirmed:form.get("waste_confirmed")==="on"}:{})},p_lines:parsed(form,"lines")});checked(result.error);id=result.data;
-  revalidatePath("/workspace/inventory");revalidatePath("/workspace/inventory/processing");revalidatePath("/workspace/inventory/waste");revalidatePath("/workspace/setup/centres");revalidatePath("/workspace/materials");revalidatePath("/workspace/setup");revalidatePath("/workspace/setup/standards");revalidatePath("/workspace");
+  revalidatePath("/workspace/inventory");revalidatePath("/workspace/inventory/processing");revalidatePath("/workspace/inventory/waste");revalidatePath("/workspace/inventory/waste/daily");revalidatePath("/workspace/inventory/waste/analysis");revalidatePath("/workspace/setup/centres");revalidatePath("/workspace/materials");revalidatePath("/workspace/setup");revalidatePath("/workspace/setup/standards");revalidatePath("/workspace");
  }catch(error){return failure(error);}
  redirect(`/workspace/inventory?${new URLSearchParams({organisation:org,view:"movements",document:id})}`);
 }
@@ -50,7 +51,7 @@ export async function actOnStock(_state:StockActionState,form:FormData):Promise<
   if(!isUuid(document)||form.get("confirmed")!=="on")throw new Error("Confirm the stock decision before saving.");
   decision=String(form.get("decision")??"");if(!["APPROVE","POST","DISPATCH","RECEIVE","REJECT","DECLINE","RESOLVE","CANCEL"].includes(decision))throw new Error("Choose a stock action.");
   const result=await client.rpc("stock_document_action",{p_organisation_id:org,p_document_id:document,p_action:decision,p_note:String(form.get("note")??"").trim(),p_received:parsed(form,"received")});checked(result.error);
-  revalidatePath("/workspace/inventory");revalidatePath("/workspace/inventory/processing");revalidatePath("/workspace/inventory/waste");revalidatePath("/workspace/setup/centres");revalidatePath("/workspace/materials");revalidatePath("/workspace/setup");revalidatePath("/workspace/setup/standards");revalidatePath("/workspace");
+  revalidatePath("/workspace/inventory");revalidatePath("/workspace/inventory/processing");revalidatePath("/workspace/inventory/waste");revalidatePath("/workspace/inventory/waste/daily");revalidatePath("/workspace/inventory/waste/analysis");revalidatePath("/workspace/setup/centres");revalidatePath("/workspace/materials");revalidatePath("/workspace/setup");revalidatePath("/workspace/setup/standards");revalidatePath("/workspace");
  }catch(error){return failure(error);}
  redirect(`/workspace/inventory?${new URLSearchParams({organisation:org,view:"movements",document,result:decision.toLowerCase()})}`);
 }
@@ -62,7 +63,7 @@ export async function saveDepartmentAccess(_state:StockActionState,form:FormData
   const revision=Number(form.get("revision"));if(!Number.isInteger(revision)||revision<0)throw new Error("Refresh and review the latest permissions.");
   const result=await auth.client.rpc("save_stock_member_access",{p_organisation_id:org,p_membership_id:member,p_revision:revision,p_mode:String(form.get("mode")??""),p_assignments:parsed(form,"assignments")});
   if(result.error?.code==="PGRST202")return {error:"Department access needs migration 024. Ask your administrator to apply it after 023."};
-  checked(result.error);revalidatePath("/workspace/inventory");revalidatePath("/workspace/inventory/processing");revalidatePath("/workspace/inventory/waste");revalidatePath("/workspace/setup/centres");revalidatePath("/workspace/materials");revalidatePath("/workspace/setup");revalidatePath("/workspace/setup/standards");revalidatePath("/workspace");
+  checked(result.error);revalidatePath("/workspace/inventory");revalidatePath("/workspace/inventory/processing");revalidatePath("/workspace/inventory/waste");revalidatePath("/workspace/inventory/waste/daily");revalidatePath("/workspace/inventory/waste/analysis");revalidatePath("/workspace/setup/centres");revalidatePath("/workspace/materials");revalidatePath("/workspace/setup");revalidatePath("/workspace/setup/standards");revalidatePath("/workspace");
  }catch(error){return failure(error);}
  redirect(`/workspace/inventory?${new URLSearchParams({organisation:org,view:"access",member,result:"access-saved"})}`);
 }
@@ -72,7 +73,7 @@ export async function finishWasteRecord(_state:StockActionState,form:FormData):P
   const {org,client}=await access(form),doc=String(form.get("document")??""),name=String(form.get("submitter_name")??"").trim();
   if(!isUuid(doc)||!name||name.length>120)throw new Error("Enter the submitter name (up to 120 characters).");
   const result=await client.rpc("complete_waste_record",{p_organisation_id:org,p_document_id:doc,p_submitter_name:name});checked(result.error);
-  revalidatePath("/workspace/inventory");revalidatePath("/workspace/inventory/waste");revalidatePath("/workspace/records");revalidatePath("/workspace");return {success:"Waste recorded. Stock updated; no approval required."};
+  revalidatePath("/workspace/inventory");revalidatePath("/workspace/inventory/waste");revalidatePath("/workspace/inventory/waste/daily");revalidatePath("/workspace/inventory/waste/analysis");revalidatePath("/workspace/records");revalidatePath("/workspace");return {success:"Waste recorded. Stock updated; no approval required."};
  }catch(error){return failure(error);}
 }
 

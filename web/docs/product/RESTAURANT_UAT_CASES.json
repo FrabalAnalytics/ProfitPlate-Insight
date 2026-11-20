@@ -382,5 +382,45 @@
     "prerequisite": "MENU-01 / CHANNEL-01",
     "steps": "Open menu profitability. Filter Food, then Mains; select Drink and its subcategory. Add an optional channel price and select it under pricing exceptions.",
     "expected": "Each selling item appears once, counts follow category filters, recipes are absent, standard prices are used by default and channel exceptions do not add duplicate rows."
+  },
+  {
+    "id": "WASTE-DAY-01",
+    "area": "Daily centre reporting",
+    "role": "Inventory / Kitchen / Bar",
+    "prerequisite": "Centres and owners assigned",
+    "steps": "Open each workspace and Daily reporting for the actual operational date. Record waste where present and confirm the day; explicitly confirm no waste for Bar.",
+    "expected": "Each operating centre has one daily obligation. Main Store and Kitchen confirm waste; Bar confirms no waste. Submitter and signed-in account are retained. Daily declarations do not change stock."
+  },
+  {
+    "id": "WASTE-DAY-02",
+    "area": "Reopening and safe retries",
+    "role": "Kitchen",
+    "prerequisite": "WASTE-DAY-01",
+    "steps": "Record another small measured loss after confirmation, then review the daily report. Retry an identical declaration and test a stale browser tab. Use separate references and record any changed stock totals.",
+    "expected": "New loss reopens the day. No-waste is blocked when loss exists. Identical retries do not duplicate declarations or stock postings; stale evidence is rejected."
+  },
+  {
+    "id": "WASTE-DAY-03",
+    "area": "Deadlines and closure audit",
+    "role": "Admin / CEO / Centre owner",
+    "prerequisite": "Reporting enabled",
+    "steps": "Set operating days and an overnight deadline effective tomorrow. Later review an overdue day and submit it late. Test an exceptional closed day without waste, with a reason, and reopen a mistaken closure.",
+    "expected": "Past deadlines are preserved. Not-yet-due days are not overdue. Late submissions remain late. Closed days are excluded from expected reports, and closure reasons/history remain visible."
+  },
+  {
+    "id": "WASTE-DAY-04",
+    "area": "Executive compliance and scope",
+    "role": "CEO / Finance / Inventory",
+    "prerequisite": "WASTE-DAY-01",
+    "steps": "Review workspace compliance, filter Daily reporting by centre/date/status and export CSV. Try the Kitchen report as the Main Store Inventory Manager and attempt a declaration as Finance.",
+    "expected": "Executive/Finance views cover permitted centres; Inventory stays at its own centre. CSV matches screen scope. Finance cannot declare or configure. Reporting failure does not appear as a compliant zero."
+  },
+  {
+    "id": "WASTE-DAY-05",
+    "area": "Waste analysis and trusted values",
+    "role": "CEO / Finance / Kitchen",
+    "prerequisite": "Waste and processing records posted",
+    "steps": "Open Waste analysis, compare centre/reason/material charts and reporting coverage. Check processing trim once, test an unpriced loss separately, and later correct its material price.",
+    "expected": "No unlike-unit totals. Only posted losses are analysed. Missing reports are not zero; unpriced loss stays visible. Existing loss-price snapshots stay unchanged after price updates. Processing loss is not deducted or added twice."
   }
 ]

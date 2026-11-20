@@ -9,8 +9,8 @@ ROOT=Path(__file__).resolve().parents[1]
 DEST=ROOT/'public/templates/complete-restaurant-test-data'
 DATE='2026-11-19'
 PACK_DATE='2026-11-20'
-APP_RELEASE='048-category-first-menu'
-MIGRATION='048'
+APP_RELEASE='049-daily-waste-accountability'
+MIGRATION='049'
 DATA={}
 def sheet(name,header,rows,folder='manual-entry'):
     DATA[name]={'columns':header.split(','),'rows':rows,'folder':folder}
@@ -51,6 +51,7 @@ sheet('processing-log','batch_reference,date,centre,process_code,input_material,
 sheet('waste-log','waste_reference,date,centre,material_code,quantity,unit,submitter_name,category,reason',[
  ['TRAIN-WASTE-MAIN',DATE,'MAIN_STORE','RICE','1','KG','Emeka','Spoilage','Measured Main Store spoilage'],
  ['TRAIN-WASTE-001',DATE,'KITCHEN','SNAPPER_CUT','2','PCS','Ada','Spoilage','Two cuts spoiled after processing; separate from recorded trim']])
+sheet('daily-waste-declarations','centre,reporting_day,outcome,submitter,expected_stock_change',[['MAIN_STORE','ACTUAL_OPERATIONAL_DATE','WASTE','Emeka','0'],['KITCHEN','ACTUAL_OPERATIONAL_DATE','WASTE','Ada','0'],['BAR','ACTUAL_OPERATIONAL_DATE','NO_WASTE','Bola','0']])
 headers={key:(ROOT/f'public/templates/{key}.csv').read_text(encoding='utf-8-sig').splitlines()[0] for key in ['purchases-import','sales-import','expense-import']}
 sheet('purchases-import',headers['purchases-import'],[
  ['TRAINING','TRAINING_CSV',DATE,'TRAIN-INV-FISH','1','FISH_SUP','WHOLE_SNAPPER','10','KG','3000','0','0','PRIMARY','NGN','RECEIVED'],['TRAINING','TRAINING_CSV',DATE,'TRAIN-INV-RICE','1','DRY_SUP','RICE','5','KG','1800','0','0','PRIMARY','NGN','RECEIVED']],'upload-ready')
@@ -71,7 +72,7 @@ Start with the Excel workbook for the whole dataset. Use the Word guide for the 
 IMPORTANT: This is a testing pack, not a universal master-data importer. The XLSX workbook is for review/manual entry; do not upload it to a CSV screen. Files in manual-entry/ are populated collection sheets, not application upload formats. Only the five CSVs in upload-ready/ match implemented import screens, and they still need their prerequisite masters created first.
 
 ## Before testing
-- Pack revision 20 November 2026; updated for category-first menu release 048 and migrations through 048. The core example transaction date remains 19 November. Do not rerun applied migrations.
+- Pack revision 20 November 2026; updated for daily waste accountability release 049 and migrations through 049. The core example transaction date remains 19 November. Do not rerun applied migrations.
 - Complete run-details and test-results in the workbook. This replaces the earlier stock-only/v2 testing instructions.
 - Create Training Restaurant, brand Training Kitchen and first outlet Dining Room. Fresh onboarding assigns brand and outlet code PRIMARY; verify these codes in the actual workspace before uploading. Map/replace PRIMARY explicitly if using a different outlet.
 - Owner rows in users.csv represent the same existing owner with two roles; do not invite or create the owner twice.
@@ -108,6 +109,9 @@ The sample sales and expense files test financial records; they do not automatic
 Suppliers, materials, conversions, recipe headers/components, processing baselines and opening stock currently have no bulk upload screen. Their manual-entry sheets must remain labelled as such until the relevant importers are built.
 '''
 README+='''
+## Daily waste accountability
+Every active centre requires a daily declaration on its operating days. Use the actual operational date, not a date before reporting started. Main Store and Kitchen confirm their recorded waste; Bar explicitly confirms no waste. New loss reopens a completed day. CEO/Finance review compliance and waste analysis; Inventory retains own-centre scope. Declarations do not move stock. On-time compliance uses passed deadlines; closed days require a reason and retain history. Missing reports/prices are not zero waste.
+
 ## Updated role checks
 - Inviting requests a Supabase email sign-in link; copyable backup and resend remain available. Custom SMTP is needed for unrestricted staff delivery.
 - Existing centres/tasks can be selected on the invitation. If none exist yet, assign them after joining. Verified pending invitations recover at /join across browsers; staff must not create a restaurant.
@@ -116,7 +120,7 @@ README+='''
 - Inventory waste: own responsible centres only, including direct links and exports. Kitchen/Bar: assigned centres only. Test with single-role accounts.
 - Invoice: bill and material summary first; unreviewed matching exceptions and pending correction decisions visible; source/resolved history collapsed. PO approval remains excluded.
 - Weekly stock-count flag: verify Include in weekly stock counts on each material; do not claim missing weekly count automation is implemented.
-- This revision requires migration 048 and the matching app deployment. The menu CSV is now the fifth supported upload format.
+- This revision requires migration 049 and the matching app deployment. The menu CSV is now the fifth supported upload format.
 '''
 DEST.mkdir(parents=True,exist_ok=True)
 for name,data in DATA.items():
@@ -159,7 +163,7 @@ word_guide(guide,DEST/'Complete_Restaurant_Onboarding_and_Test_Guide.docx')
 shutil.copyfile(DEST/'Complete_Restaurant_Onboarding_and_Test_Guide.docx',ROOT/'docs/exports/Complete_Restaurant_Onboarding_and_Test_Guide.docx')
 for name in ['CENTRES_AND_TEAM_ACCESS_GUIDE.md','CENTRE_WASTE_REVIEW_GUIDE.md','TEAM_INVITATIONS_AND_EMAIL_SETUP.md']:
     shutil.copyfile(ROOT/'docs/product'/name,DEST/name)
-(DEST/'CHANGES-2026-11-20.md').write_text('Release 048: Menu profitability shows selling items only, one row per item. Food/Drink and restaurant-defined subcategories are the core filters. Recipes stay in Recipes & scaling. Onboarding includes menu categories and automatic standard pricing; extra channels are optional price exceptions. Menu CSV imports support categories, recipe links and standard prices together, with explicit CREATE/UPDATE, review and safe retries. The workbook contains five uploadable CSV schemas; other master sheets remain manual. Requires migration 048 and matching app deployment. Existing prices and history remain.\n',encoding='utf-8')
+(DEST/'CHANGES-2026-11-20.md').write_text('Release 049 adds mandatory daily centre waste reporting, named no-waste declarations, reopening on new loss, deadline-aware compliance, scoped CSV exports and coverage-aware waste analysis. Existing stock posting remains unchanged. Menu profitability shows selling items only, one row per item. Food/Drink and restaurant-defined subcategories are the core filters. Recipes stay in Recipes & scaling. Onboarding includes menu categories and automatic standard pricing; extra channels are optional price exceptions. Menu CSV imports support categories, recipe links and standard prices together, with explicit CREATE/UPDATE, review and safe retries. The workbook contains five uploadable CSV schemas; other master sheets remain manual. Requires migration 049 and matching app deployment. Existing prices and history remain.\n',encoding='utf-8')
 
 # XLSX workbook: all cells are text to preserve codes, phone numbers and source decimals.
 def col(n):

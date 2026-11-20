@@ -1,3 +1,5 @@
+import {WasteWorkspaceStatus} from "@/app/components/waste-workspace-status";
+import type {WasteWorkspacePacket} from "@/lib/waste-accountability";
 import {pendingTeamInvitations} from "@/lib/team-invitation-server";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -43,12 +45,14 @@ export default async function WorkspacePage({ searchParams }: { searchParams: Pr
   const parts=new Intl.DateTimeFormat("en",{timeZone:org.time_zone,year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date());
   const today=["year","month","day"].map(key=>parts.find(p=>p.type===key)?.value).join("-");
   const attention=!executive?await client.rpc("workspace_attention",{p_organisation_id:org.id,p_queue:null,p_page:1}):null;
+  const waste=await client.rpc("waste_compliance_workspace",{p_organisation_id:org.id});
   return <WorkspaceShell {...shell}>
     <div className="page-heading-row"><div><p className="workspace-greeting">{(()=>{const hour=Number(new Intl.DateTimeFormat("en-GB",{timeZone:org.time_zone,hour:"numeric",hourCycle:"h23"}).format(new Date()));return `${hour<12?"Good morning":hour<18?"Good afternoon":"Good evening"}${membership.data?.display_name?", "+membership.data.display_name:""}.`;})()}</p><h1 className="workspace-title">{home.title}</h1></div>{organisations.data.length > 1 && <form method="get" className="business-switcher"><label htmlFor="organisation">Business</label><select id="organisation" name="organisation" defaultValue={org.id}>{organisations.data.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}</select><Button variant="outline" type="submit">Switch</Button></form>}</div>
     {!membership.data?.display_name&&<details className="workspace-access-disclosure"><summary>Set the name shown in your workspace</summary><MemberNameForm organisation={org.id} member={{id:membership.data!.id,display_name:""}}/></details>}
     {params.message === "signout-failed" && <p className="auth-alert" role="alert">We couldn’t sign you out. Please check your connection and try again.</p>}
-    {!executive&&<NeedsAttention organisation={org.id} packet={attention?.data as AttentionPacket|null} error={!!attention?.error}/>}
+    {!executive&&<NeedsAttention organisation={org.id} packet={attention?.data as AttentionPacket|null} error={!!attention?.error} waste={waste.data as WasteWorkspacePacket|null} wasteError={!!waste.error}/>}
     {executive?<>
+      <WasteWorkspaceStatus organisation={org.id} packet={waste.data as WasteWorkspacePacket|null} executive error={!!waste.error}/>
       <ExecutiveBriefing organisation={org.id} from={params.from??`${today.slice(0,7)}-01`} to={params.to??today} location={params.location??""} today={today} timeZone={org.time_zone} locations={locations.data??[]}/>
       <nav className="management-overview-actions" aria-label="Executive reporting links">{home.tasks.map(task=><Link className="secondary-button" key={task.path} href={`${task.path}?organisation=${org.id}&${new URLSearchParams({from:params.from??`${today.slice(0,7)}-01`,to:params.to??today,...(params.location?{location:params.location}:{})})}`}>{task.action} <ArrowRight size={14} aria-hidden="true"/></Link>)}</nav>
       <details className="executive-access"><summary>Your assigned access</summary><p>{roles.data.map(role=>roleName(role.role_code)).join(" · ")}. Other assigned responsibilities remain available through navigation.</p></details>

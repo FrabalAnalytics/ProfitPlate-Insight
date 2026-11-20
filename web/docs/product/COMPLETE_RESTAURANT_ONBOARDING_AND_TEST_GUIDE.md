@@ -1,6 +1,6 @@
 # Complete Restaurant Onboarding & Test Guide
 
-ProfitPlate Insight | Updated 20 November 2026 / category-first menu update 048 / migrations through 048 | Includes the full master-data setup and daily operational test sequence.
+ProfitPlate Insight | Updated 20 November 2026 / daily waste accountability update 049 / migrations through 049 | Includes the full master-data setup and daily operational test sequence.
 
 This replaces the stock-only walkthrough as the main onboarding guide. Use a fresh training restaurant; preserve the existing demo restaurant and its historical records. The examples are fictional training data, not recommended recipes, prices or operating defaults.
 
@@ -8,7 +8,7 @@ This replaces the stock-only walkthrough as the main onboarding guide. Use a fre
 
 Use this guide with **profitplate-complete-test-data-2026-11-20.zip**. It supersedes earlier test-pack instructions. The example transaction date is **19 November 2026**, aligned across prices, recipes, openings and imports. Use that date in the app filters. Record your actual execution date separately in the workbook. If starting later, update the sample dates together before entry. Receiver acceptance posts on its actual business date; subsequent processing/waste must use that date or later. If the test spans days, use the current operational date for later stock activity and widen report filters; keep master versions effective on or before that date.
 
-1. Use the deployed site at https://profit-plate-insight.vercel.app/ and confirm migrations through **048** are applied and the matching app is deployed. Do not rerun applied migrations.
+1. Use the deployed site at https://profit-plate-insight.vercel.app/ and confirm migrations through **049** are applied and the matching app is deployed. Do not rerun applied migrations.
 2. During initial setup, add the Food/Drink subcategories in **menu-categories.csv**. Standard pricing is automatic; additional channels are optional.
 3. Create a fresh training restaurant, for example **Training Restaurant - Run 041**. Keep the earlier demo and its histories intact.
 4. Open **ProfitPlate_Complete_Test_Data.xlsx**. Complete **run-details**, then use **test-results** to record Not run, Pass, Fail, Blocked or Not available, actual result and evidence. Run the sections in order.
@@ -398,3 +398,19 @@ Create the selling menu manually with its major category, subcategory, recipe li
 Menu profitability has one row per selling menu item. Filter Food/Drink, then subcategory, status, outlet and date. Recipes and their costs stay in Recipes & scaling. At the standard price of 6000 the training plate costs 1680, contributes an estimated 4320 and has a 72% Gross Profit Margin, before unconnected variable costs. Channel exceptions can be chosen under Outlet, date & pricing exceptions without duplicating rows. A missing standard price may use a sole consistent legacy price; conflicting legacy prices require choosing a pricing basis or saving a standard price. Prices are never averaged across channels.
 
 The menu CSV is the fifth uploadable format in this pack. Suppliers, material masters, recipe definitions and opening-stock collection sheets remain manual-entry/reference sheets unless their specific screen offers an importer. Use the CHANNEL-01/02 cases to check category setup, one-row reporting and optional channel overrides.
+
+
+## 20. Confirm each centre's daily waste report
+
+Use the actual operational test date in the restaurant timezone for physical processing, spoilage and daily declarations. Do not try to confirm a historical sample date that precedes the centre's reporting start. Keep financial import sample dates explicit; widen the waste filters when the test spans dates.
+
+1. Each newly created active centre automatically requires daily reporting, due at 23:59 local time. Administrators/CEOs can open Waste reporting schedules from Centres & team access or Daily reporting to choose operating days and an overnight deadline. Changes apply from tomorrow; past obligations are preserved.
+2. Sign in as Emeka. Open Waste Log > Daily reporting, select Main Store and the operational date. After its 1 KG rice loss is recorded, review the entries, enter the submitter name and confirm the waste report is complete. No approval and no extra stock deduction occur.
+3. Sign in as Ada. Confirm Kitchen's daily report after posting its processing batch and separate 2 PCS spoilage. Processing trim counts as loss evidence automatically; do not enter the trim again as standalone waste.
+4. Sign in as Bola. Select Bar and explicitly confirm no waste if no waste occurred. An empty log alone is not a no-waste declaration.
+5. CEO/Finance: review Daily reporting for all centres on the same operational date. Expect 3/3 complete. Export the compliance CSV and check the responsible owner, named submitter, actual account, deadline and lateness. On-time compliance uses deadlines that have passed; before today's deadline it may say Not due.
+6. Open Waste analysis. The training scenario contains 1 KG Main Store rice, 4 KG measured Kitchen processing trim and 2 PCS Kitchen Snapper Cut spoilage. Never sum KG and PCS. With the saved sample prices the known estimated loss is NGN 15,800 (1800 + 12000 + 2000); it is not actual profit or inventory valuation and must not be added again to production costs. Output achievement is 110/120 = 91.67%; measured usable-weight yield is 36/40 = 90%.
+7. Run WASTE-DAY-02 through WASTE-DAY-05 with separate references after core balance checks. Additional losses change the earlier quantities and totals. A new loss reopens a confirmed day; unposted losses block confirmation; stale or repeated requests cannot double-post stock. Late reporting remains late. Exceptional closures require an administrator/CEO and a reason, and closures declared after deadline are visible.
+8. Inventory must still see only its own centre. Kitchen/Bar must see assigned centres. Finance reads permitted combined waste and compliance but cannot submit declarations, record stock or change schedules.
+
+The daily-waste-declarations sheet is a manual test collection sheet, not an upload schema. In-app reminders do not send emails. Missing reports, missing prices and older unclassified reasons remain visible rather than being invented as zeros or guessed categories.
