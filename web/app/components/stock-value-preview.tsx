@@ -1,0 +1,12 @@
+'use client';
+import {useId,useState} from 'react';
+import {ArrowDownRight,Check} from 'lucide-react';
+
+const centres=[{id:'MAIN',name:'Main Store',items:[{name:'Rice',quantity:50,unit:'KG',cost:1800},{name:'Whole snapper',quantity:40,unit:'KG',cost:3000}]},{id:'KITCHEN',name:'Kitchen',items:[{name:'Rice',quantity:10,unit:'KG',cost:1800},{name:'Snapper cuts',quantity:60,unit:'PCS',cost:1000}]},{id:'BAR',name:'Bar',items:[{name:'Bottled water',quantity:100,unit:'PCS',cost:300}]}];
+const money=(n:number)=>`NGN ${new Intl.NumberFormat('en-GB').format(n)}`;
+export function StockValuePreview(){
+ const [selected,setSelected]=useState('ALL'),id=useId(),scope=centres.filter(c=>selected==='ALL'||c.id===selected),total=scope.reduce((sum,c)=>sum+c.items.reduce((value,i)=>value+i.quantity*i.cost,0),0);
+ return <div className="marketing-value-preview" aria-label="Illustrative current stock value"><div className="marketing-value-preview-bar"><span>CURRENT STOCK VALUE</span><span>Fictional example</span></div><label htmlFor={id}>Explore a stock centre</label><select id={id} value={selected} onChange={e=>setSelected(e.target.value)}><option value="ALL">All centres</option>{centres.map(c=><option key={c.id} value={c.id}>{c.name}</option>)}</select><div className="marketing-value-total" aria-live="polite" aria-atomic="true"><span>Estimated stock held</span><strong data-testid="stock-preview-total">{money(total)}</strong><small>{selected==='ALL'?'Main Store + Kitchen + Bar':scope[0].name} · Reference-price estimate</small></div>
+ {selected==='ALL'?<ul className="marketing-value-centres">{scope.map(c=><li key={c.id}><button type="button" onClick={()=>setSelected(c.id)}><span>{c.name}<ArrowDownRight size={13} aria-hidden="true"/></span><strong>{money(c.items.reduce((sum,i)=>sum+i.quantity*i.cost,0))}</strong></button></li>)}</ul>:<div className="marketing-value-items" role="region" aria-label={`${scope[0].name} example stock details`} tabIndex={0}><table><thead><tr><th>Material</th><th>Held × unit cost</th><th>Est. value</th></tr></thead><tbody>{scope[0].items.map(i=><tr key={i.name}><th scope="row">{i.name}</th><td>{i.quantity} {i.unit} × {money(i.cost)}</td><td>{money(i.quantity*i.cost)}</td></tr>)}</tbody></table></div>}
+ <div className="marketing-value-basis"><Check size={15} aria-hidden="true"/><p>Quantity held × reference unit cost.<br/><span>Unpriced stock stays visible. These are estimates, not accounting valuations.</span></p></div></div>;
+}

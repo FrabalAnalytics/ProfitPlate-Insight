@@ -16,6 +16,21 @@ test("homepage explains availability and its cost example responds to keyboard i
   await page.getByText("Why are my food costs rising?", { exact: true }).click();
   await expect(page.getByText(/See which ingredient prices changed/)).toBeVisible();
   await expect(page.locator(".marketing-capabilities article")).toHaveCount(6);
+  const stockPreview=page.getByLabel('Illustrative current stock value');
+  await expect(stockPreview.getByTestId('stock-preview-total')).toHaveText('NGN 318,000');
+  await stockPreview.getByRole('button',{name:'Main Store',exact:false}).click();
+  await expect(stockPreview.getByTestId('stock-preview-total')).toHaveText('NGN 210,000');
+  await expect(stockPreview.getByRole('table')).toContainText('Whole snapper');
+  await page.getByLabel('Explore a stock centre',{exact:true}).selectOption('KITCHEN');
+  await expect(stockPreview.getByTestId('stock-preview-total')).toHaveText('NGN 78,000');
+  await expect(stockPreview.getByRole('table')).toContainText('Snapper cuts');
+  await page.getByLabel('Explore a stock centre',{exact:true}).selectOption('BAR');
+  await expect(stockPreview.getByTestId('stock-preview-total')).toHaveText('NGN 30,000');
+  await page.getByLabel('Explore a stock centre',{exact:true}).selectOption('ALL');
+  await expect(stockPreview.getByTestId('stock-preview-total')).toHaveText('NGN 318,000');
+  await expect(page.locator('#product')).toContainText('Material plans & production');
+  await expect(page.locator('#product')).toContainText('Weekly stock accountability');
+
   await expect(page.getByLabel("Illustrative daily waste reporting")).toContainText("2 of 3");
   await expect(page.getByLabel("Illustrative daily waste reporting")).toContainText("Overdue");
   await page.getByText("Planning a pilot? Start with sample data", {exact:true}).click();
@@ -29,6 +44,11 @@ test("homepage explains availability and its cost example responds to keyboard i
   await expect(page.getByText(/record the loss without approval/)).toBeVisible();
   const tabs=page.getByRole('tablist',{name:'Explore team workspaces'});await tabs.getByRole('tab',{name:'Kitchen / Bar',exact:true}).click();await expect(page.getByRole('tabpanel')).toContainText('Waste needs no approval.');await expect(page.getByRole('tabpanel')).toContainText('Hello, Ada.');await tabs.getByRole('tab',{name:'Kitchen / Bar',exact:true}).press('ArrowRight');await expect(tabs.getByRole('tab',{name:'Finance',exact:true})).toHaveAttribute('aria-selected','true');await expect(page.getByRole('tabpanel')).toContainText('Management reports');await tabs.getByRole('tab',{name:'Finance',exact:true}).press('Home');await expect(tabs.getByRole('tab',{name:'Owner / CEO',exact:true})).toHaveAttribute('aria-selected','true');
   await expect(page.getByLabel("Illustrative management report")).toContainText("Fictional sample");
+  await expect(page.getByLabel("Illustrative management report")).toContainText("Owner workspace");
+  await page.getByText('Where are our operating costs going?',{exact:true}).click();
+  await expect(page.getByText(/Create expense categories such as Promotions/)).toBeVisible();
+  await page.getByText('How much value is sitting in my stock?',{exact:true}).click();
+  await expect(page.getByText(/See current posted quantities multiplied/)).toBeVisible();
   await page.getByRole("link", { name: "Create your workspace", exact: true }).first().click();
   await expect(page).toHaveURL(/\/signup$/);
 });
@@ -45,5 +65,8 @@ test("mobile homepage navigation and layout work without horizontal overflow", a
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.goto("/");
   await page.getByRole('tab',{name:'Inventory',exact:true}).click();await expect(page.getByRole('tabpanel')).toContainText('Needs Attention');expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);await page.evaluate(()=>window.scrollTo(0,0));
+  await page.getByLabel('Explore a stock centre',{exact:true}).selectOption('KITCHEN');
+  await expect(page.getByRole('table').filter({hasText:'Snapper cuts'})).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.screenshot({ path: testInfo.outputPath("homepage-mobile.png"), fullPage: true });
 });

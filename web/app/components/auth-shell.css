@@ -21,6 +21,7 @@
 .auth-welcome .auth-form > .auth-button { min-height:54px; font-size:15px; margin-top:4px; }
 .auth-welcome .auth-invitation { margin-top:26px; padding-top:22px; font-size:13px; line-height:1.7; }
 .auth-welcome .auth-footer { max-width:460px; margin-top:0; font-size:11px; }
+.auth-workspace-preview{margin-top:28px;padding:22px;border:1px solid #ffffff29;border-radius:12px;background:#ffffff09;box-shadow:0 10px 30px #06291e20}.auth-workspace-preview>div{display:flex;justify-content:space-between;gap:12px;font-size:8px;letter-spacing:1px;color:#c5d8cd}.auth-workspace-preview>p{font-size:12px;margin:22px 0 6px;color:#d1dfd6}.auth-workspace-preview>strong{display:block;font-size:32px;font-weight:650;color:#fff;letter-spacing:-.7px}.auth-workspace-preview>small{font-size:11px;display:block;margin-top:6px;color:#c3d4c9}.auth-workspace-preview ul{list-style:none;margin:20px 0 0;padding:0;border-top:1px solid #ffffff20}.auth-workspace-preview li{display:flex;justify-content:space-between;gap:15px;padding-top:14px;font-size:12px;color:#e2ebe5}.auth-workspace-preview b{color:#e8cf9b;font-size:14px}.auth-outcomes-compact{margin-top:22px;border:0}.auth-outcomes-compact>div{padding:10px 0;border:0;font-size:12px}.auth-welcome .auth-footer span:last-child{text-align:right;max-width:230px}.auth-welcome .auth-form-container:focus-within{box-shadow:0 18px 54px #173f3510}
 @media(max-width:900px) {
  .auth-welcome { grid-template-columns:minmax(0,1fr); }
  .auth-welcome .auth-story { display:none; }
