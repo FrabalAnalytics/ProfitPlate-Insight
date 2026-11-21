@@ -9,7 +9,7 @@ export const teamRoles = [
   ["stock_receiver", "Stock receiver (optional)", "Confirm assigned receiving processes without stock approval, dispatch or financial permissions."],
   ["stock_dispatcher", "Stock dispatcher (optional)", "Dispatch approved movements from assigned stock locations; no approval, receiving or financial access."],
   ["inventory_manager", "Inventory Manager", "Oversee stock across all business locations, configure movements and department access, and approve physical stock records."],
-  ["operations", "Operations Manager", "Manage recipes and operational masters; no sales revenue."],
+  ["operations", "Operations Manager", "Drive waste and count compliance, monitor stock, production and menu margins within assigned scope; transaction powers remain separately assigned."],
   ["restaurant_admin", "Restaurant Administrator", "Manage business configuration and team access when organisation-wide."],
 ] as const;
 export type Assignment = {role_code: string; location_id: string | null; location_name?: string | null};

@@ -51,7 +51,7 @@ test('location-scoped roles never create organisation-wide purchasing or finance
 test('disabled capabilities hide links even when roles include an administrator',()=>{
  const disabled=Object.fromEntries(Object.keys(all).map(key=>[key,false]));
  assert.deepEqual(workspaceHome([role('restaurant_admin')],disabled).tasks,[]);
- assert.equal(workspaceHome([role('operations')],disabled).title,'Operations workspace');
+ assert.equal(workspaceHome([role('operations')],disabled).title,'Operations Manager workspace');
  assert.equal(workspaceHome([role('restaurant_admin')],all).title,'Administration workspace');
 });
 test('Inventory receives through its own workspace without purchasing or finance shortcuts',()=>{
@@ -72,4 +72,11 @@ test('Finance has centre waste and financial work without setup or stock handlin
 
 test('Operations retains recipe and material tools, and explicitly combined executive roles retain navigation',()=>{
  const access={...all,inventory:true,orders:true};const ops=workspaceNavigation([role('operations')],access);assert.equal(ops.recipes,true);assert.equal(ops.catalogue,true);assert.equal(ops.sales,false);assert.equal(workspaceNavigation([role('ceo')],access).inventory,false);assert.equal(workspaceNavigation([role('ceo'),role('restaurant_admin')],access).inventory,true);
+});
+
+
+test('Operations navigation exposes margins without finance entry or team setup',()=>{
+ const nav=workspaceNavigation([role('operations')],{...all,inventory:true,orders:true,history:true});
+ assert.equal(nav.menus,true);assert.equal(nav.recipes,true);assert.equal(nav.inventory,true);
+ assert.equal(nav.sales,false);assert.equal(nav.expenses,false);assert.equal(nav.team,false);assert.equal(nav.overview,false);
 });

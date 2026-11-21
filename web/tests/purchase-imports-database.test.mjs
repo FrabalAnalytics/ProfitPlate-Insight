@@ -117,12 +117,12 @@ test("purchase files stage privately, reconcile atomically and preserve source i
     await db.query("insert into public.membership_roles(organisation_id,membership_id,role_code,location_id) values($1,$2,$3,$4)", [org, membership, role, scope]);
    }
    await db.query("insert into private.platform_admins(user_id) values($1)", [founder]);
-   for (const id of [finance, ceo]) {
+   for (const id of [finance, ceo, operations]) {
     await login(id); assert.equal((await detail(batch)).state, "POSTED"); await rejects(stage(csv([row()])), "42501"); await rejects(post(batch), "42501");
    }
    await login(finance); assert.equal((await scalar("select public.purchase_import_access($1)", [org])).write, false); assert.equal((await scalar("select public.purchase_import_access($1)", [org])).approve_corrections, true);
    await login(procurement); assert.equal((await detail(batch)).state, "POSTED"); await stage(csv([row({ 3: "PROC" })]));
-   for (const id of [other, scoped, operations, founder]) {
+   for (const id of [other, scoped, founder]) {
     await login(id); await rejects(detail(batch), "42501"); await rejects(stage(csv([row()])), "42501"); await rejects(post(batch), "42501");
     await rejects(scalar("select public.purchase_import_source($1,$2)", [org, batch]), "42501");
     assert.equal(await scalar("select count(*)::int from public.purchase_lines where organisation_id=$1", [org]), 0);

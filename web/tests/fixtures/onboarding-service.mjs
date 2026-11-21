@@ -14,6 +14,8 @@ for (const migration of (await readdir(new URL("../../supabase/migrations/", imp
   await db.exec(await readFile(new URL(`../../supabase/migrations/${migration}`, import.meta.url), "utf8"));
 const emailRequests=[];
 const users = [
+ {id:"00000000-0000-0000-0000-000000000093",email:"operations@example.test"},
+ {id:"00000000-0000-0000-0000-000000000094",email:"operations-scoped@example.test"},
  {id:"00000000-0000-0000-0000-000000000092",email:"experience-owner@example.test"},
  {id:"00000000-0000-0000-0000-000000000090",email:"weekly-owner@example.test"},
  {id:"00000000-0000-0000-0000-000000000091",email:"weekly-counter@example.test"},
@@ -122,6 +124,11 @@ const weeklyScalar=async(tx,sql,args=[])=>Object.values((await tx.query(sql,args
 const weeklyOrg=await asUser(weeklyOwner,async tx=>{await tx.query("select public.save_restaurant_setup('Weekly Test Restaurant','QSR','NG','NGN','Weekly','Dining','Africa/Lagos','',3)");return weeklyScalar(tx,'select public.complete_restaurant_setup()');});
 const weeklyMember=await weeklyScalar(db,"insert into public.organisation_memberships(organisation_id,user_id,display_name) values($1,$2,'Ada') returning id",[weeklyOrg,weeklyCounter.id]);
 await db.query("insert into public.membership_roles(organisation_id,membership_id,role_code) values($1,$2,'inventory_manager')",[weeklyOrg,weeklyMember]);
+for(const email of ['operations@example.test','operations-scoped@example.test']){
+ const u=users.find(u=>u.email===email),m=await weeklyScalar(db,"insert into public.organisation_memberships(organisation_id,user_id,display_name) values($1,$2,'Ada Operations') returning id",[weeklyOrg,u.id]);
+ const location=email==='operations-scoped@example.test'?await weeklyScalar(db,'select id from public.locations where organisation_id=$1',[weeklyOrg]):null;
+ await db.query("insert into public.membership_roles(organisation_id,membership_id,role_code,location_id) values($1,$2,'operations',$3)",[weeklyOrg,m,location]);
+}
 const weeklyToday=await weeklyScalar(db,"select (now() at time zone 'Africa/Lagos')::date::text"),weeklyYesterday=new Date(Date.parse(weeklyToday+'T12:00:00Z')-86400000).toISOString().slice(0,10);
 let weeklySite,weeklyFish,weeklyZero;
 await asUser(weeklyOwner,async tx=>{
@@ -260,6 +267,9 @@ createServer(async (request, response) => {
         save_expense_categories: ["p_organisation_id","p_evidence","p_categories"],
         save_setup_expense_categories: ["p_categories"],
         complete_restaurant_setup_with_expenses: [],
+        operations_access: ["p_organisation_id"],
+        operations_price_warnings: ["p_organisation_id","p_outlet_id","p_from","p_to"],
+        operations_workspace: ["p_organisation_id"],
         material_plan_options: ["p_organisation_id","p_site_id","p_date"],
         generate_material_plan: ["p_organisation_id","p_site_id","p_date","p_rows","p_basis"],
         save_material_processing_baseline: ["p_organisation_id","p_request_id","p_value"],

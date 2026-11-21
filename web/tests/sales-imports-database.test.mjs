@@ -138,15 +138,15 @@ test('sales imports reconcile source receipts, pin menu versions and expose inco
    await db.exec('reset role'); await db.query("update public.organisations set currency_code='USD' where id=$1",[org]); await login(owner); await rejects(summary()); await rejects(overview());
    await db.exec('reset role'); await db.query("update public.organisations set currency_code='NGN' where id=$1",[org]); await login(owner);
   });
-  await t.test('sales revenue and source files are private to admin, finance and CEO; only admin can write',async()=>{
+  await t.test('sales revenue and source files are visible to admin, finance, CEO and business Operations; only admin can write',async()=>{
    await db.exec('reset role');
    for(const [id,role,scope] of [[finance,'finance',null],[ceo,'ceo',null],[procurement,'procurement',null],[operations,'operations',null],[scoped,'restaurant_admin',location]]) {
     const m=await scalar('insert into public.organisation_memberships(organisation_id,user_id) values($1,$2) returning id',[org,id]);
     await db.query('insert into public.membership_roles(organisation_id,membership_id,role_code,location_id) values($1,$2,$3,$4)',[org,m,role,scope]);
    }
    await db.query('insert into private.platform_admins(user_id) values($1)',[founder]);
-   for(const id of [finance,ceo]) { await login(id); assert.equal((await detail(batch)).state,'POSTED'); assert.ok((await summary()).lines>0); assert.ok((await overview()).summary.lines>0); assert.equal((await scalar('select public.workspace_navigation_access($1)',[org])).overview,true); await rejects(stage(csv([row()])),'42501'); await rejects(post(batch),'42501'); }
-   for(const id of [other,procurement,operations,scoped,founder]) {
+   for(const id of [finance,ceo,operations]) { await login(id); assert.equal((await detail(batch)).state,'POSTED'); assert.ok((await summary()).lines>0); assert.ok((await overview()).summary.lines>0); assert.equal((await scalar('select public.workspace_navigation_access($1)',[org])).overview,true); await rejects(stage(csv([row()])),'42501'); await rejects(post(batch),'42501'); }
+   for(const id of [other,procurement,scoped,founder]) {
     await login(id); await rejects(detail(batch),'42501'); await rejects(summary(),'42501'); await rejects(overview(),'42501'); assert.equal((await scalar('select public.workspace_navigation_access($1)',[org])).overview,false); await rejects(stage(csv([row()])),'42501');
     await rejects(scalar('select public.sales_import_source($1,$2)',[org,batch]),'42501'); assert.equal(await scalar('select count(*)::int from public.sales_lines where organisation_id=$1',[org]),0);
    }

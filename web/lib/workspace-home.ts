@@ -12,6 +12,7 @@ export function workspaceNavigation(roles: Role[], access: NavigationAccess): Na
  if(p.executive&&roles.every(r=>r.role_code==='ceo'))return {...nav,purchases:false,orders:false,inventory:false,sales:false,expenses:false};
  if(p.financeOnly)return {...nav,team:false,catalogue:false,recipes:false};
  if(p.procurementOnly)return {...nav,overview:false,expenses:false,sales:false,inventory:false,team:false,recipes:false,menus:false};
+ if(p.stockOnly&&roles.some(r=>r.role_code==='operations'))return {...nav,overview:false,expenses:false,sales:false,team:false};
  if(p.stockOnly)return {...nav,overview:false,expenses:false,sales:false,purchases:false,team:false,catalogue:roles.some(r=>r.role_code==='operations')&&nav.catalogue,recipes:roles.some(r=>r.role_code==='operations')&&nav.recipes,menus:false};
  return nav;
 }
@@ -21,7 +22,7 @@ export function workspaceHome(roles: Role[], access: NavigationAccess) {
   access = workspaceNavigation(roles, access);
   const has = (code: string) => roles.some(role => role.role_code === code);
   const businessRole = (code: string) => roles.some(role => role.role_code === code && role.location_id === null);
-  const title = has("ceo") ? "Executive workspace" : businessRole("inventory_manager") ? "Inventory Manager workspace" : has("finance") ? "Finance workspace" : has("procurement") ? "Procurement workspace" : has("kitchen_manager") ? "Kitchen Manager workspace" : has("bar_lead") ? "Bar Lead workspace" : has("stock_department") ? "Department stock workspace" : has("stock_receiver") ? "Stock receiving workspace" : has("stock_dispatcher") ? "Stock dispatch workspace" : has("inventory") ? "Inventory / Receiving workspace" : has("restaurant_admin") ? "Administration workspace" : "Operations workspace";
+  const title = has("ceo") ? "Executive workspace" : businessRole("inventory_manager") ? "Inventory Manager workspace" : has("operations") ? "Operations Manager workspace" : has("finance") ? "Finance workspace" : has("procurement") ? "Procurement workspace" : has("kitchen_manager") ? "Kitchen Manager workspace" : has("bar_lead") ? "Bar Lead workspace" : has("stock_department") ? "Department stock workspace" : has("stock_receiver") ? "Stock receiving workspace" : has("stock_dispatcher") ? "Stock dispatch workspace" : has("inventory") ? "Inventory / Receiving workspace" : has("restaurant_admin") ? "Administration workspace" : "Operations Manager workspace";
   const tasks: Task[] = [];
   if(access.history)tasks.push({title:"Historical reports",description:"Filter earlier records by date, location and status; trace the source or export the permitted history.",action:"Open historical reports",path:"/workspace/records"});
   const policy=workspaceRolePolicy(roles);
