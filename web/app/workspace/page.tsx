@@ -1,5 +1,5 @@
+import {CurrentStockCard} from "@/app/components/current-stock-card";
 import {WeeklyCountStatus,type WeeklyWorkspacePacket} from '@/app/components/weekly-count-status';
-import {WasteWorkspaceStatus} from "@/app/components/waste-workspace-status";
 import type {WasteWorkspacePacket} from "@/lib/waste-accountability";
 import {pendingTeamInvitations} from "@/lib/team-invitation-server";
 import type { Metadata } from "next";
@@ -43,24 +43,25 @@ export default async function WorkspacePage({ searchParams }: { searchParams: Pr
   if (membership.error || roles.error || !roles.data?.length || navigation.error || !navigation.data) return <WorkspaceShell {...shell}><h1 className="workspace-title">Your workspace access couldn’t be loaded.</h1><p className="workspace-description">Refresh to try again. If this continues, ask your restaurant administrator to check your assigned roles.</p></WorkspaceShell>;
   const home = workspaceHome(roles.data, navigation.data as NavigationAccess);
   const executive=roles.data.some(r=>r.role_code==="ceo"&&r.location_id===null)&&(navigation.data as NavigationAccess).overview;
+  const Greeting=executive?"h1":"p";
   const parts=new Intl.DateTimeFormat("en",{timeZone:org.time_zone,year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date());
   const today=["year","month","day"].map(key=>parts.find(p=>p.type===key)?.value).join("-");
   const attention=!executive?await client.rpc("workspace_attention",{p_organisation_id:org.id,p_queue:null,p_page:1}):null;
   const [waste,weekly]=await Promise.all([client.rpc("waste_compliance_workspace",{p_organisation_id:org.id}),client.rpc("weekly_counts_workspace",{p_organisation_id:org.id})]);
-  return <WorkspaceShell {...shell}>
-    <div className="page-heading-row"><div><p className="workspace-greeting">{(()=>{const hour=Number(new Intl.DateTimeFormat("en-GB",{timeZone:org.time_zone,hour:"numeric",hourCycle:"h23"}).format(new Date()));return `${hour<12?"Good morning":hour<18?"Good afternoon":"Good evening"}${membership.data?.display_name?", "+membership.data.display_name:""}.`;})()}</p><h1 className="workspace-title">{home.title}</h1></div>{organisations.data.length > 1 && <form method="get" className="business-switcher"><label htmlFor="organisation">Business</label><select id="organisation" name="organisation" defaultValue={org.id}>{organisations.data.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}</select><Button variant="outline" type="submit">Switch</Button></form>}</div>
+  return <WorkspaceShell {...shell}><div className={executive?"owner-workspace":undefined}>
+    <div className="page-heading-row"><div><Greeting className="workspace-greeting">{(()=>{const hour=Number(new Intl.DateTimeFormat("en-GB",{timeZone:org.time_zone,hour:"numeric",hourCycle:"h23"}).format(new Date()));return `${hour<12?"Good morning":hour<18?"Good afternoon":"Good evening"}${membership.data?.display_name?", "+membership.data.display_name:""}.`;})()}</Greeting>{!executive&&<h1 className="workspace-title">{home.title}</h1>}</div>{organisations.data.length > 1 && <form method="get" className="business-switcher"><label htmlFor="organisation">Business</label><select id="organisation" name="organisation" defaultValue={org.id}>{organisations.data.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}</select><Button variant="outline" type="submit">Switch</Button></form>}</div>
     {!membership.data?.display_name&&<details className="workspace-access-disclosure"><summary>Set the name shown in your workspace</summary><MemberNameForm organisation={org.id} member={{id:membership.data!.id,display_name:""}}/></details>}
     {params.message === "signout-failed" && <p className="auth-alert" role="alert">We couldn’t sign you out. Please check your connection and try again.</p>}
+    {!executive&&(navigation.data as NavigationAccess).inventory&&<CurrentStockCard org={org.id} timeZone={org.time_zone}/>}
     {!executive&&<NeedsAttention organisation={org.id} packet={attention?.data as AttentionPacket|null} error={!!attention?.error} waste={waste.data as WasteWorkspacePacket|null} wasteError={!!waste.error} extraPending={!!weekly.error||!!weekly.data?.backlog||!!weekly.data?.review_waiting||!!weekly.data?.rows?.some((r:{state:string})=>['NOT_STARTED','DRAFT'].includes(r.state))}/>}
-    <WeeklyCountStatus organisation={org.id} packet={weekly.data as WeeklyWorkspacePacket|null} error={!!weekly.error}/>
+    {!executive&&<WeeklyCountStatus organisation={org.id} packet={weekly.data as WeeklyWorkspacePacket|null} error={!!weekly.error}/>}
     {executive?<>
-      <WasteWorkspaceStatus organisation={org.id} packet={waste.data as WasteWorkspacePacket|null} executive error={!!waste.error}/>
-      <ExecutiveBriefing organisation={org.id} from={params.from??`${today.slice(0,7)}-01`} to={params.to??today} location={params.location??""} today={today} timeZone={org.time_zone} locations={locations.data??[]}/>
+      <ExecutiveBriefing organisation={org.id} from={params.from??`${today.slice(0,7)}-01`} to={params.to??today} location={params.location??""} today={today} timeZone={org.time_zone} locations={locations.data??[]} waste={waste.data as WasteWorkspacePacket|null} weekly={weekly.data as WeeklyWorkspacePacket|null} wasteError={!!waste.error} weeklyError={!!weekly.error}/>
       <nav className="management-overview-actions" aria-label="Executive reporting links">{home.tasks.map(task=><Link className="secondary-button" key={task.path} href={`${task.path}?organisation=${org.id}&${new URLSearchParams({from:params.from??`${today.slice(0,7)}-01`,to:params.to??today,...(params.location?{location:params.location}:{})})}`}>{task.action} <ArrowRight size={14} aria-hidden="true"/></Link>)}</nav>
       <details className="executive-access"><summary>Your assigned access</summary><p>{roles.data.map(role=>roleName(role.role_code)).join(" · ")}. Other assigned responsibilities remain available through navigation.</p></details>
     </>:<>
     <details className="workspace-access-disclosure"><summary>Your assigned access</summary><h2>Your access at {org.name}</h2>{roles.data.map((role, index) => <p key={index}>{roleName(role.role_code)} · {role.location_id ? locations.data?.find(location => location.id === role.location_id)?.name ?? "Assigned location" : "All business locations"}</p>)}</details>
     <section className="location-section"><div className="section-heading"><h2>Your daily work</h2></div><nav className="workspace-home-tasks" aria-label="Daily work shortcuts">{home.tasks.slice(0,6).map(task => <Link key={task.path} href={`${task.path}${task.path.includes("?") ? "&" : "?"}organisation=${org.id}`}>{task.action}<ArrowRight size={16} aria-hidden="true" /></Link>)}</nav>{home.tasks.length>6&&<details className="workspace-access-disclosure"><summary>More records &amp; tools</summary><nav className="workspace-home-tasks" aria-label="Additional workspace tools">{home.tasks.slice(6).map(task=><Link key={task.path} href={`${task.path}${task.path.includes("?")?"&":"?"}organisation=${org.id}`}>{task.action}<ArrowRight size={16} aria-hidden="true"/></Link>)}</nav></details>}{!home.tasks.length && <p className="workspace-description">No shortcuts available. Ask your administrator to check your access.</p>}</section>
     </>}
-  </WorkspaceShell>;
+  </div></WorkspaceShell>;
 }

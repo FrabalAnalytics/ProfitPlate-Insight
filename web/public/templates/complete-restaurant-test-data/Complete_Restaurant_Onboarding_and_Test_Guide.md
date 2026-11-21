@@ -1,6 +1,6 @@
 # Complete Restaurant Onboarding & Test Guide
 
-ProfitPlate Insight | Updated 20 November 2026 / weekly counts and stock statements update 053 / migrations through 053 | Includes the full master-data setup and daily operational test sequence.
+ProfitPlate Insight | Updated 21 November 2026 / owner workspace update 054 / migrations through 054 | Includes the full master-data setup and daily operational test sequence.
 
 This replaces the stock-only walkthrough as the main onboarding guide. Use a fresh training restaurant; preserve the existing demo restaurant and its historical records. The examples are fictional training data, not recommended recipes, prices or operating defaults.
 
@@ -8,8 +8,10 @@ This replaces the stock-only walkthrough as the main onboarding guide. Use a fre
 
 Use this guide with **profitplate-complete-test-data-2026-11-20.zip**. It supersedes earlier test-pack instructions. The example transaction date is **19 November 2026**, aligned across prices, recipes, openings and imports. Use that date in the app filters. Record your actual execution date separately in the workbook. If starting later, update the sample dates together before entry. Receiver acceptance posts on its actual business date; subsequent processing/waste must use that date or later. If the test spans days, use the current operational date for later stock activity and widen report filters; keep master versions effective on or before that date.
 
-1. Use the deployed site at https://profit-plate-insight.vercel.app/ and confirm migrations through **053** are applied and the matching app is deployed. Do not rerun applied migrations.
+1. Use the deployed site at https://profit-plate-insight.vercel.app/ and confirm migrations through **054** are applied and the matching app is deployed. Do not rerun applied migrations.
 2. During initial setup, add the Food/Drink subcategories in **menu-categories.csv**. Standard pricing is automatic; additional channels are optional.
+For expense-category onboarding, you may keep the initial categories or choose your own. This pack uses WAGES and RENT: keep them active, or reactivate Rent in Data & Setup > Expense categories before the expense tests.
+
 3. Create a fresh training restaurant, for example **Training Restaurant - Run 041**. Keep the earlier demo and its histories intact.
 4. Open **ProfitPlate_Complete_Test_Data.xlsx**. Complete **run-details**, then use **test-results** to record Not run, Pass, Fail, Blocked or Not available, actual result and evidence. Run the sections in order.
 5. Replace example emails with verified accounts or aliases you control. For a Gmail account, a plus alias such as `yourname+finance@gmail.com` goes to the same inbox but is registered as a separate app login. Use a separate browser profile for each tester role. Do not save passwords in the pack.
@@ -440,3 +442,12 @@ Open Daily operations > Material Plan as a centre user with stock-request access
 Keep stocked preparations as SKUs uses a permitted baseline's pinned inputs where available. Other saved recipes retain bound sub-recipe outputs as prepared stock; unstocked sub-recipes expand. Expand saved sub-recipe ingredients expands those pinned child recipe versions instead. Direct material SKUs, including processed materials explicitly listed as components, remain materials in either basis. Do not select a child separately unless its target is additional demand beyond its parent's requirement.
 
 Available now is current on-hand minus reservations at the selected centre. It is not a stock forecast for the plan date. Zero availability or shortages do not block generation. Plans never create requisitions, production, reservations, stock movements or cost postings. Download CSV or print to keep the generated snapshot; changing inputs requires regeneration. Operational records remain separate. Test PLAN-01 through PLAN-03 with separate targets.
+
+## 20. Owner workspace, current stock value and expense categories (054)
+
+1. Sign in as the owner. Six performance metrics should precede Needs attention and Performance trends. Open the stock-value centre breakdown. Detailed PO/waste/movement tables should be collapsed until opened.
+2. Choose a historical sales period. The stock metric must still show posted stock now, with its update time. Open Reports > Current stock value and drill to each centre. Check reference-price estimates, unpriced exclusions, inactive-centre holdings, reservation and available quantities.
+3. Sign in as a responsible centre manager. Their own centre value should appear; another centre's monetary details must remain unavailable. Other operational permissions and invoice restrictions should be unchanged.
+4. For new onboarding, choose operating expense categories at setup or skip to retain initial categories. Existing restaurants open Data & Setup > Expense categories. Add Promotions, Maintenance, Logistics or Subscriptions as needed. Keep WAGES and RENT active if using this pack's expense examples.
+5. Save, reload and check the category in manual expense entry and category import codes. Deactivate/reactivate a practice category; historical records must remain linked to the same ID. Finance should use the categories but have no setup controls.
+6. Run the new owner/category acceptance cases in the workbook. Current menu target warnings should include unsold items and identify their outlet scope.

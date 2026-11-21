@@ -1,7 +1,7 @@
 {
   "pack_date": "2026-11-20",
-  "app_release": "053-weekly-counts-and-stock-statements",
-  "required_migration": "053",
+  "app_release": "054-owner-workspace-stock-value-expense-setup",
+  "required_migration": "054",
   "test_date": "2026-11-19",
   "source_org": "TRAINING",
   "sheets": {
@@ -1230,12 +1230,12 @@
         ],
         [
           "App release",
-          "053-weekly-counts-and-stock-statements",
+          "054-owner-workspace-stock-value-expense-setup",
           "Deployment checked before executing"
         ],
         [
           "Required migration",
-          "053",
+          "054",
           "Verify required migration; do not rerun applied migrations"
         ],
         [
@@ -2200,6 +2200,48 @@
           "Priced and unpriced balances, scoped users",
           "Compare Finance and centre-only reports; attempt another centre and tenant. Inspect CSV and unpriced stock.",
           "Money appears only with financial permission. Unpriced balances are disclosed, not valued as zero. No cross-centre/tenant access. Values labelled estimated, not carrying valuation.",
+          "Not run",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "OWNER-01",
+          "Metrics-first owner workspace",
+          "CEO / owner",
+          "Restaurant with sales, costs and compliance history",
+          "Sign in; inspect cards, attention list, charts and collapsed details on desktop and mobile. Change reporting period and refresh.",
+          "Performance metrics precede operational information. Coverage is explicit; no redundant slogan or 0/0 weekly panel. Current stock remains current while period figures change.",
+          "Not run",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "VALUE-01",
+          "Current held-stock value and scopes",
+          "Owner / Finance / centre manager",
+          "Priced and unpriced stock at multiple centres",
+          "Drill from owner stock card to centre and materials; export. Compare responsible centre manager; attempt another centre. Dispatch and accept a transfer. Inspect remaining inactive-centre stock.",
+          "Business and centre estimates reconcile; unpriced balances excluded explicitly. No double counting on transfer. Centre managers see only their permitted own-centre value; inactive holdings remain included.",
+          "Not run",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "CATEGORY-01",
+          "Expense categories in onboarding and setup",
+          "Administrator / Finance",
+          "Fresh setup and an existing restaurant",
+          "Choose Promotions/Subscriptions during onboarding; save/resume/complete. Add Logistics in setup, save twice, reload and record/import an expense using its code. Deactivate/reactivate a category; attempt Finance setup access.",
+          "Chosen categories persist and feed manual entry/imports/reports. Repeated completion does not reset edits. Names can change; IDs and types remain; history is preserved. Finance cannot manage setup.",
           "Not run",
           "",
           "",

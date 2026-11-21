@@ -5,7 +5,8 @@ import ts from "typescript";
 
 const source = await readFile(new URL("../lib/onboarding.ts", import.meta.url), "utf8");
 const dep=ts.transpileModule(await readFile(new URL("../lib/menu-categories.ts",import.meta.url),"utf8"),{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText;
-const resolved=source.replace('"./menu-categories"',JSON.stringify(`data:text/javascript;base64,${Buffer.from(dep).toString("base64")}`));
+const expenseDep=ts.transpileModule(await readFile(new URL("../lib/expense-categories.ts",import.meta.url),"utf8"),{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText;
+const resolved=source.replace('"./expense-categories"',JSON.stringify(`data:text/javascript;base64,${Buffer.from(expenseDep).toString("base64")}`)).replace('"./menu-categories"',JSON.stringify(`data:text/javascript;base64,${Buffer.from(dep).toString("base64")}`));
 const { outputText } = ts.transpileModule(resolved, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } });
 const { normaliseSetup, emptySetup, validateSetup } = await import(`data:text/javascript;base64,${Buffer.from(outputText).toString("base64")}`);
 

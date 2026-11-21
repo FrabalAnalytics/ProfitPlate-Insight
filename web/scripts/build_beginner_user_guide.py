@@ -7,7 +7,7 @@ import json
 import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / 'docs/exports/ProfitPlate_Insights_Beginner_Setup_and_Daily_Operations_Guide_053.docx'
+OUT = ROOT / 'docs/exports/ProfitPlate_Insights_Beginner_Setup_and_Daily_Operations_Guide_054.docx'
 PAGES = []
 
 def page(title, text):
@@ -16,7 +16,7 @@ def page(title, text):
 page('ProfitPlate Insights', '''
 ### Your beginner guide
 From restaurant setup to daily operations
-Current application: 20 November 2026 | Includes weekly stock counts, movement statements, material planning and daily waste accountability
+Current application: 21 November 2026 | Includes the owner dashboard, current stock value, expense category setup and weekly counts
 
 ### What the product does
 ProfitPlate Insights helps restaurant owners and their teams understand how everyday operating decisions affect estimated profitability and accountability. It connects material prices, recipe costs, selling menus, purchases, stock movements, processing, waste, sales and operating expenses in one restaurant workspace.
@@ -119,6 +119,7 @@ Who: the owner or authorised Restaurant Administrator.
 5. Choose when your reporting week starts. A Wednesday-start week is valid if that matches the restaurant's working cycle.
 6. Choose the physical count day and local cutoff time. This is the agreed counting schedule, not an automatic stock adjustment.
 7. Add Food and Drink subcategories when prompted, such as Food / Mains, Food / Sides and Drink / Soft drinks.
+8. Choose operating expense categories, such as Promotions, Maintenance, Logistics or Subscriptions. Add your own name and import code, or skip this step and customise later in Data & Setup > Expense categories. Existing labour categories remain available.
 8. Finish onboarding. If the platform presents an activation/access restriction, follow up with the platform administrator rather than creating a duplicate business.
 9. Open Data & Setup, then Reporting calendar & targets. Confirm the saved settings and enter the business-approved Food and Drink cost targets; review outlet overrides where used.
 10. In My workspace, save the name to use in your greeting if it has not already been entered.
@@ -517,8 +518,11 @@ Default deadline is 24 hours after cutoff. A manager can set a business-wide win
 ### Stock movement statement
 Open Reports > Stock movement statement. Choose centre, dates and optional material/category. Reconcile opening + additions - removals + count adjustments = closing. Movement detail shows sources and running balance; CSV includes the selected scope. Financial users see reference-price estimates and unpriced balances. These are not carrying valuation or actual COGS.
 
+### Current stock value
+Reports > Current stock value shows posted stock now, independently of your selected sales period. Open Stock value by centre, then View stock to see held, reserved and available quantities, estimated unit costs and held value. Centre owners see their own centre; financial users see their permitted business scope. Unpriced balances are excluded explicitly. Remaining stock at inactive centres stays included. These are reference estimates, not accounting valuation or actual COGS.
+
 ### Owner/Finance weekly review
-1. Open the executive workspace/overview and select the correct reporting period and outlet scope. Check coverage before drawing conclusions.
+1. Sign in to the owner workspace. Read the six headline metrics first, then Needs attention and Performance trends. Use the reporting selector for period figures; stock value remains current at refresh. Open a card or centre breakdown to investigate. Check coverage before drawing conclusions.
 2. Review menu items above Food/Drink cost targets. Check price, portion, recipe version and material cost basis.
 3. Review purchase price pressure. Separate issued-PO early warnings from posted invoice cost evidence.
 4. Review waste reporting compliance, late reports and recurring loss reasons.

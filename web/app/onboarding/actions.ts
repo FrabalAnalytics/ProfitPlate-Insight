@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { getPlatformAccess, requireUser, workspacePath } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
+import {parseExpenseCategories} from "@/lib/expense-categories";
 import {parseMenuCategories} from "@/lib/menu-categories";
 import {parseChannelRows} from "@/lib/channels";
 import { setupValues, validateSetup, type SetupValues } from "@/lib/onboarding";
@@ -39,9 +40,10 @@ export async function saveSetup(_state: SetupState, form: FormData): Promise<Set
   if (calendar.error) return {values, error: "We could not save the reporting calendar. Check the setup update and try again."};
   const channelSave=await supabase.rpc("save_setup_sales_channels",{p_channels:channels});if(channelSave.error)return {values,error:"Sales channels could not be saved. Check database update 046 and try again."};
   const categorySave=await supabase.rpc("save_setup_menu_categories",{p_categories:categories});if(categorySave.error)return {values,error:"Menu categories could not be saved. Check database update 048."};
+  const expenseSave=await supabase.rpc("save_setup_expense_categories",{p_categories:parseExpenseCategories(values.expense_categories)});if(expenseSave.error)return{values,error:"Expense categories could not be saved. Check database update 054."};
   if (!finishing) return { saved: true, values: { ...values, step: nextStep } };
 
-  const { data: organisationId, error: completeError } = await supabase.rpc("complete_restaurant_setup_with_categories");
+  const { data: organisationId, error: completeError } = await supabase.rpc("complete_restaurant_setup_with_expenses");
   if (completeError || typeof organisationId !== "string") {
     return { values, error: "Your details are saved, but we couldn’t finish setup. Please try again." };
   }

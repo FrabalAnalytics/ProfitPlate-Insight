@@ -14,6 +14,7 @@ for (const migration of (await readdir(new URL("../../supabase/migrations/", imp
   await db.exec(await readFile(new URL(`../../supabase/migrations/${migration}`, import.meta.url), "utf8"));
 const emailRequests=[];
 const users = [
+ {id:"00000000-0000-0000-0000-000000000092",email:"experience-owner@example.test"},
  {id:"00000000-0000-0000-0000-000000000090",email:"weekly-owner@example.test"},
  {id:"00000000-0000-0000-0000-000000000091",email:"weekly-counter@example.test"},
   {id:"00000000-0000-0000-0000-000000000023",email:"channels-owner@example.test"},
@@ -253,6 +254,12 @@ createServer(async (request, response) => {
         weekly_count_action: ["p_organisation_id", "p_count_id", "p_revision", "p_request_id", "p_action", "p_reason"],
         weekly_count_scope: ["p_organisation_id", "p_site_id"],
         save_weekly_count_scope: ["p_organisation_id", "p_site_id", "p_item_ids", "p_submission_hours", "p_evidence"],
+        owner_menu_attention: ["p_organisation_id","p_outlet_id"],
+        current_stock_value: ["p_organisation_id","p_site_id","p_outlet_id","p_page","p_export"],
+        expense_category_setup: ["p_organisation_id"],
+        save_expense_categories: ["p_organisation_id","p_evidence","p_categories"],
+        save_setup_expense_categories: ["p_categories"],
+        complete_restaurant_setup_with_expenses: [],
         material_plan_options: ["p_organisation_id","p_site_id","p_date"],
         generate_material_plan: ["p_organisation_id","p_site_id","p_date","p_rows","p_basis"],
         save_material_processing_baseline: ["p_organisation_id","p_request_id","p_value"],
@@ -327,7 +334,7 @@ createServer(async (request, response) => {
       membership_roles: ["id", "organisation_id", "membership_id", "role_code", "location_id"],
       brands: ["id", "name", "organisation_id"],
       locations: ["id", "name", "code", "timezone", "address", "is_active", "brand_id", "organisation_id"],
-      restaurant_setup_drafts: ["user_id", "business_name", "concept", "country_code", "currency_code", "brand_name", "location_name", "timezone", "address", "reporting_week_start", "count_day", "count_cutoff", "sales_channels", "menu_categories", "step", "completed_organisation_id"],
+      restaurant_setup_drafts: ["user_id", "business_name", "concept", "country_code", "currency_code", "brand_name", "location_name", "timezone", "address", "reporting_week_start", "count_day", "count_cutoff", "sales_channels", "menu_categories", "expense_categories", "step", "completed_organisation_id"],
       units_of_measure: ["id", "organisation_id", "code", "name", "dimension"],
       item_categories: ["id", "organisation_id", "name"],
       items: ["id", "organisation_id", "code", "name", "item_type", "category_id", "base_uom_id", "stock_tracked", "is_active", "location_id", "weekly_count_required", "supply_class", "requires_processing"],

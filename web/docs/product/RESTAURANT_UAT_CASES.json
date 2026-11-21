@@ -518,5 +518,29 @@
     "prerequisite": "Priced and unpriced balances, scoped users",
     "steps": "Compare Finance and centre-only reports; attempt another centre and tenant. Inspect CSV and unpriced stock.",
     "expected": "Money appears only with financial permission. Unpriced balances are disclosed, not valued as zero. No cross-centre/tenant access. Values labelled estimated, not carrying valuation."
+  },
+  {
+    "id": "OWNER-01",
+    "area": "Metrics-first owner workspace",
+    "role": "CEO / owner",
+    "prerequisite": "Restaurant with sales, costs and compliance history",
+    "steps": "Sign in; inspect cards, attention list, charts and collapsed details on desktop and mobile. Change reporting period and refresh.",
+    "expected": "Performance metrics precede operational information. Coverage is explicit; no redundant slogan or 0/0 weekly panel. Current stock remains current while period figures change."
+  },
+  {
+    "id": "VALUE-01",
+    "area": "Current held-stock value and scopes",
+    "role": "Owner / Finance / centre manager",
+    "prerequisite": "Priced and unpriced stock at multiple centres",
+    "steps": "Drill from owner stock card to centre and materials; export. Compare responsible centre manager; attempt another centre. Dispatch and accept a transfer. Inspect remaining inactive-centre stock.",
+    "expected": "Business and centre estimates reconcile; unpriced balances excluded explicitly. No double counting on transfer. Centre managers see only their permitted own-centre value; inactive holdings remain included."
+  },
+  {
+    "id": "CATEGORY-01",
+    "area": "Expense categories in onboarding and setup",
+    "role": "Administrator / Finance",
+    "prerequisite": "Fresh setup and an existing restaurant",
+    "steps": "Choose Promotions/Subscriptions during onboarding; save/resume/complete. Add Logistics in setup, save twice, reload and record/import an expense using its code. Deactivate/reactivate a category; attempt Finance setup access.",
+    "expected": "Chosen categories persist and feed manual entry/imports/reports. Repeated completion does not reset edits. Names can change; IDs and types remain; history is preserved. Finance cannot manage setup."
   }
 ]
