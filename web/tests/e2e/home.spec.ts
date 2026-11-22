@@ -45,7 +45,7 @@ test("homepage explains availability and its cost example responds to keyboard i
   await expect(page.getByRole('tabpanel')).toContainText('Missing daily waste reports');
   await expect(page.getByRole('tabpanel')).toContainText('Weekly counts awaiting review');
   await page.getByText('Will setup mean retyping all our restaurant data?',{exact:true}).click();
-  await expect(page.getByText(/Materials and recipes currently use manual setup/)).toBeVisible();
+  await expect(page.getByText(/Use manual entry or reviewed CSV\/Excel imports/)).toBeVisible();
   await page.getByText('Will the margin figures tell me our actual net profit?',{exact:true}).click();
   await expect(page.getByText(/complete net profit requires all relevant costs/)).toBeVisible();
   await expect(page.locator('#how-it-works')).toContainText('Founder approval');

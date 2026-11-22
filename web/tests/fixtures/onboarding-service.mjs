@@ -310,6 +310,7 @@ createServer(async (request, response) => {
         confirm_waste_day:['p_organisation_id','p_site_id','p_day','p_outcome','p_submitter','p_revision','p_evidence','p_request_id','p_reason'],waste_analysis:['p_organisation_id','p_site_id','p_from','p_to'],
         menu_categories:['p_organisation_id'],save_menu_categories:['p_organisation_id','p_revision','p_categories'],save_setup_menu_categories:['p_categories'],complete_restaurant_setup_with_categories:[],
         selling_menu_profitability:['p_organisation_id','p_location_id','p_channel','p_as_of','p_search','p_page','p_status','p_major','p_subcategory'],menu_margin_for_scope:['p_organisation_id','p_version_id','p_location_id','p_channel','p_as_of'],save_menu_entry:['p_organisation_id','p_request_id','p_value'],
+        preview_master_import:['p_organisation_id','p_kind','p_location_id','p_rows'],post_master_import:['p_organisation_id','p_kind','p_location_id','p_request_id','p_rows','p_preview'],import_opening_queue:['p_organisation_id'],submit_import_opening:['p_organisation_id','p_batch_id'],
         preview_menu_catalogue_import:['p_organisation_id','p_location_id','p_rows'],post_menu_catalogue_import:['p_organisation_id','p_location_id','p_request_id','p_rows','p_preview'],
         profitability_items_dashboard: ["p_organisation_id","p_location_id","p_channel","p_as_of","p_search","p_page","p_status","p_kind"],
         menu_profitability_dashboard: ["p_organisation_id","p_location_id","p_channel","p_as_of","p_search","p_page","p_status"],

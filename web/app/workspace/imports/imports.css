@@ -1,0 +1,14 @@
+.import-actions { display:flex; flex-wrap:wrap; align-items:center; gap:1rem; margin:1.25rem 0; }
+.import-actions a { width:auto; }
+.import-guide { margin-top:1rem; max-width:80ch; }
+.import-guide summary { cursor:pointer; font-weight:600; }
+.import-guide p { line-height:1.6; margin:.8rem 0; }
+.import-template-actions { display:flex; flex-wrap:wrap; gap:.75rem; }
+.import-template-actions > .secondary-button { width:auto; }
+.master-import-upload { margin:1.5rem 0; }
+.master-import-upload fieldset { display:grid; grid-template-columns:minmax(150px,1fr) minmax(220px,2fr) auto; gap:1rem; align-items:end; border:0; padding:0; }
+.master-import-upload .setup-field { min-width:0; }
+.master-import-upload button { white-space:nowrap; }
+.import-opening-table .data-table-scroll { max-height:26rem; overflow-y:auto; }
+.import-opening-table thead { position:sticky; top:0; z-index:1; }
+@media(max-width:700px) { .master-import-upload fieldset { grid-template-columns:1fr; } .import-template-actions { align-items:stretch; } }

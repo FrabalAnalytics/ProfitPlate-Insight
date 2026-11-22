@@ -82,6 +82,7 @@ export default async function RecipesPage({ searchParams }: { searchParams: Prom
  return <WorkspaceShell email={user.email} restaurantName={org.name} organisationId={org.id} sectionLabel="Recipes & scaling">
   {params.return_to?.startsWith('/workspace/menus/profitability?')&&new URLSearchParams(params.return_to.split('?')[1]).get('organisation')===org.id&&<Link className="catalogue-back" href={params.return_to}>Back to profitability</Link>}
   <Link className="catalogue-back" href={`/workspace?organisation=${org.id}`}><ArrowLeft size={14}/> Back to workspace</Link>
+  {canEdit && !showEditor && <Link className="secondary-button" href={`/workspace/imports?organisation=${org.id}&kind=RECIPE`}>Import recipes</Link>}
   <div className="page-heading-row"><div><p className="eyebrow form-eyebrow">PROFITABILITY / RECIPES</p><h1 className="workspace-title">Recipes & scaling</h1></div>{canEdit && !showEditor && <Link className="auth-button catalogue-add" href={query({new:"1"})}><Plus size={16}/> Create recipe</Link>}</div>
   {!canEdit && <p className="catalogue-readonly"><Info size={16}/> You have read-only recipe access. An organisation-wide restaurant administrator or operations manager can publish versions.</p>}
   {params.saved==="1" && <p className="welcome-message" role="status"><Check size={16}/> Your recipe version has been published. Earlier versions remain unchanged.</p>}

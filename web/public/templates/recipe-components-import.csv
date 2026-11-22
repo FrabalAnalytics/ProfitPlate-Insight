@@ -1,0 +1,3 @@
+action,recipe_code,recipe_name,recipe_type,yield_quantity,yield_unit,effective_from,notes,component_kind,component_code,component_version,component_quantity,component_unit
+CREATE,SNAPPER_PLATE,Snapper Plate,FINAL,1,PCS,2026-11-22,,RECIPE,SNAPPER_PREP,,1,PCS
+CREATE,SNAPPER_PREP,Snapper Prep,SUB_RECIPE,120,PCS,2026-11-22,,ITEM,WHOLE_SNAPPER,,40,KG

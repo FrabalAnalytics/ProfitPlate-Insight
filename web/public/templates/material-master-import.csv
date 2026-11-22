@@ -1,0 +1,4 @@
+action,material_code,material_name,material_type,category,base_unit,stock_tracked,weekly_count_required,supply_source,requires_processing,last_purchase_unit_price,last_purchase_date,centre_code,opening_quantity,opening_date
+CREATE,WHOLE_SNAPPER,Whole Snapper Fish,RAW,Fish,KG,true,true,PURCHASED,true,3000,2026-11-22,MAIN_STORE,40,2026-11-22
+CREATE,WHOLE_SNAPPER,Whole Snapper Fish,RAW,Fish,KG,true,true,PURCHASED,true,3000,2026-11-22,KITCHEN,0,2026-11-22
+CREATE,SNAPPER_CUT,Snapper Cut,SEMI_FINISHED,Fish,PCS,true,true,PROCESSED,false,,,,,
