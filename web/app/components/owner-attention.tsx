@@ -1,3 +1,4 @@
+import {countActionPath} from '@/lib/inventory-accountability';
 import Link from 'next/link';import type {ExecutiveBriefing} from '@/lib/executive-briefing';import type {WasteWorkspacePacket} from '@/lib/waste-accountability';import type {WeeklyWorkspacePacket} from './weekly-count-status';
 export function OwnerAttention({org,briefing,waste,weekly,wasteError,weeklyError,monthly,monthlyError,menuFlags,menuError}:{org:string;briefing:ExecutiveBriefing;waste:WasteWorkspacePacket|null;weekly:WeeklyWorkspacePacket|null;monthly?:WeeklyWorkspacePacket|null;monthlyError?:boolean;wasteError?:boolean;weeklyError?:boolean;menuFlags:{at_risk:number;incomplete:number;targets_missing:number;scopes:{id:string;name:string;at_risk:number;incomplete:number;targets_missing:number}[]}|null;menuError?:boolean}){
  const rows:{label:string;count:number;href:string;tone:string}[]=[];
@@ -11,8 +12,10 @@ export function OwnerAttention({org,briefing,waste,weekly,wasteError,weeklyError
  add('Waste reports overdue',waste?.overdue??0,`/workspace/inventory/waste/daily?organisation=${org}&state=OVERDUE`,'danger');
  add('Weekly counts overdue',weekly?.backlog??0,`/workspace/inventory/counts?organisation=${org}`,'danger');
  add('Monthly counts overdue',monthly?.backlog??0,`/workspace/inventory/counts?organisation=${org}&frequency=MONTHLY`,'danger');
- add('Monthly counts awaiting review',monthly?.review_waiting??0,`/workspace/inventory/counts?organisation=${org}&frequency=MONTHLY`);
- add('Counts awaiting review',weekly?.review_waiting??0,`/workspace/inventory/counts?organisation=${org}`);
+ add('Monthly counts awaiting review',monthly?.review_waiting??0,countActionPath(org,true,'SUBMITTED'));
+ add('Monthly counts approved - awaiting posting',monthly?.posting_waiting??0,countActionPath(org,true,'APPROVED'));
+ add('Weekly counts awaiting review',weekly?.review_waiting??0,countActionPath(org,false,'SUBMITTED'));
+ add('Weekly counts approved - awaiting posting',weekly?.posting_waiting??0,countActionPath(org,false,'APPROVED'));
  add('Stock handovers over 24h',briefing.movements.overdue,`/workspace/inventory?organisation=${org}&view=movements&status=FOLLOW_UP`);
  add('Sales lines need costs',briefing.summary.missing_lines,`/workspace/overview?organisation=${org}`);
  const nextMonthly=monthly?.rows.filter(r=>r.state==='UPCOMING').sort((a,b)=>a.cutoff.localeCompare(b.cutoff))[0];

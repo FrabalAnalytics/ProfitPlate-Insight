@@ -8,6 +8,8 @@ test('Operations Manager sees compliance first, scoped stock value and practical
  await expect(page.getByLabel("Your centres' current stock value")).toContainText('Count Store');
  await expect(page.getByRole('link',{name:'Data & Setup',exact:true})).toHaveCount(0);
  await expect(page.getByRole('link',{name:'Users & roles',exact:true})).toHaveCount(0);
+ const weeklyPriority=page.getByRole('region',{name:'Operational priorities'}).locator('.operations-count-priority').filter({hasText:'Weekly counts overdue'});
+ await weeklyPriority.getByRole('link',{name:/awaiting review/}).click();await expect(page).toHaveURL(/state=SUBMITTED/);await expect(page.getByLabel('Count task',{exact:true})).toHaveValue('SUBMITTED');await expect(page.getByRole('heading',{name:'Weekly stock counts',exact:true})).toBeVisible();await page.getByRole('link',{name:'Back to workspace',exact:true}).click();
  await page.getByText('Purchase price warnings this month',{exact:true}).click();
  await expect(page.getByRole('table',{name:'Operations purchase price warnings'})).toBeVisible();
  await page.evaluate(()=>window.scrollTo(0,0));

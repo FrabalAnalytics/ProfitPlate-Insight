@@ -6,7 +6,7 @@ export type WeeklyReport={centres:{id:string;name:string}[];manage:boolean;total
 export type CountLine={item_id:string;name:string;code:string;unit:string;book:string;physical:string|null;variance:string|null;variance_percent:string|null;note:string;unit_cost:string|null;estimated_variance_value:string|null;price_basis:unknown};
 export type WeeklySheet={daily_boundary?:string|null;reporting_month?:string|null;scheduled_cutoff?:string|null;schedule_exception?:string|null;sales_reconciliations?:{item_id:string;book_delta:string;approved_at:string}[];monthly_date?:string|null;no_stock_confirmed?:boolean;id:string;organisation_id:string;site_id:string;centre:string;count_date:string;cutoff:string;deadline:string;time_zone:string;owner_name:string|null;state:string;revision:number;snapshot_at:string;submitter_name:string|null;submitted_by:string|null;submitted_at:string|null;submission_note:string|null;reviewed_by:string|null;reviewed_at:string|null;review_note:string|null;posted_at:string|null;stock_document_id:string|null;financial:boolean;currency:string;can_record:boolean;can_review:boolean;can_post:boolean;stale:boolean;cutoff_warnings:{id:string;reference:string}[];lines:CountLine[]};
 export type CountScope={evidence:string;submission_hours:number;items:{id:string;name:string;code:string;unit:string;included:boolean;quantity:string}[]};
-export const countLabels:Record<string,string>={UPCOMING:'Upcoming',NOT_STARTED:'Not started',DRAFT:'In progress',SUBMITTED:'Submitted for review',APPROVED:'Approved for adjustment',POSTED:'Adjustment posted',REVIEWED:'Reviewed without adjustment'};
+export const countLabels:Record<string,string>={UPCOMING:'Upcoming',NOT_STARTED:'Not started',DRAFT:'In progress',SUBMITTED:'Submitted for review',APPROVED:'Approved - awaiting posting',POSTED:'Adjustment posted',REVIEWED:'Reviewed without adjustment'};
 export function countTime(value:string,zone:string){return new Intl.DateTimeFormat('en-GB',{timeZone:zone,dateStyle:'medium',timeStyle:'short'}).format(new Date(value));}
 // Decimal subtraction stays exact even for twelve-place stock quantities.
 export function quantityDifference(physical:string,book:string):string|null {
@@ -24,3 +24,5 @@ export function quantityDifference(physical:string,book:string):string|null {
  const fraction=String(value%scale).padStart(12,'0').replace(/0+$/,'');
  return(negative?'-':'')+String(value/scale)+(fraction?'.'+fraction:'');
 }
+
+export function countActionPath(organisation:string,monthly:boolean,state:'SUBMITTED'|'APPROVED'){return `/workspace/inventory/counts?${new URLSearchParams({organisation,...(monthly?{frequency:'MONTHLY'}:{}),state})}`;}

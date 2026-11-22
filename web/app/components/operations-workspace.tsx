@@ -1,3 +1,4 @@
+import {countActionPath} from '@/lib/inventory-accountability';
 import Link from 'next/link';
 import {createClient} from '@/lib/supabase/server';
 import {CurrentStockCard} from './current-stock-card';
@@ -25,8 +26,8 @@ export async function OperationsWorkspace({organisation,timeZone,currency,waste,
  return <div className="operations-workspace">
   <section className="operations-priorities" aria-label="Operational priorities">
    <Link href={query('/workspace/inventory/waste/daily')}><span>Waste reports overdue</span><strong>{wasteError?'Unavailable':waste?.overdue??0}</strong><small>Centre-days requiring follow-up</small></Link>
-   <Link href={query('/workspace/inventory/counts')}><span>Weekly counts overdue</span><strong>{weeklyError?'Unavailable':weekly?.backlog??0}</strong><small>{weeklyError?'Check count reporting':`${weekly?.review_waiting??0} awaiting review`}</small></Link>
-   <Link href={query('/workspace/inventory/counts',{frequency:'MONTHLY'})}><span>Monthly counts overdue</span><strong>{monthlyError?'Unavailable':monthly?.backlog??0}</strong><small>{monthly?.review_waiting??0} awaiting review</small></Link>
+   <CountPriority org={organisation} packet={weekly} error={weeklyError}/>
+   <CountPriority org={organisation} packet={monthly??null} error={!!monthlyError} monthly/>
    <Link href={query('/workspace/menus/profitability',{status:'AT_RISK'})}><span>Menus above cost target</span><strong>{menuError?'Unavailable':risk}</strong><small>Menu / outlet comparisons</small></Link>
   </section>
   <section className="operations-panel" aria-label="Needs Attention"><div className="operations-heading"><h2>Needs Attention</h2><Link href={query('/workspace/records')}>Open operational reports</Link></div>
@@ -41,4 +42,8 @@ export async function OperationsWorkspace({organisation,timeZone,currency,waste,
   <details className="operations-panel"><summary>Purchase price warnings this month</summary>{priceError&&<p role="alert">Some purchase price comparisons are unavailable. Narrow the period in purchasing reports or refresh to retry.</p>}<DataTable label="Operations purchase price warnings" columns={[{label:'Material / PO'},{label:'Outlet'},{label:'Previous / quoted unit price'},{label:'Increase',numeric:true}]} rows={prices.flatMap(({outlet,result})=>((result.data as ExecutiveBriefing['po_exposure'])?.rows??[]).map(r=>({id:r.line_id,cells:[<span key="po">{r.name}<small><Link href={query('/workspace/records',{type:'PO',q:r.reference,from:today.slice(0,7)+'-01',to:today})}>{r.reference}</Link></small></span>,outlet.name,<span key="prices">{referenceAmount(r.baseline_unit_cost,currency)} / {referenceAmount(r.quote_unit_cost,currency)}<small>Per {r.unit}</small></span>,r.change_percent==null?'Unavailable':`${displayPercent(r.change_percent)}%`]})))} empty="No comparable price increases in this period."/><p className="purchase-help">Issued PO quotes are early warnings, not confirmed purchase costs. Up to five priority material lines per permitted outlet are shown.</p></details>
   <nav className="workspace-home-tasks" aria-label="Operations tools">{[['Material Plan','/workspace/inventory/plans'],['Production & yield','/workspace/inventory/processing'],['Waste analysis','/workspace/inventory/waste/analysis'],['Stock movements','/workspace/inventory/statements'],['Historical reports','/workspace/records']].map(([label,path])=><Link key={path} href={query(path)}>{label}</Link>)}</nav>
  </div>;
+}
+
+function CountPriority({org,packet,error,monthly=false}:{org:string;packet:WeeklyWorkspacePacket|null;error:boolean;monthly?:boolean}){
+ return <article className="operations-count-priority"><Link href={`/workspace/inventory/counts?${new URLSearchParams({organisation:org,...(monthly?{frequency:'MONTHLY'}:{})})}`}><span>{monthly?'Monthly':'Weekly'} counts overdue</span><strong>{error?'Unavailable':packet?.backlog??0}</strong></Link>{error?<small>Check count reporting</small>:<div className="operations-count-links"><Link href={countActionPath(org,monthly,'SUBMITTED')}>{packet?.review_waiting??0} awaiting review</Link><Link href={countActionPath(org,monthly,'APPROVED')}>{packet?.posting_waiting??0} approved - awaiting posting</Link></div>}</article>;
 }
