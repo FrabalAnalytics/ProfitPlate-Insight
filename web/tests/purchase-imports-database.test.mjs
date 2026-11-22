@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { randomUUID, createHash } from "node:crypto";
 import { readFile, readdir } from "node:fs/promises";
-import { PGlite } from "@electric-sql/pglite";
+import { PGlite } from "./helpers/active-restaurant-db.mjs";
 
 const headers = "Organisation_Code,Source_System,Purchase_Date,Purchase_Ref,Line_Ref,Supplier_Code,Item_Code,Quantity,Purchase_UOM,Unit_Price,Line_Discount,Tax,Location_Code,Currency,Status";
 const base = ["ORG001", "ERP_A", "2020-01-01", "INV001", "1", "SUP001", "RICE", "2", "BAG", "45000", "0", "0", "PRIMARY", "NGN", "RECEIVED"];

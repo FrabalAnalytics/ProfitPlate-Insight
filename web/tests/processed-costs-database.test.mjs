@@ -1,4 +1,4 @@
-import {test} from 'node:test';import assert from 'node:assert/strict';import {readFile,readdir} from 'node:fs/promises';import {randomUUID} from 'node:crypto';import {PGlite} from '@electric-sql/pglite';
+import {test} from 'node:test';import assert from 'node:assert/strict';import {readFile,readdir} from 'node:fs/promises';import {randomUUID} from 'node:crypto';import {PGlite} from './helpers/active-restaurant-db.mjs';
 test('processed SKU estimates derive through linked recipes without manual prices, cycles or double counting',async t=>{
  const db=new PGlite(),[owner,other,manager]=Array.from({length:3},()=>randomUUID());
  const val=async(sql,args=[])=>Object.values((await db.query(sql,args)).rows[0])[0],login=async id=>{await db.exec('reset role');await db.query("select set_config('request.jwt.claim.sub',$1,false)",[id]);await db.exec('set role authenticated');},reject=(work,code='42501')=>assert.rejects(work,e=>e.code===code);

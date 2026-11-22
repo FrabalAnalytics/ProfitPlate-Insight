@@ -1,4 +1,4 @@
-﻿import {test} from 'node:test';import assert from 'node:assert/strict';import {readFile,readdir} from 'node:fs/promises';import {randomUUID} from 'node:crypto';import {PGlite} from '@electric-sql/pglite';
+﻿import {test} from 'node:test';import assert from 'node:assert/strict';import {readFile,readdir} from 'node:fs/promises';import {randomUUID} from 'node:crypto';import {PGlite} from './helpers/active-restaurant-db.mjs';
 test('named waste is recorded without approval while preserving centre scope and auditability',async t=>{
  const db=new PGlite(),[owner,manager,chef,reviewer,barUser,receiver,unassigned,outsider]=Array.from({length:8},()=>randomUUID()),today=new Date().toISOString().slice(0,10);let org,main,kitchen,bar,kg,rice,cut,chefMember,reviewerMember,barMember,managerMember,receiverMember,departmentWaste,mainWaste;
  const val=async(sql,args=[])=>Object.values((await db.query(sql,args)).rows[0])[0],login=async id=>{await db.exec('reset role');await db.query("select set_config('request.jwt.claim.sub',$1,false)",[id]);await db.exec('set role authenticated');},deny=(work,code='42501')=>assert.rejects(work,e=>e.code===code);

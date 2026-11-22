@@ -2,7 +2,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile,readdir} from 'node:fs/promises';
 import {randomUUID} from 'node:crypto';
-import {PGlite} from '@electric-sql/pglite';
+import {PGlite} from './helpers/active-restaurant-db.mjs';
 
 test('configurable stock flows preserve quantities, role scopes and an immutable audit ledger',async t=>{
  const db=new PGlite();

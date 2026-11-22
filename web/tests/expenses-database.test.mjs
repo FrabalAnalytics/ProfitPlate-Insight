@@ -2,7 +2,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile,readdir} from 'node:fs/promises';
 import {randomUUID,createHash} from 'node:crypto';
-import {PGlite} from '@electric-sql/pglite';
+import {PGlite} from './helpers/active-restaurant-db.mjs';
 const headers=['Organisation_Code','Source_System','Expense_Ref','Line_Ref','Category_Code','Scope','Location_Code','Expense_From','Expense_To','Recognition_Method','Payment_Date','Amount','Currency','Description'];
 const base={Organisation_Code:'ORG001',Source_System:'TEST_EXP',Expense_Ref:'WAGES-1',Line_Ref:'1',Category_Code:'WAGES',Scope:'LOCATION',Location_Code:'PRIMARY',Expense_From:'2020-04-15',Expense_To:'2020-04-15',Recognition_Method:'ON_DATE',Payment_Date:'2020-04-15',Amount:'600',Currency:'NGN',Description:'Fictional labour'};
 const csv=rows=>headers.join(',')+'\r\n'+rows.map(row=>headers.map(key=>'"'+String({...base,...row}[key]).replaceAll('"','""')+'"').join(',')).join('\r\n');

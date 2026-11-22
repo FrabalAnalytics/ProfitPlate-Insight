@@ -1,4 +1,4 @@
-import {test} from 'node:test';import assert from 'node:assert/strict';import {readFile,readdir} from 'node:fs/promises';import {randomUUID} from 'node:crypto';import {PGlite} from '@electric-sql/pglite';
+import {test} from 'node:test';import assert from 'node:assert/strict';import {readFile,readdir} from 'node:fs/promises';import {randomUUID} from 'node:crypto';import {PGlite} from './helpers/active-restaurant-db.mjs';
 test('separate purchasing registers, material reports and invoice comparisons preserve document grain and role scope',async t=>{
  const db=new PGlite(),[owner,buyer,manager,finance,department,other]=Array.from({length:6},()=>randomUUID());
  const val=async(sql,args=[])=>Object.values((await db.query(sql,args)).rows[0])[0];

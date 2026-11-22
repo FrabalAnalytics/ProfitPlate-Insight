@@ -2,7 +2,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile,readdir} from 'node:fs/promises';
 import {randomUUID} from 'node:crypto';
-import {PGlite} from '@electric-sql/pglite';
+import {PGlite} from './helpers/active-restaurant-db.mjs';
 
 test('historical reports filter complete role-scoped history and exports without widening operational permissions',async t=>{
  const db=new PGlite(),users=Array.from({length:8},()=>randomUUID()),[owner,manager,procurement,finance,kitchenUser,barUser,receiver,other]=users;

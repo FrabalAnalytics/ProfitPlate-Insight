@@ -1,4 +1,4 @@
-import {test} from 'node:test';import assert from 'node:assert/strict';import {readFile,readdir} from 'node:fs/promises';import {randomUUID} from 'node:crypto';import {PGlite} from '@electric-sql/pglite';
+import {test} from 'node:test';import assert from 'node:assert/strict';import {readFile,readdir} from 'node:fs/promises';import {randomUUID} from 'node:crypto';import {PGlite} from './helpers/active-restaurant-db.mjs';
 test('POs, partial GRNs and invoice matching preserve operational/Finance boundaries and source evidence',async t=>{
  const db=new PGlite(),[owner,procurement,finance,other,scoped,inventory,inventoryScoped]=Array.from({length:7},()=>randomUUID());
  const value=async(sql,args=[])=>Object.values((await db.query(sql,args)).rows[0])[0];

@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 import { readFile } from "node:fs/promises";
-import { PGlite } from "@electric-sql/pglite";
+import { PGlite } from "./helpers/active-restaurant-db.mjs";
 
 test("recipe reference estimates preserve composition, coverage and financial boundaries", async t => {
  const db = new PGlite();

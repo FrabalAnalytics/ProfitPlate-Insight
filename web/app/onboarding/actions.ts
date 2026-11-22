@@ -48,5 +48,5 @@ export async function saveSetup(_state: SetupState, form: FormData): Promise<Set
     return { values, error: "Your details are saved, but we couldn’t finish setup. Please try again." };
   }
   revalidatePath("/workspace");
-  redirect(`/workspace/setup?organisation=${encodeURIComponent(organisationId)}&welcome=1`);
+  redirect(`/account-access?organisation=${encodeURIComponent(organisationId)}`);
 }

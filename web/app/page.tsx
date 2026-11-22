@@ -23,6 +23,7 @@ const capabilities = [
   { icon: ShieldCheck, number: "06", title: "Check the shelf against the screen", text: "Give flagged materials a weekly physical count. See missing submissions and review book-versus-count differences.", detail: "Weekly stock accountability" },
 ];
 const questions = [
+  ["How do I get my restaurant started?", "Register, verify your email and submit your restaurant details for approval. After Founder activation, invite your Administrator and team, load your data and begin your operational checks."],
   ["Why are my food costs rising?", "See which ingredient prices changed and review the dishes they affect. Monthly quantity-weighted purchase costs inform recipe estimates, so you can review price pressure with a clearer basis."],
   ["Which dishes need a pricing review?", "See selling menu items once, grouped by your Food or Drink subcategories. Compare cost per plate, estimated contribution and food-cost targets to decide where to review the price, portion or recipe."],
   ["How can I make waste easier to track?", "Each centre records losses with a name and reason, then confirms the day is complete. If nothing was wasted, they confirm No waste. Teams record the loss without approval; owners can follow missing reports and compare waste by centre, material and reason."],

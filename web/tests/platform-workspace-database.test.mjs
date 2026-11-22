@@ -1,4 +1,4 @@
-import {test} from 'node:test';import assert from 'node:assert/strict';import {readFile,readdir} from 'node:fs/promises';import {randomUUID} from 'node:crypto';import {PGlite} from '@electric-sql/pglite';
+import {test} from 'node:test';import assert from 'node:assert/strict';import {readFile,readdir} from 'node:fs/promises';import {randomUUID} from 'node:crypto';import {PGlite} from './helpers/active-restaurant-db.mjs';
 test('founder workspace provides scoped platform metadata, real counts, filters and pagination',async()=>{
  const db=new PGlite(),founder=randomUUID(),owner=randomUUID(),newOwner=randomUUID();
  const val=async(sql,args=[])=>Object.values((await db.query(sql,args)).rows[0])[0];

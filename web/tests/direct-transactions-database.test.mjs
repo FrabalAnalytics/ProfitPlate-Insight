@@ -2,7 +2,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile,readdir} from 'node:fs/promises';
 import {randomUUID} from 'node:crypto';
-import {PGlite} from '@electric-sql/pglite';
+import {PGlite} from './helpers/active-restaurant-db.mjs';
 test('direct invoices and Finance-approved corrections preserve source evidence and enforce transaction roles',async t=>{
  const db=new PGlite(),[owner,finance,procurement,other,scoped,ceo,founder]=Array.from({length:7},()=>randomUUID());
  const value=async(sql,args=[])=>Object.values((await db.query(sql,args)).rows[0])[0];

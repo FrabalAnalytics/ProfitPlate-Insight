@@ -1,4 +1,4 @@
-import {test} from 'node:test';import assert from 'node:assert/strict';import {readFile,readdir} from 'node:fs/promises';import {randomUUID} from 'node:crypto';import {PGlite} from '@electric-sql/pglite';
+import {test} from 'node:test';import assert from 'node:assert/strict';import {readFile,readdir} from 'node:fs/promises';import {randomUUID} from 'node:crypto';import {PGlite} from './helpers/active-restaurant-db.mjs';
 test('fresh restaurant: named team, owned centres, one processing unit, baseline, processing and independent waste',async t=>{
  const db=new PGlite(),[owner,manager,chef,bar,outsider]=Array.from({length:5},()=>randomUUID()),today=new Date().toISOString().slice(0,10);
  const val=async(sql,args=[])=>Object.values((await db.query(sql,args)).rows[0])[0],login=async id=>{await db.exec('reset role');await db.query("select set_config('request.jwt.claim.sub',$1,false)",[id]);await db.exec('set role authenticated');},bad=(work,code='22023')=>assert.rejects(work,e=>e.code===code);

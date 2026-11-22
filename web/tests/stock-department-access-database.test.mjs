@@ -2,7 +2,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile,readdir} from 'node:fs/promises';
 import {randomUUID} from 'node:crypto';
-import {PGlite} from '@electric-sql/pglite';
+import {PGlite} from './helpers/active-restaurant-db.mjs';
 
 test('fine-dining stock assignments separate Main Store, Kitchen and Bar without broadening role access',async t=>{
  const db=new PGlite(),[owner,storeUser,kitchenUser,barUser,opsUser,financeUser,otherUser]=Array.from({length:7},()=>randomUUID());

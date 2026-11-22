@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
-import { PGlite } from "@electric-sql/pglite";
+import { PGlite } from "./helpers/active-restaurant-db.mjs";
 
 test("onboarding preserves existing access, saves privately and creates isolated businesses once", async (t) => {
   const db = new PGlite();

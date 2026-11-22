@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 import { readFile, readdir } from "node:fs/promises";
-import { PGlite } from "@electric-sql/pglite";
+import { PGlite } from "./helpers/active-restaurant-db.mjs";
 
 test("menu versions and dated prices give scoped, explicit reference food margins", async t => {
  const db = new PGlite();

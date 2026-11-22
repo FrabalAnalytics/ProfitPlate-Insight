@@ -1,4 +1,4 @@
-import {test} from 'node:test';import assert from 'node:assert/strict';import {readFile,readdir} from 'node:fs/promises';import {randomUUID} from 'node:crypto';import {PGlite} from '@electric-sql/pglite';
+import {test} from 'node:test';import assert from 'node:assert/strict';import {readFile,readdir} from 'node:fs/promises';import {randomUUID} from 'node:crypto';import {PGlite} from './helpers/active-restaurant-db.mjs';
 test('setup standards preserve incomplete records, enforce scopes, inherit targets and measure real readiness',async t=>{
  const db=new PGlite(),[owner,manager,outsider]=[randomUUID(),randomUUID(),randomUUID()];
  const val=async(sql,args=[])=>Object.values((await db.query(sql,args)).rows[0])[0];const login=async id=>{await db.exec('reset role');await db.query("select set_config('request.jwt.claim.sub',$1,false)",[id]);await db.exec('set role authenticated');};

@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { randomUUID, createHash } from "node:crypto";
 import { readFile, readdir } from "node:fs/promises";
-import { PGlite } from "@electric-sql/pglite";
+import { PGlite } from "./helpers/active-restaurant-db.mjs";
 const headers = 'Organisation_Code,Source_System,Location_Code,Sale_Date,Transaction_Ref,Line_Ref,Menu_Code,Quantity,Gross_Sales,Discount,Tax,Net_Sales,Channel_Code,Line_Type,Parent_Line_Ref,Status';
 const base = ['ORG001','POS_A','PRIMARY','2020-01-15','TX001','001','MENU001','2','3000','0','0','3000','DINE_IN','NORMAL','','PAID'];
 const row = (changes = {}) => base.map((value, i) => changes[i] ?? value);

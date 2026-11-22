@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile,readdir } from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
-import { PGlite } from '@electric-sql/pglite';
+import { PGlite } from './helpers/active-restaurant-db.mjs';
 
 test('team invitation and membership security through real migrations',async t=>{
  const db=new PGlite();

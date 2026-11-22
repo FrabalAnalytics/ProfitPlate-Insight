@@ -1,3 +1,4 @@
+import {approveRestaurantFixture} from "./helpers/activate-restaurant";
 import { test, expect, type Page } from "@playwright/test";
 
 async function login(page: Page, email: string) {
@@ -35,7 +36,8 @@ test("owner saves, resumes and completes restaurant setup", async ({ page }, tes
   await expect(page.getByLabel("First location name")).toHaveValue("Lekki Outlet");
   await page.getByRole("button", { name: "Save & continue" }).click();
   await expect(page.getByRole("heading", { name: "Ready to make it yours?" })).toBeVisible();
-  await page.getByRole("button", { name: "Create workspace" }).click();
+  await page.getByRole("button", { name: "Submit for approval" }).click();
+  await approveRestaurantFixture(page);
   await expect(page).toHaveURL(/\/workspace\/setup\?organisation=.+&welcome=1/);
   await expect(page.getByText("Your restaurant workspace is ready. Welcome to ProfitPlate.")).toBeVisible();
   await expect(page.getByRole("heading", { name: "Tangibles Test Restaurant", exact: true })).toBeVisible();

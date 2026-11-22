@@ -17,6 +17,12 @@ export async function requireUser() {
   return user;
 }
 
+// Share the account-status lookup within this server request; never cache across users.
+export const getAccountRestaurants = cache(async () => {
+  const supabase=await createClient();
+  return supabase.rpc("account_restaurant_access");
+});
+
 export const getPlatformAccess = cache(async () => {
   await requireUser();
   const supabase = await createClient();
@@ -26,8 +32,9 @@ export const getPlatformAccess = cache(async () => {
   if (error?.code === "PGRST202") return "setup-required" as const;
   if (error || typeof data !== "boolean") return "unavailable" as const;
   if (data) return "admin" as const;
-  const restaurants = await supabase.rpc("account_restaurant_access");
+  const restaurants = await getAccountRestaurants();
   if (restaurants.error || !Array.isArray(restaurants.data)) return "unavailable" as const;
+  if (restaurants.data.some((r: {state: string}) => r.state === "PENDING") && !restaurants.data.some((r: {state: string}) => r.state === "ACTIVE")) return "pending" as const;
   if (restaurants.data.some((r: {state: string}) => r.state === "INACTIVE") && !restaurants.data.some((r: {state: string}) => r.state === "ACTIVE")) return "inactive" as const;
   return "member" as const;
 });

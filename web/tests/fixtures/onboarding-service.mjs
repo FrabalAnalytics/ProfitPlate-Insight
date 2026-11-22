@@ -10,10 +10,11 @@ await db.exec(`create role anon; create role authenticated; create schema auth;
 create table auth.users(id uuid primary key,email_confirmed_at timestamptz,email text);
 create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$;
 grant usage on schema public,auth to authenticated,anon; grant execute on function auth.uid() to authenticated,anon;`);
-for (const migration of (await readdir(new URL("../../supabase/migrations/", import.meta.url))).filter(name => name.endsWith(".sql")).sort())
+for (const migration of (await readdir(new URL("../../supabase/migrations/", import.meta.url))).filter(name => name.endsWith(".sql")&&name<"202611220056").sort())
   await db.exec(await readFile(new URL(`../../supabase/migrations/${migration}`, import.meta.url), "utf8"));
 const emailRequests=[];
 const users = [
+ {id:"00000000-0000-0000-0000-000000000095",email:"activation-owner@example.test"},
  {id:"00000000-0000-0000-0000-000000000093",email:"operations@example.test"},
  {id:"00000000-0000-0000-0000-000000000094",email:"operations-scoped@example.test"},
  {id:"00000000-0000-0000-0000-000000000092",email:"experience-owner@example.test"},
@@ -143,6 +144,9 @@ await asUser(weeklyCounter,tx=>tx.query("select public.stock_document_action($1,
 await db.query("update public.organisations set count_day=extract(dow from $2::date),count_cutoff='00:00' where id=$1",[weeklyOrg,weeklyToday]);
 await db.query('delete from private.weekly_count_programmes where organisation_id=$1',[weeklyOrg]);await db.query('select private.pp_weekly_programme($1,$2,$3)',[weeklyOrg,weeklySite,weeklyToday]);
 await db.query('delete from private.weekly_count_scope where organisation_id=$1',[weeklyOrg]);for(const id of[weeklyFish,weeklyZero])await db.query('select private.pp_count_scope_seed($1,$2,$3,$4,true)',[weeklyOrg,weeklySite,id,weeklyToday]);
+// Existing fixture restaurants predate the approval rollout. New registrations below
+// exercise Pending and the real Founder activation endpoint.
+for(const migration of(await readdir(new URL('../../supabase/migrations/',import.meta.url))).filter(name=>name.endsWith('.sql')&&name>='202611220056').sort())await db.exec(await readFile(new URL(`../../supabase/migrations/${migration}`,import.meta.url),'utf8'));
 createServer(async (request, response) => {
   const send = (status, data, headers = {}) => { response.writeHead(status, { "Content-Type": "application/json", "Cache-Control": "no-store", ...headers }); response.end(JSON.stringify(data)); };
   try {

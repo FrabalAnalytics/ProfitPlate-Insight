@@ -2,7 +2,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile,readdir} from 'node:fs/promises';
 import {randomUUID} from 'node:crypto';
-import {PGlite} from '@electric-sql/pglite';
+import {PGlite} from './helpers/active-restaurant-db.mjs';
 
 test('executive briefing connects corrected purchase prices, posted loss exposure and accountable handovers without claiming actual profit',async t=>{
  const db=new PGlite(),[owner,finance,ceo,department,outsider]=Array.from({length:5},()=>randomUUID());

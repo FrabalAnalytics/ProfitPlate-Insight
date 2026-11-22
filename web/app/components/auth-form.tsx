@@ -20,7 +20,7 @@ export function AuthForm({ mode = "login", notice, joining = false }: { mode?: M
   const [confirmation, setConfirmation] = useState("");
   const copy = {
     login: { title: "Welcome back.", description: joining ? "Sign in with your invited email to review your team invitation." : "Sign in to your restaurant workspace.", button: "Sign in", busy: "Signing you in…" },
-    signup: { title: "Start with a clearer picture.", description: joining ? "Create and verify your account to join your restaurant team." : "Create your account to set up a restaurant or accept your team invitation.", button: "Create account", busy: "Creating your account…" },
+    signup: { title: "Start with a clearer picture.", description: joining ? "Create and verify your account to join your restaurant team." : "Create your account to apply for a restaurant workspace or accept your team invitation.", button: "Create account", busy: "Creating your account…" },
     forgot: { title: "Forgot your password?", description: "Enter your account email and we’ll send you a link to reset your password.", button: "Send reset link", busy: "Sending reset link…" },
     reset: { title: "A fresh start.", description: "Choose a new password to keep your account secure.", button: "Save new password", busy: "Updating password…" },
   }[mode];
