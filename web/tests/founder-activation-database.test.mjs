@@ -15,10 +15,10 @@ test('Founder approval gates every registration API and preserves existing resta
  await db.exec(`create role anon;create role authenticated;create schema auth;create table auth.users(id uuid primary key,email_confirmed_at timestamptz,email text);create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;grant usage on schema public,auth to authenticated,anon;grant execute on function auth.uid() to authenticated,anon;`);
  for(const id of[founder,legacy,outsider,...users])await db.query('insert into auth.users values($1,now(),$2)',[id,`${id}@example.test`]);
  const migrations=(await readdir(new URL('../supabase/migrations/',import.meta.url))).filter(n=>n.endsWith('.sql')).sort();
- for(const name of migrations.filter(n=>!n.includes('0056_')))await db.exec(await readFile(new URL(`../supabase/migrations/${name}`,import.meta.url),'utf8'));
+ for(const name of migrations.filter(n=>n<'202611220056'))await db.exec(await readFile(new URL(`../supabase/migrations/${name}`,import.meta.url),'utf8'));
  await db.query('insert into private.platform_admins(user_id) values($1)',[founder]);
  await login(legacy);await save('Existing approved restaurant');old=await val('select public.complete_restaurant_setup_with_expenses()');
- await db.exec('reset role');for(const name of migrations.filter(n=>n.includes('0056_')))await db.exec(await readFile(new URL(`../supabase/migrations/${name}`,import.meta.url),'utf8'));
+ await db.exec('reset role');for(const name of migrations.filter(n=>n>='202611220056'))await db.exec(await readFile(new URL(`../supabase/migrations/${name}`,import.meta.url),'utf8'));
  await t.test('existing restaurant and memberships remain active without reapproval',async()=>{
   await login(legacy);assert.equal((await val('select public.account_restaurant_access()'))[0].state,'ACTIVE');assert.equal((await val('select public.workspace_navigation_access($1)',[old])).team,true);assert.equal(await val('select public.complete_restaurant_setup_with_expenses()'),old);assert.equal((await val('select public.account_restaurant_access()'))[0].state,'ACTIVE');
  });

@@ -18,7 +18,7 @@ import { DataTable,StatusBadge } from "./data-table";
 import { ExecutiveRefresh } from "./executive-refresh";
 import "./executive-briefing.css";
 
-export async function ExecutiveBriefing({organisation,from,to,location,today,timeZone,locations,waste,weekly,wasteError,weeklyError}:{waste:WasteWorkspacePacket|null;weekly:WeeklyWorkspacePacket|null;wasteError?:boolean;weeklyError?:boolean;organisation:string;from:string;to:string;location:string;today:string;timeZone:string;locations:{id:string;name:string}[]}) {
+export async function ExecutiveBriefing({organisation,from,to,location,today,timeZone,locations,waste,weekly,wasteError,weeklyError,monthly,monthlyError}:{waste:WasteWorkspacePacket|null;weekly:WeeklyWorkspacePacket|null;monthly?:WeeklyWorkspacePacket|null;monthlyError?:boolean;wasteError?:boolean;weeklyError?:boolean;organisation:string;from:string;to:string;location:string;today:string;timeZone:string;locations:{id:string;name:string}[]}) {
  const client=await createClient();
  const valid=validBusinessDate(from)&&validBusinessDate(to)&&(!location||locations.some(l=>l.id===location));
  const periodArgs={p_organisation_id:organisation,p_from:from,p_to:to,p_location_id:location||null};
@@ -52,7 +52,7 @@ export async function ExecutiveBriefing({organisation,from,to,location,today,tim
    <div className="executive-coverage"><span>{p.recorded_days} {p.recorded_days===1?'day':'days'} with sales records · Compared with {p.prior_from} to {p.prior_to}</span><span>Updated {new Intl.DateTimeFormat('en-GB',{timeZone,hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date(stockValue?.as_of??p.refreshed_at))} · {timeZone}</span></div>
    {p.summary.missing_lines>0&&<p className="executive-note" role="status">{p.summary.missing_lines} sales lines need usable costs. Margin is incomplete. <Link href={href('/workspace/overview')}>Review missing costs</Link></p>}
    {Boolean(stockValue?.centre_count)&&stockValue&&<StockValueBreakdown org={organisation} packet={stockValue}/>}
-   <OwnerAttention org={organisation} briefing={p} waste={waste} weekly={weekly} wasteError={wasteError} weeklyError={weeklyError} menuFlags={menuFlags.data} menuError={!!menuFlags.error}/>
+   <OwnerAttention org={organisation} briefing={p} waste={waste} weekly={weekly} wasteError={wasteError} weeklyError={weeklyError} monthly={monthly} monthlyError={monthlyError} menuFlags={menuFlags.data} menuError={!!menuFlags.error}/>
    <OwnerTrends org={organisation} overview={overview?.data as Overview|null} expenses={expenses} briefing={p}/>
    {hasEvidence&&<div className="owner-detail-heading"><h2>Details</h2><Link className="inline-link" href={href('/workspace/overview')}>Open performance report →</Link></div>}
    {p.po_exposure&&Boolean(p.po_exposure.open||p.po_exposure.unmatched||p.po_exposure.unavailable)&&<details className="executive-panel" aria-labelledby="executive-po-prices"><summary className="executive-panel-heading"><div><h3 id="executive-po-prices">Issued PO price warnings</h3><p>{p.po_exposure.unavailable?'Comparison unavailable':`${money(p.po_exposure.potential_exposure)} potential increase / ${p.po_exposure.open} unbilled material lines`}</p></div><span className="executive-owner">Early warning / Procurement</span></summary>

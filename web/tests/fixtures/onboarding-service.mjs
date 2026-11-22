@@ -14,6 +14,9 @@ for (const migration of (await readdir(new URL("../../supabase/migrations/", imp
   await db.exec(await readFile(new URL(`../../supabase/migrations/${migration}`, import.meta.url), "utf8"));
 const emailRequests=[];
 const users = [
+ {id:"00000000-0000-0000-0000-000000000101",email:"monthly-owner@example.test"},
+ {id:"00000000-0000-0000-0000-000000000102",email:"monthly-counter@example.test"},
+ {id:"00000000-0000-0000-0000-000000000103",email:"monthly-operations@example.test"},
  {id:"00000000-0000-0000-0000-000000000095",email:"activation-owner@example.test"},
  {id:"00000000-0000-0000-0000-000000000093",email:"operations@example.test"},
  {id:"00000000-0000-0000-0000-000000000094",email:"operations-scoped@example.test"},
@@ -144,9 +147,29 @@ await asUser(weeklyCounter,tx=>tx.query("select public.stock_document_action($1,
 await db.query("update public.organisations set count_day=extract(dow from $2::date),count_cutoff='00:00' where id=$1",[weeklyOrg,weeklyToday]);
 await db.query('delete from private.weekly_count_programmes where organisation_id=$1',[weeklyOrg]);await db.query('select private.pp_weekly_programme($1,$2,$3)',[weeklyOrg,weeklySite,weeklyToday]);
 await db.query('delete from private.weekly_count_scope where organisation_id=$1',[weeklyOrg]);for(const id of[weeklyFish,weeklyZero])await db.query('select private.pp_count_scope_seed($1,$2,$3,$4,true)',[weeklyOrg,weeklySite,id,weeklyToday]);
+// Isolated monthly count fixture, provisioned as an existing active restaurant.
+const monthlyOwner=users.find(u=>u.email==='monthly-owner@example.test'),monthlyCounter=users.find(u=>u.email==='monthly-counter@example.test');
+const monthlyOrg=await asUser(monthlyOwner,async tx=>{await tx.query("select public.save_restaurant_setup('Monthly Test Restaurant','QSR','NG','NGN','Monthly','Dining','Africa/Lagos','',3)");return weeklyScalar(tx,'select public.complete_restaurant_setup()');});
+const monthlyMember=await weeklyScalar(db,"insert into public.organisation_memberships(organisation_id,user_id,display_name) values($1,$2,'Ada') returning id",[monthlyOrg,monthlyCounter.id]);
+await db.query("insert into public.membership_roles(organisation_id,membership_id,role_code) values($1,$2,'inventory_manager')",[monthlyOrg,monthlyMember]);
+const monthlyOpsMember=await weeklyScalar(db,"insert into public.organisation_memberships(organisation_id,user_id,display_name) values($1,$2,'Tolu') returning id",[monthlyOrg,users.find(u=>u.email==='monthly-operations@example.test').id]);
+await db.query("insert into public.membership_roles(organisation_id,membership_id,role_code) values($1,$2,'operations')",[monthlyOrg,monthlyOpsMember]);
+let monthlySite,monthlyRice,monthlySalt;
+await asUser(monthlyOwner,async tx=>{
+ const kg=await weeklyScalar(tx,"select id from public.units_of_measure where organisation_id=$1 and code='KG'",[monthlyOrg]);
+ for(const [code,name]of [['MONTH_RICE','Monthly Rice'],['MONTH_SALT','Monthly Salt']]){const id=await weeklyScalar(tx,'select public.save_material_setup($1,$2)',[monthlyOrg,JSON.stringify({code,name,item_type:'RAW',base_uom_id:kg,stock_tracked:true,is_active:true,weekly_count_required:false,supply_class:'PURCHASED'})]);if(code==='MONTH_RICE')monthlyRice=id;else monthlySalt=id;}
+ monthlySite=await weeklyScalar(tx,'select public.save_stock_centre($1,$2)',[monthlyOrg,JSON.stringify({code:'MONTH_STORE',name:'Monthly Store',kind:'STORE',responsible:monthlyMember})]);
+ const rows=[{material_code:'MONTH_RICE',quantity:'1',unit_code:'KG',total_price:'1000',price_date:weeklyYesterday,source_note:'Fixture purchase price'}],preview=await weeklyScalar(tx,'select public.preview_material_reference_prices($1,$2)',[monthlyOrg,JSON.stringify(rows)]);
+ await tx.query("select public.save_material_reference_prices($1,$2,'MANUAL',$3,$4)",[monthlyOrg,crypto.randomUUID(),JSON.stringify(rows),JSON.stringify(preview)]);
+});
+const monthlyOpening=await asUser(monthlyCounter,tx=>weeklyScalar(tx,'select public.request_stock_document($1,$2,$3,$4)',[monthlyOrg,crypto.randomUUID(),JSON.stringify({kind:'OPENING',destination_id:monthlySite,date:weeklyYesterday,note:'Signed monthly opening'}),JSON.stringify([{item_id:monthlyRice,quantity:'10'},{item_id:monthlySalt,quantity:'4'}])]));
+await asUser(monthlyOwner,tx=>tx.query("select public.stock_document_action($1,$2,'APPROVE','Verified',null)",[monthlyOrg,monthlyOpening]));
+await asUser(monthlyCounter,tx=>tx.query("select public.stock_document_action($1,$2,'POST','Posted',null)",[monthlyOrg,monthlyOpening]));
 // Existing fixture restaurants predate the approval rollout. New registrations below
 // exercise Pending and the real Founder activation endpoint.
 for(const migration of(await readdir(new URL('../../supabase/migrations/',import.meta.url))).filter(name=>name.endsWith('.sql')&&name>='202611220056').sort())await db.exec(await readFile(new URL(`../../supabase/migrations/${migration}`,import.meta.url),'utf8'));
+await db.query('delete from private.monthly_count_programmes where organisation_id=$1',[monthlyOrg]);
+await db.query("insert into private.monthly_count_programmes values($1,$2,$3,true,extract(day from $3::date)::integer,'00:00','Africa/Lagos',1,'Ada')",[monthlyOrg,monthlySite,weeklyToday]);
 createServer(async (request, response) => {
   const send = (status, data, headers = {}) => { response.writeHead(status, { "Content-Type": "application/json", "Cache-Control": "no-store", ...headers }); response.end(JSON.stringify(data)); };
   try {
@@ -256,6 +279,7 @@ createServer(async (request, response) => {
         save_processing_centres: ["p_organisation_id","p_centre_ids","p_revision"],
         inventory_report_options: ["p_organisation_id", "p_site_id"],
         inventory_movement_statement: ["p_organisation_id", "p_site_id", "p_from", "p_to", "p_item_id", "p_page", "p_export", "p_category"],
+        monthly_count_analysis:['p_organisation_id','p_site_id','p_from','p_to','p_page'],monthly_count_calendar:['p_organisation_id'],save_monthly_count_calendar:['p_organisation_id','p_day','p_cutoff','p_hours','p_evidence'],monthly_counts_report:['p_organisation_id','p_site_id','p_from','p_to','p_page'],start_monthly_count:['p_organisation_id','p_site_id','p_day'],save_monthly_count:['p_organisation_id','p_count_id','p_revision','p_request_id','p_rows','p_submit','p_submitter','p_note','p_no_stock'],monthly_count_detail:['p_organisation_id','p_count_id'],monthly_counts_workspace:['p_organisation_id'],
         weekly_counts_report: ["p_organisation_id", "p_site_id", "p_from", "p_to", "p_page"],
         weekly_counts_workspace: ["p_organisation_id"],
         weekly_count_detail: ["p_organisation_id", "p_count_id"],
