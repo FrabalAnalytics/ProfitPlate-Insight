@@ -13,8 +13,9 @@ test("homepage explains availability and its cost example responds to keyboard i
   await expect(page.getByTestId("preview-margin")).toHaveText("40.8%");
   await expect(page.getByText(/Fictional example. Packaging/)).toBeVisible();
   await page.screenshot({ path: testInfo.outputPath("homepage-desktop.png") });
-  await page.getByText("Why are my food costs rising?", { exact: true }).click();
-  await expect(page.getByText(/See which ingredient prices changed/)).toBeVisible();
+  await expect(page.locator(".marketing-faq-list details")).toHaveCount(7);
+  await page.getByText("We already use a POS and spreadsheets. Why add ProfitPlate?", {exact:true}).click();
+  await expect(page.getByText(/a live POS connection is not currently included/)).toBeVisible();
   await expect(page.locator(".marketing-capabilities article")).toHaveCount(6);
   const stockPreview=page.getByLabel('Illustrative current stock value');
   await expect(stockPreview.getByTestId('stock-preview-total')).toHaveText('NGN 318,000');
@@ -33,23 +34,22 @@ test("homepage explains availability and its cost example responds to keyboard i
 
   await expect(page.getByLabel("Illustrative daily waste reporting")).toContainText("2 of 3");
   await expect(page.getByLabel("Illustrative daily waste reporting")).toContainText("Overdue");
-  await page.getByText("Planning a pilot? Start with sample data", {exact:true}).click();
-  const onboardingPack = page.getByRole("link", { name: "Download test data pack" });
-  await expect(onboardingPack).toHaveAttribute("download", "");
-  await expect(onboardingPack).toHaveAttribute("href", "/templates/profitplate-complete-test-data-2026-11-20.zip");
-  const templateResponse = await page.request.get(await onboardingPack.getAttribute("href") as string);
-  expect(templateResponse.ok()).toBe(true);
-  expect((await templateResponse.body()).subarray(0, 2).toString()).toBe("PK");
-  await page.getByText("How can I make waste easier to track?", {exact:true}).click();
-  await expect(page.getByText(/record the loss without approval/)).toBeVisible();
+  await expect(page.locator('main a[download]')).toHaveCount(0);
+  await expect(page.locator('a[href*="profitplate-complete-test-data"]')).toHaveCount(0);
+  await page.getByText('My team struggles to record consistently. Will another system help?',{exact:true}).click();
+  await expect(page.getByText(/Teams record waste without an approval queue/)).toBeVisible();
   const tabs=page.getByRole('tablist',{name:'Explore team workspaces'});await tabs.getByRole('tab',{name:'Kitchen / Bar',exact:true}).click();await expect(page.getByRole('tabpanel')).toContainText('Waste needs no approval.');await expect(page.getByRole('tabpanel')).toContainText('Hello, Ada.');await tabs.getByRole('tab',{name:'Kitchen / Bar',exact:true}).press('ArrowRight');await expect(tabs.getByRole('tab',{name:'Finance',exact:true})).toHaveAttribute('aria-selected','true');await expect(page.getByRole('tabpanel')).toContainText('Management reports');await tabs.getByRole('tab',{name:'Finance',exact:true}).press('Home');await expect(tabs.getByRole('tab',{name:'Owner / CEO',exact:true})).toHaveAttribute('aria-selected','true');
   await expect(page.getByLabel("Illustrative management report")).toContainText("Fictional sample");
   await expect(page.getByLabel("Illustrative management report")).toContainText("Owner workspace");
-  await page.getByText('Where are our operating costs going?',{exact:true}).click();
-  await expect(page.getByText(/Create expense categories such as Promotions/)).toBeVisible();
-  await page.getByText('How much value is sitting in my stock?',{exact:true}).click();
-  await expect(page.getByText(/See current posted quantities multiplied/)).toBeVisible();
-  await page.getByRole("link", { name: "Create your workspace", exact: true }).first().click();
+  await page.getByRole('tab',{name:'Operations Manager',exact:true}).click();
+  await expect(page.getByRole('tabpanel')).toContainText('Missing daily waste reports');
+  await expect(page.getByRole('tabpanel')).toContainText('Weekly counts awaiting review');
+  await page.getByText('Will setup mean retyping all our restaurant data?',{exact:true}).click();
+  await expect(page.getByText(/Materials and recipes currently use manual setup/)).toBeVisible();
+  await page.getByText('Will the margin figures tell me our actual net profit?',{exact:true}).click();
+  await expect(page.getByText(/complete net profit requires all relevant costs/)).toBeVisible();
+  await expect(page.locator('#how-it-works')).toContainText('Founder approval');
+  await page.getByRole("link", { name: "Request workspace access", exact: true }).first().click();
   await expect(page).toHaveURL(/\/signup$/);
 });
 
