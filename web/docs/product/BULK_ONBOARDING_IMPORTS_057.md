@@ -4,7 +4,7 @@ Release 057 adds reviewed CSV and Excel imports. Manual entry remains available.
 
 ## Recommended order
 
-1. Complete business setup, units, outlets, stock centres and responsible users.
+1. Complete business setup, units and outlets. Add the responsible users, then open **Data & Setup → Centres & team access** to create stock centres before preparing opening-stock rows. Copy each centre's code from its stock-centre table. If you are importing only materials and purchase prices, centres can be created later; leave all three opening-stock fields blank.
 2. Set up Food / Drink subcategories under Menu categories.
 3. Open **Materials & suppliers → Import materials**.
 4. Download the CSV or Excel template. Replace the fictional examples with your own data and actual centre codes. Dates in the examples are illustrative; use your real opening and purchase dates.

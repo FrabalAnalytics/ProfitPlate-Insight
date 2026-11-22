@@ -1,0 +1,8 @@
+.setup-tools { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin:20px 0; }
+.setup-tools a { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:15px 18px; background:white; border:1px solid var(--border); border-radius:10px; font-size:14px; font-weight:600; line-height:1.5; }
+.setup-tools a:hover { background:var(--surface-muted,#eef4f1); }
+.setup-tools svg { flex-shrink:0; }
+.setup-tools a:focus-visible { outline:2px solid var(--brand); outline-offset:3px; }
+.setup-checklist .inline-link { display:inline-flex; align-items:center; gap:8px; }
+@media(max-width:1000px) { .setup-tools { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(max-width:520px) { .setup-tools { grid-template-columns:1fr; } }
