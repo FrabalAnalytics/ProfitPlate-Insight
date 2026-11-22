@@ -1,4 +1,4 @@
-export const menuImportHeaders=["action", "menu_code", "menu_name", "major_category", "subcategory", "recipe_code", "recipe_version", "recipe_quantity", "selling_price", "tax_setting", "tax_percent", "effective_from"] as const;
+export const menuImportHeaders=["action", "menu_code", "menu_name", "major_category", "subcategory", "recipe_code", "recipe_version", "recipe_quantity", "selling_price", "tax_setting", "tax_percent", "effective_from", "stock_centre_code", "consumption_mode"] as const;
 export type MenuImportRow=Record<(typeof menuImportHeaders)[number],string>;
 export type MenuImportPreview={valid:boolean;rows:{row:number;code:string;name:string;major:string;subcategory:string;price:string;action:string;error:string|null;warning:string|null}[]};
 export function parseMenuCsv(input: string): MenuImportRow[] {
@@ -22,10 +22,11 @@ export function parseMenuCsv(input: string): MenuImportRow[] {
  if (quoted) throw new Error("The CSV contains an unclosed quote.");
  if (cell || row.length || closed) endRow();
  if (records.length < 2) throw new Error("Include the header and at least one menu row.");
- if (records[0].join(",") !== menuImportHeaders.join(",")) throw new Error(`Use the template headers in this order: ${menuImportHeaders.join(", ")}.`);
+ const legacy=records[0].join(",")===menuImportHeaders.slice(0,12).join(",");
+ if (!legacy&&records[0].join(",") !== menuImportHeaders.join(",")) throw new Error(`Use the template headers in this order: ${menuImportHeaders.join(", ")}.`);
  return records.slice(1).map((values, index) => {
-  if (values.length !== menuImportHeaders.length) throw new Error(`Row ${index + 1}: check the template columns. Quote any note containing commas.`);
-  const row = Object.fromEntries(menuImportHeaders.map((key, i) => [key, values[i]])) as MenuImportRow;
+  if (values.length !== (legacy?12:menuImportHeaders.length)) throw new Error(`Row ${index + 1}: check the template columns. Quote any note containing commas.`);
+  const row = Object.fromEntries(menuImportHeaders.map((key, i) => [key, values[i]??""])) as MenuImportRow;
   row.action=row.action.toUpperCase();row.menu_code=row.menu_code.toUpperCase();row.major_category=row.major_category.toUpperCase();row.recipe_code=row.recipe_code.toUpperCase();
   return row;
  });

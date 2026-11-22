@@ -1,2 +1,2 @@
-action,menu_code,menu_name,major_category,subcategory,recipe_code,recipe_version,recipe_quantity,selling_price,tax_setting,tax_percent,effective_from
-CREATE,SNAPPER_PLATE_MENU,Snapper Plate,FOOD,Mains,SNAPPER_PLATE,,1,6000,NONE,0,2026-11-22
+action,menu_code,menu_name,major_category,subcategory,recipe_code,recipe_version,recipe_quantity,selling_price,tax_setting,tax_percent,effective_from,stock_centre_code,consumption_mode
+CREATE,SNAPPER_PLATE_MENU,Snapper Plate,FOOD,Mains,SNAPPER_PLATE,,1,6000,NONE,0,2026-11-22,,

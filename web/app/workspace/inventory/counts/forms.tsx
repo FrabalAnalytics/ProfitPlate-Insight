@@ -6,8 +6,22 @@ import {quantityDifference,type WeeklySheet,type CountScope} from '@/lib/invento
 import {displayQuantity} from '@/lib/recipes';
 export function CountOperation({org,site,count='',revision=0,intent,label,day,reason=false,token,frequency='WEEKLY'}:{org:string;site:string;count?:string;revision?:number;intent:string;label:string;day?:string;reason?:boolean;token:string;frequency?:'WEEKLY'|'MONTHLY'}){
  const[state,action,pending]=useActionState(countAction,{});
- return <form action={action} onReset={e=>e.preventDefault()} className="weekly-count-actions"><input type="hidden" name="frequency" value={frequency}/><input type="hidden" name="organisation" value={org}/><input type="hidden" name="site" value={site}/><input type="hidden" name="count" value={count}/><input type="hidden" name="revision" value={revision}/><input type="hidden" name="token" value={token}/><input type="hidden" name="intent" value={intent}/>{day&&<input type="hidden" name="day" value={day}/>} {reason&&<div className="setup-field"><label htmlFor={`reason-${intent}`}>Reason / review note</label><input id={`reason-${intent}`} name="note" required minLength={3} maxLength={1000}/></div>}<button className="secondary-button" disabled={pending||!token}>{pending?'Saving…':label}</button>{state.error&&<p role="alert" className="auth-alert">{state.error}</p>}</form>;
+ return <form action={action} onReset={e=>e.preventDefault()} className="weekly-count-actions" aria-busy={pending}>
+  <input type="hidden" name="frequency" value={frequency}/><input type="hidden" name="organisation" value={org}/><input type="hidden" name="site" value={site}/><input type="hidden" name="count" value={count}/><input type="hidden" name="revision" value={revision}/><input type="hidden" name="token" value={token}/><input type="hidden" name="intent" value={intent}/>{day&&<input type="hidden" name="day" value={day}/>}
+  {intent==='START'&&frequency==='MONTHLY'&&<details>
+   <summary>Physical count date &amp; timing</summary>
+   <div className="setup-field"><label htmlFor={`report-month-${token}`}>Reporting month being closed</label><input id={`report-month-${token}`} type="month" name="reporting_month" defaultValue={day?.slice(0,7)} required/></div>
+   <div className="setup-field"><label htmlFor={`actual-date-${token}`}>Actual physical count date</label><input id={`actual-date-${token}`} name="actual" type="date" defaultValue={day} required/></div>
+   <div className="setup-field"><label htmlFor={`count-boundary-${token}`}>Count boundary</label><select id={`count-boundary-${token}`} name="boundary" defaultValue="AFTER_CLOSING"><option value="BEFORE_OPENING">Before opening: excludes this day&apos;s activity</option><option value="AFTER_CLOSING">After closing: includes this day&apos;s activity</option></select></div>
+   <div className="setup-field"><label htmlFor={`schedule-reason-${token}`}>Reason if early or late</label><input id={`schedule-reason-${token}`} name="schedule_reason" maxLength={1000}/></div>
+   <p>Use the real count date. Count after closing becomes available after that day has ended.</p>
+  </details>}
+  {intent==='BOUNDARY'&&<div className="setup-field"><label htmlFor={`count-clarification-${token}`}>Physical count timing</label><select id={`count-clarification-${token}`} name="boundary" required><option value="BEFORE_OPENING">Before opening</option><option value="AFTER_CLOSING">After closing</option></select></div>}
+  {reason&&<div className="setup-field"><label htmlFor={`reason-${token}`}>Reason / review note</label><input id={`reason-${token}`} name="note" required minLength={5} maxLength={1000}/></div>}
+  <button className="secondary-button" disabled={pending||!token}>{pending?'Saving...':label}</button>{state.error&&<p role="alert" className="auth-alert">{state.error}</p>}
+ </form>;
 }
+
 export function CountEntry({sheet,name,token}:{sheet:WeeklySheet;name:string;token:string}){
  const[state,action,pending]=useActionState(countAction,{}),[lines,setLines]=useState(sheet.lines.map(l=>({item_id:l.item_id,physical:l.physical===null?'':displayQuantity(l.physical),note:l.note??''})));
  const [page,setPage]=useState(1),pages=Math.max(1,Math.ceil(sheet.lines.length/25)),visible=sheet.lines.map((line,index)=>({line,index})).slice((page-1)*25,page*25);

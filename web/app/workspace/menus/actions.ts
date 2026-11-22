@@ -57,3 +57,12 @@ export async function toggleMenuActive(_state: MenuState, form: FormData): Promi
  revalidatePath("/workspace/menus");revalidatePath("/workspace/menus/profitability");
  redirect(`/workspace/menus?organisation=${org}&item=${id}&saved=status`);
 }
+
+export async function saveStockMapping(_state:MenuState,form:FormData):Promise<MenuState>{
+ const client=await session(),get=(key:string)=>String(form.get(key)??'');
+ if(!['organisation_id','menu_id','request_id','stock_outlet_id','stock_site_id'].every(k=>isUuid(get(k))))return {error:'Choose an outlet and stock centre.'};
+ const {error}=await client.rpc('save_menu_stock_mapping',{p_organisation_id:get('organisation_id'),p_request_id:get('request_id'),p_menu_id:get('menu_id'),p_outlet_id:get('stock_outlet_id'),p_site_id:get('stock_site_id'),p_mode:get('consumption_mode'),p_from:get('stock_from')});
+ if(error)return failure(error);
+ revalidatePath('/workspace/menus');revalidatePath('/workspace/inventory/sales-consumption');
+ redirect(`/workspace/menus?organisation=${get('organisation_id')}&item=${get('menu_id')}&saved=stock`);
+}

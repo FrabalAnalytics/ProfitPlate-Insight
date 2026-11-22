@@ -26,7 +26,7 @@ export async function stageSales(_state: SalesActionState, form: FormData): Prom
  try { mappings = parseSalesMappings(get("mappings") || "{}"); } catch (error) { return { error: error instanceof Error ? error.message : "Check the source mappings." }; }
  const { data, error } = await client.rpc("stage_sales_import", { p_organisation_id: org, p_request_id: get("request_id"), p_filename: filename, p_csv: csv, p_source_org: sourceOrg, p_net_basis: basis, p_currency: get("currency"), p_mappings: mappings });
  if (error) return { error: error.code === "22023" ? error.message : "We could not validate these sales. Check your access and try again." };
- revalidatePath("/workspace/sales"); redirect(`/workspace/sales?organisation=${org}&batch=${data}`);
+ revalidatePath("/workspace/inventory");revalidatePath("/workspace/inventory/sales-consumption");revalidatePath("/workspace/inventory/statements");revalidatePath("/workspace/inventory/counts");revalidatePath("/workspace");revalidatePath("/workspace/sales"); redirect(`/workspace/sales?organisation=${org}&batch=${data}`);
 }
 export async function postSales(_state: SalesActionState, form: FormData): Promise<SalesActionState> {
  const org = String(form.get("organisation_id") ?? ""), id = String(form.get("batch_id") ?? ""), client = await access(org, true);
@@ -37,14 +37,14 @@ export async function postSales(_state: SalesActionState, form: FormData): Promi
  if (form.get("confirmed") !== "yes") return { error: "Confirm the source currency, tax format, menu versions and receipt totals before saving." };
  const { data, error } = await client.rpc("post_sales_import", { p_organisation_id: org, p_batch_id: id, p_controls: controls });
  if (error) return { error: error.code === "22023" ? error.message : "We could not record the sales. Your review remains available; please try again." };
- revalidatePath("/workspace/sales"); redirect(`/workspace/sales?organisation=${org}&batch=${id}&result=${data?.posted ? "recorded" : "review"}`);
+ revalidatePath("/workspace/inventory");revalidatePath("/workspace/inventory/sales-consumption");revalidatePath("/workspace/inventory/statements");revalidatePath("/workspace/inventory/counts");revalidatePath("/workspace");revalidatePath("/workspace/sales"); redirect(`/workspace/sales?organisation=${org}&batch=${id}&result=${data?.posted ? "recorded" : "review"}`);
 }
 export async function cancelSales(_state: SalesActionState, form: FormData): Promise<SalesActionState> {
  const org = String(form.get("organisation_id") ?? ""), id = String(form.get("batch_id") ?? ""), client = await access(org, true);
  if (!client || !isUuid(id)) return { error: "This sales import is unavailable to your account." };
  const { error } = await client.rpc("cancel_sales_import", { p_organisation_id: org, p_batch_id: id });
  if (error) return { error: error.code === "22023" ? error.message : "We could not cancel this import." };
- revalidatePath("/workspace/sales"); redirect(`/workspace/sales?organisation=${org}&batch=${id}`);
+ revalidatePath("/workspace/inventory");revalidatePath("/workspace/inventory/sales-consumption");revalidatePath("/workspace/inventory/statements");revalidatePath("/workspace/inventory/counts");revalidatePath("/workspace");revalidatePath("/workspace/sales"); redirect(`/workspace/sales?organisation=${org}&batch=${id}`);
 }
 export async function downloadSalesSource(org: string, batch: string): Promise<{ error: string } | { filename: string; csv: string }> {
  const client = await access(org, false);

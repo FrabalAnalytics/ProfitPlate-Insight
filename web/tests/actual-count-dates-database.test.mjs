@@ -1,0 +1,32 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';import {readFile,readdir} from 'node:fs/promises';import {randomUUID} from 'node:crypto';import {PGlite} from './helpers/active-restaurant-db.mjs';
+test('actual monthly count dates preserve daily stock boundaries and independent approval',async t=>{
+ const db=new PGlite(),owner=randomUUID(),manager=randomUUID(),other=randomUUID();let org,kg,flagged,ownerMember;
+ const val=async(sql,args=[])=>Object.values((await db.query(sql,args)).rows[0])[0];const login=async id=>{await db.exec('reset role');await db.query("select set_config('request.jwt.claim.sub',$1,false)",[id]);await db.exec('set role authenticated');};const deny=(p,code='22023')=>assert.rejects(p,e=>e.code===code);
+ const inspect=async(sql,args=[])=>{await db.exec('reset role');try{return await val(sql,args);}finally{await db.exec('set role authenticated');}};
+ const detail=id=>val('select public.monthly_count_detail($1,$2)',[org,id]);
+ const save=(id,rows,rev,submit=true,zero=false,token=randomUUID())=>val('select public.save_monthly_count($1,$2,$3,$4,$5,$6,$7,$8,$9)',[org,id,rev,token,rows,submit,'Ada','Verified physical stock; differences under investigation.',zero]);
+ const act=(id,rev,action,token=randomUUID())=>val('select public.weekly_count_action($1,$2,$3,$4,$5,$6)',[org,id,rev,token,action,'Independent physical review']);
+ try{
+ await db.exec(`create role anon;create role authenticated;create schema auth;create table auth.users(id uuid primary key,email_confirmed_at timestamptz,email text);create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;grant usage on schema public,auth to authenticated,anon;grant execute on function auth.uid() to authenticated,anon;`);
+ for(const id of[owner,manager,other])await db.query('insert into auth.users values($1,now(),$2)',[id,`${id}@example.test`]);for(const f of(await readdir(new URL('../supabase/migrations/',import.meta.url))).filter(f=>f.endsWith('.sql')).sort())await db.exec(await readFile(new URL(`../supabase/migrations/${f}`,import.meta.url),'utf8'));
+ await login(owner);await val("select public.save_restaurant_setup('Monthly Test','QSR','NG','NGN','Brand','Outlet','Africa/Lagos','',3)");org=await val('select public.complete_restaurant_setup()');kg=await val("select id from public.units_of_measure where organisation_id=$1 and code='KG'",[org]);ownerMember=await val('select id from public.organisation_memberships where organisation_id=$1 and user_id=$2',[org,owner]);
+ await db.exec('reset role');const m=await val('insert into public.organisation_memberships(organisation_id,user_id) values($1,$2) returning id',[org,manager]);await db.query("insert into public.membership_roles(organisation_id,membership_id,role_code) values($1,$2,'inventory_manager')",[org,m]);await login(owner);
+
+ flagged=await val('select public.save_material_setup($1,$2)',[org,{code:'RICE',name:'Rice',item_type:'RAW',base_uom_id:kg,stock_tracked:true,is_active:true,supply_class:'PURCHASED'}]);
+ const configure=async(centre)=>{await db.exec('reset role');await db.query("insert into private.monthly_count_programmes values($1,$2,'2020-01-01',true,16,'23:59','Africa/Lagos',24,'Ada')",[org,centre]);await db.exec('set role authenticated');};
+ const centre=async(code)=>{await login(owner);const c=await val('select public.save_stock_centre($1,$2)',[org,{code,name:code,kind:'STORE',responsible:ownerMember}]);await configure(c);return c;};
+ const opening=async(c,day,qty)=>{await login(manager);const d=await val('select public.request_stock_document($1,$2,$3,$4)',[org,randomUUID(),day==='2020-01-01'?{kind:'OPENING',destination_id:c,date:day,note:'Verified starting stock'}:{kind:'CONSUMPTION',source_id:c,date:day,note:'Verified consumption'},[{item_id:flagged,quantity:String(qty)}]]);await login(owner);await val("select public.stock_document_action($1,$2,'APPROVE','Checked',null)",[org,d]);await login(manager);await val("select public.stock_document_action($1,$2,'POST','Posted',null)",[org,d]);};
+ const start=(c,actual,boundary,reason='Closed for scheduled maintenance')=>val('select public.start_monthly_count_actual($1,$2,$3,$4,$5,$6,$7)',[org,c,'2020-01-16',actual,boundary,reason,'2020-01-01']);
+ await t.test('early before-opening count excludes that days dated movements and retains the scheduled obligation',async()=>{
+  const c=await centre('EARLY');await opening(c,'2020-01-01',100);await opening(c,'2020-01-15',10);const id=await start(c,'2020-01-15','BEFORE_OPENING');const d=await detail(id);assert.equal(d.monthly_date,'2020-01-16');assert.equal(d.count_date,'2020-01-15');assert.equal(d.daily_boundary,'BEFORE_OPENING');assert.equal(Number(d.lines[0].book),100);assert.equal(d.reporting_month,'2020-01-01');assert.equal(await start(c,'2020-01-15','BEFORE_OPENING'),id);
+  const p=await val('select public.monthly_counts_report($1,$2,$3,$3,1)',[org,c,'2020-01-16']);assert.equal(p.rows[0].count_id,id);
+ });
+ await t.test('late after-closing count includes the actual day; exceptions and future measurements are validated',async()=>{
+  const c=await centre('LATE');await opening(c,'2020-01-01',100);await opening(c,'2020-01-17',10);await deny(start(c,'2020-01-17','AFTER_CLOSING',''));await deny(start(c,'2020-01-30','AFTER_CLOSING'));await deny(start(c,'2020-01-17','INVALID'));
+  const id=await start(c,'2020-01-17','AFTER_CLOSING');const d=await detail(id);assert.equal(Number(d.lines[0].book),90);assert.equal(d.monthly_date,'2020-01-16');assert.equal(d.count_date,'2020-01-17');assert.ok(d.schedule_exception);
+  await save(id,[{item_id:flagged,physical:'88',note:'Counted and checked'}],0);await deny(act(id,1,'APPROVE'),'42501');
+  await db.exec('reset role');const m=await val('insert into public.organisation_memberships(organisation_id,user_id) values($1,$2) returning id',[org,other]);await db.query("insert into public.membership_roles(organisation_id,membership_id,role_code) values($1,$2,'ceo')",[org,m]);await login(other);assert.equal((await detail(id)).can_review,true);await act(id,1,'APPROVE');assert.equal((await detail(id)).state,'APPROVED');
+  await login(manager);await act(id,2,'POST');assert.equal((await detail(id)).state,'POSTED');assert.equal(Number(await inspect('select sum(quantity) from public.stock_ledger where organisation_id=$1 and location_id=$2 and item_id=$3',[org,c,flagged])),88);
+ });
+ }finally{await db.close();}
+});
