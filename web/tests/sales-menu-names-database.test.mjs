@@ -52,7 +52,6 @@ test('name-first sales imports preserve menu identities, saved matches and stock
    await login(owner);await scalar("select public.stock_document_action($1,$2,'APPROVE','Verified',null)",[org,id]);await login(procurement);await scalar("select public.stock_document_action($1,$2,'POST','Verified',null)",[org,id]);await login(owner);
   };
   await opening(100);await scalar('select public.save_menu_stock_mapping($1,$2,$3,$4,$5,$6,$7)',[org,randomUUID(),menu,location,centre,'RECIPE','2020-01-01']);
-  const queue=()=>scalar("select public.sales_stock_queue($1,null,null,null,1,'ALL')",[org]);
 
   let firstBatch,secondOutlet;
   const review=id=>scalar('select public.get_sales_import($1,$2)',[org,id]);

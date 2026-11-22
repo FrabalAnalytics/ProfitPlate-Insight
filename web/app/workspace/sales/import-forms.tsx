@@ -13,8 +13,23 @@ export function SalesUpload({ organisationId, requestId, currency, initial, sour
  const [sourceOrg, setSourceOrg] = useState(initial?.source_organisation_code ?? ""), [basis, setBasis] = useState(initial?.net_basis ?? "");
  const [maps, setMaps] = useState<SalesMappings>(initial?.mappings ?? { menu_items: {}, locations: {}, channels: {} });
  const [reading, setReading] = useState(false), [fileError, setFileError] = useState("");
+ const [samplePending,setSamplePending]=useState(false),[sampleError,setSampleError]=useState("");
+ async function downloadSample(){
+  setSamplePending(true);setSampleError("");const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),30000);
+  try{
+   const response=await fetch(`/workspace/sales/sample?organisation=${encodeURIComponent(organisationId)}`,{cache:'no-store',signal:controller.signal});
+   if(response.redirected){setSampleError('Your session has expired. Sign in again, then retry the download.');return;}
+   if(!response.ok){const result=await response.json().catch(()=>null);setSampleError(typeof result?.error==='string'?result.error:'The sample could not be downloaded. Please try again shortly.');return;}
+   if(!response.headers.get('Content-Type')?.startsWith('text/csv')){setSampleError('The sample could not be downloaded. Refresh the page and try again.');return;}
+   const blob=await response.blob(),url=URL.createObjectURL(blob),anchor=document.createElement('a');
+   anchor.href=url;anchor.download=response.headers.get('Content-Disposition')?.match(/filename="(ProfitPlate_training_sales_\d{4}-\d{2}-\d{2}\.csv)"/)?.[1]??'ProfitPlate_training_sales.csv';
+   document.body.append(anchor);anchor.click();anchor.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);setSourceOrg('TRAINING');
+  }catch{setSampleError('The sample could not be downloaded. Check your connection and try again.');}
+  finally{clearTimeout(timeout);setSamplePending(false);}
+ }
  return <section className="purchase-panel"><p className="eyebrow form-eyebrow">UPLOAD → VALIDATE → RECONCILE → RECORD</p><h2>Upload sales records</h2><p className="purchase-intro">Use the menu names in your POS export and save the Sales_Import sheet as CSV UTF-8. Up to 100 data rows and 128 KB per file. Standard PAID / NORMAL lines are supported first; combos, refunds and voids are flagged.</p>
-  <div className="purchase-template-links"><a className="secondary-button purchase-template" href="/templates/sales-import.csv" download><Download size={15}/> Download sales template</a><a className="secondary-button purchase-template" href={`/workspace/sales/sample?organisation=${organisationId}`} onClick={()=>setSourceOrg("TRAINING")} download><Download size={15}/> Download restaurant training sample</a></div>
+  <div className="purchase-template-links"><a className="secondary-button purchase-template" href="/templates/sales-import.csv" download><Download size={15}/> Download sales template</a><button type="button" className="secondary-button purchase-template" onClick={downloadSample} disabled={samplePending} aria-busy={samplePending}><Download size={15}/>{samplePending?'Preparing sample...':'Download restaurant training sample'}</button></div>
+  {sampleError&&<p role="alert" className="auth-alert">{sampleError}</p>}
   <p className="purchase-intro">The training sample uses an existing menu name, outlet and configured sales channel, with a fictional unit price of {currency} 6,000 and zero tax. Use a training restaurant: saving it creates sales and may consume stock.</p><details className="purchase-mappings"><summary>Using an earlier code-based export?</summary><p>The Menu_Code format still works. Names are recommended; duplicate or unmatched names need your selection before saving.</p><a href="/templates/sales-import-codes.csv" download>Download code-based CSV template</a></details>
   <form action={action} onReset={event => event.preventDefault()} className="setup-form" aria-busy={pending || reading}><input type="hidden" name="organisation_id" value={organisationId}/><input type="hidden" name="request_id" value={requestId}/><input type="hidden" name="csv_text" value={csv}/><input type="hidden" name="filename" value={filename}/><input type="hidden" name="currency" value={currency}/><input type="hidden" name="mappings" value={JSON.stringify(maps)}/>
    <fieldset disabled={pending || reading} className="purchase-fieldset"><div className="setup-field"><label htmlFor="sales-file">Sales CSV</label><input id="sales-file" type="file" accept=".csv,text/csv" onChange={async event => {
