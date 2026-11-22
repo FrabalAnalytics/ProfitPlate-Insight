@@ -48,3 +48,5 @@
 .sales-filter-action { color: var(--brand); white-space: nowrap; text-decoration: underline; text-underline-offset: 3px; }
 .sales-filter-panel[open] .sales-filter-action { font-weight: 600; }
 .sales-filter-panel .sales-summary-filters { margin: 0; padding: 12px; border-top: 1px solid var(--border); }
+
+.sales-menu-match{padding:14px 0;border-top:1px solid var(--border);margin-top:12px}.sales-menu-match>summary{cursor:pointer;line-height:1.7;overflow-wrap:anywhere}.sales-menu-match>summary>span{display:block;font-size:12px;color:var(--muted-foreground);margin-left:18px}.sales-menu-match>p{font-size:12px;line-height:1.8;color:var(--muted-foreground)}.sales-menu-picker{display:grid;gap:14px;min-width:0}.sales-menu-picker select,.sales-menu-picker input{width:100%;min-width:0}.sales-menu-picker .menu-picker-pages{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}

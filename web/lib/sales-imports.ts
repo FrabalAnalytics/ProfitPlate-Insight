@@ -1,10 +1,11 @@
-export const salesHeaders = ["Organisation_Code", "Source_System", "Location_Code", "Sale_Date", "Transaction_Ref", "Line_Ref", "Menu_Code", "Quantity", "Gross_Sales", "Discount", "Tax", "Net_Sales", "Channel_Code", "Line_Type", "Parent_Line_Ref", "Status"] as const;
+export const salesHeaders = ["Organisation_Code", "Source_System", "Location_Code", "Sale_Date", "Transaction_Ref", "Line_Ref", "Menu_Name", "Quantity", "Gross_Sales", "Discount", "Tax", "Net_Sales", "Channel_Code", "Line_Type", "Parent_Line_Ref", "Status"] as const;
 export const salesFormats = [
  ["EXCLUSIVE", "Gross_Sales and Net_Sales both exclude tax"],
  ["INCLUSIVE", "Gross_Sales and Net_Sales both include tax"],
  ["GROSS_INCLUSIVE", "Gross_Sales includes tax; Net_Sales excludes tax"],
 ] as const;
-export type SalesMappings = { menu_items: Record<string, string>; locations: Record<string, string>; channels: Record<string, string> };
+export type SalesMappings = { menu_items: Record<string, string>; locations: Record<string, string>; channels: Record<string, string>; menu_rows?:Record<string,string> };
+export type SalesMenuChoice={id:string;code:string;name:string;version:number;recipe_name:string;primary_category:string|null;subcategory:string;centre:string|null;is_active:boolean};
 export function parseSalesMappings(text: string): SalesMappings {
  if (text.length > 32768) throw new Error("The source mappings are too large.");
  const input = JSON.parse(text);
@@ -19,13 +20,21 @@ export function parseSalesMappings(text: string): SalesMappings {
    if (target.trim()) Object.defineProperty(result[type], source, { value: target.trim(), enumerable: true, configurable: true, writable: true });
   }
  }
+ if(input.menu_rows!==undefined){
+  if(!input.menu_rows||typeof input.menu_rows!=="object"||Array.isArray(input.menu_rows)||Object.keys(input.menu_rows).length>100)throw new Error("Use at most 100 menu row matches.");
+  result.menu_rows={};
+  for(const [row,target] of Object.entries(input.menu_rows)){
+   if(!/^(?:[1-9][0-9]?|100)$/.test(row)||typeof target!=="string"||target.trim().length>40)throw new Error("Check the selected selling menus and row numbers.");
+   if(target.trim())Object.defineProperty(result.menu_rows,row,{value:target.trim(),enumerable:true,configurable:true,writable:true});
+  }
+ }
  return result;
 }
 export type SalesReport = {
  file_error: string | null; ready: number; duplicates: number; rejected: number; can_post: boolean;
  receipts: { key: string; transaction_ref: string; source_system: string; location_name: string; sale_date: string; channel_code: string; currency_code: string; total: string; net_revenue: string; lines: number; duplicate: boolean }[];
  rows: { row: number; state: "READY" | "REJECTED" | "DUPLICATE"; source: Record<string, string>; findings: string[]; warnings: string[];
-  prepared: null | { menu_name: string; menu_code: string; menu_version: number; menu_version_id: string; location_name: string; quantity: string; gross_sales: string; discount: string; tax: string; net_revenue: string; customer_total: string; currency_code: string } }[];
+  prepared: null | { menu_name: string; menu_code: string; menu_version: number; menu_version_id: string; recipe_name?:string;stock_centre?:string|null;consumption_mode?:string|null;menu_match_basis?:string;location_name: string; quantity: string; gross_sales: string; discount: string; tax: string; net_revenue: string; customer_total: string; currency_code: string } }[];
 };
 export type SalesBatch = { id: string; filename: string; source_hash: string; state: "INVALID" | "REVIEW" | "POSTED" | "CANCELLED"; source_organisation_code: string; net_basis: string; currency_code: string; mappings: SalesMappings; report: SalesReport; created_at: string };
 export type SalesHistory = { total: number; batches: { id: string; filename: string; state: SalesBatch["state"]; created_at: string; ready: number; rejected: number; duplicates: number }[] };

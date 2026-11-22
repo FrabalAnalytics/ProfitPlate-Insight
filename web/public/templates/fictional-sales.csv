@@ -1,3 +1,3 @@
-Organisation_Code,Source_System,Location_Code,Sale_Date,Transaction_Ref,Line_Ref,Menu_Code,Quantity,Gross_Sales,Discount,Tax,Net_Sales,Channel_Code,Line_Type,Parent_Line_Ref,Status
-ORG001,DEMO_POS,PRIMARY,2026-11-15,DEMO-S001,L1,MENU001,2,3000,0,0,3000,DINE_IN,NORMAL,,PAID
-ORG001,DEMO_POS,PRIMARY,2026-11-15,DEMO-S002,L1,MENU001,1,1500,150,0,1350,TAKEAWAY,NORMAL,,PAID
+Organisation_Code,Source_System,Location_Code,Sale_Date,Transaction_Ref,Line_Ref,Menu_Name,Quantity,Gross_Sales,Discount,Tax,Net_Sales,Channel_Code,Line_Type,Parent_Line_Ref,Status
+ORG001,DEMO_POS,PRIMARY,2026-11-22,DEMO-S001,L1,Snapper Rice Plate,2,12000,0,0,12000,POS_SALES,NORMAL,,PAID
+ORG001,DEMO_POS,PRIMARY,2026-11-22,DEMO-S002,L1,Snapper Rice Plate,1,6000,150,0,5850,POS_SALES,NORMAL,,PAID

@@ -5,8 +5,16 @@ import { requireUser, getPlatformAccess, workspacePath } from "@/lib/auth";
 import { isUuid } from "@/lib/catalogue";
 import { parseSalesMappings, salesFormats } from "@/lib/sales-imports";
 import { createClient } from "@/lib/supabase/server";
+import {validBusinessDate} from '@/lib/recipes';
+import type {SalesMenuChoice} from '@/lib/sales-imports';
 
 export type SalesActionState = { error?: string };
+export async function findSalesMenus(org:string,location:string,day:string,search:string,page:number):Promise<{options:SalesMenuChoice[];more:boolean;error?:string}>{
+ const client=await access(org,true);
+ if(!client||!location||location.length>40||!validBusinessDate(day)||search.length>80||!Number.isInteger(page)||page<0||page>100000)return{options:[],more:false,error:'Map the outlet and check the sales date first.'};
+ const {data,error}=await client.rpc('sales_menu_choices',{p_organisation_id:org,p_location_code:location,p_day:day,p_search:search,p_page:page});
+ return error?{options:[],more:false,error:error.code==='22023'?error.message:'Selling menus could not be loaded. Refresh and retry.'}:data;
+}
 async function access(org: string, write: boolean) {
  await requireUser(); const role = await getPlatformAccess();
  if (role !== "member") redirect(workspacePath(role));

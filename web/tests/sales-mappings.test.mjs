@@ -18,3 +18,8 @@ test('special source keys are ordinary data properties and cannot modify map pro
 });
 
 test('custom channel codes are preserved for restaurant-specific database validation',()=>{assert.equal(parseSalesMappings('{"channels":{"ROOM":"ROOM_SERVICE"}}').channels.ROOM,'ROOM_SERVICE');});
+
+test('explicit selling-menu rows preserve choices and reject invalid row identities',()=>{
+ assert.deepEqual(parseSalesMappings('{"menu_rows":{"1":" MENU001 ","100":"SECOND"}}').menu_rows,{'1':'MENU001','100':'SECOND'});
+ for(const rows of [[],null,{'0':'A'},{'101':'A'},{'1':42},JSON.parse('{"__proto__":"A"}')])assert.throws(()=>parseSalesMappings(JSON.stringify({menu_rows:rows})));
+});

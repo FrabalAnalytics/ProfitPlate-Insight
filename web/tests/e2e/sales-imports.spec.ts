@@ -59,10 +59,10 @@ test('external menu, location and channel codes can be reviewed and mapped on mo
  await page.setViewportSize({width:375,height:812}); await openSales(page);
  await upload(page,headers+'ORG001,POS_TEST,EXT-LOC,2020-06-02,MAPPED,L1,EXT-MENU,1,1500,0,0,1500,EAT-IN,NORMAL,,PAID','mapped-sales.csv');
  await expect(page.getByText(/Unknown or retired sales channel/)).toBeVisible(); await expect(page.getByRole('button',{name:'Save reviewed sales',exact:true})).toHaveCount(0);
- await page.getByRole('link',{name:'Correct sales file or map codes',exact:true}).click();
- await page.getByText('Map source menu codes (1)',{exact:true}).click(); await page.getByLabel('Map menu EXT-MENU',{exact:true}).fill('SALES-MENU');
+ await page.getByRole('link',{name:'Correct file or match menus',exact:true}).click();
  await page.getByText('Map source location codes (1)',{exact:true}).click(); await page.getByLabel('Map location EXT-LOC',{exact:true}).fill('PRIMARY');
  await page.getByText('Map source channel codes (1)',{exact:true}).click(); await page.getByLabel('Map channel EAT-IN',{exact:true}).selectOption('DINE_IN');
+ await page.getByText('Match selling menus (1)',{exact:true}).click();await page.locator('.sales-menu-match').locator('summary').click();await page.getByLabel('Selling menu for EXT-MENU',{exact:true}).selectOption('SALES-MENU');
  await page.getByRole('button',{name:'Validate sales file',exact:true}).click(); await expect(page.getByRole('heading',{name:'Reconcile and save sales',exact:true})).toBeVisible();
  const mobileLine = page.locator('.transaction-main').first();
  expect((await mobileLine.boundingBox())!.height).toBeLessThan(190);
