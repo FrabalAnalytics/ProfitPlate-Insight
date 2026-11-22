@@ -30,7 +30,7 @@ test("homepage explains availability and its cost example responds to keyboard i
   await page.getByLabel('Explore a stock centre',{exact:true}).selectOption('ALL');
   await expect(stockPreview.getByTestId('stock-preview-total')).toHaveText('NGN 318,000');
   await expect(page.locator('#product')).toContainText('Material plans & production');
-  await expect(page.locator('#product')).toContainText('Weekly stock accountability');
+  await expect(page.locator('#product')).toContainText('Weekly & monthly stock counts');
 
   await expect(page.getByLabel("Illustrative daily waste reporting")).toContainText("2 of 3");
   await expect(page.getByLabel("Illustrative daily waste reporting")).toContainText("Overdue");
@@ -43,7 +43,7 @@ test("homepage explains availability and its cost example responds to keyboard i
   await expect(page.getByLabel("Illustrative management report")).toContainText("Owner workspace");
   await page.getByRole('tab',{name:'Operations Manager',exact:true}).click();
   await expect(page.getByRole('tabpanel')).toContainText('Missing daily waste reports');
-  await expect(page.getByRole('tabpanel')).toContainText('Weekly counts awaiting review');
+  await expect(page.getByRole('tabpanel')).toContainText('Stock counts awaiting review');
   await page.getByText('Will setup mean retyping all our restaurant data?',{exact:true}).click();
   await expect(page.getByText(/Use manual entry or reviewed CSV\/Excel imports/)).toBeVisible();
   await page.getByText('Will the margin figures tell me our actual net profit?',{exact:true}).click();
