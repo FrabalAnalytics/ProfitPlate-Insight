@@ -15,7 +15,7 @@ import {StockDepartmentAccess} from "./department-access";
 import "../materials/catalogue.css";
 import "./inventory.css";
 
-export const metadata:Metadata={title:"Inventory & movements | ProfitPlate Insight"};
+export const metadata:Metadata={title:"Inventory & movements | ProfitPlate Insights"};
 export const instant=false;
 type Params={organisation?:string;view?:string;location?:string;page?:string;document?:string;member?:string;result?:string;status?:string;q?:string;bp?:string;lp?:string;new?:string};
 const size=10;

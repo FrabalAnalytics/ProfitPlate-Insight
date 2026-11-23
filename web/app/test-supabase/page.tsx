@@ -41,7 +41,7 @@ export default function TestSupabasePage() {
     <main className="flex-1 bg-background px-6 py-16 font-sans text-foreground">
       <div className="mx-auto max-w-xl rounded-2xl border border-border bg-surface p-6 sm:p-10">
         <Link href="/" className="text-sm font-medium text-brand underline underline-offset-4">
-          Back to ProfitPlate Insight
+          Back to ProfitPlate Insights
         </Link>
         <h1 className="mt-6 text-3xl font-semibold tracking-tight text-brand">
           Supabase Connection Test

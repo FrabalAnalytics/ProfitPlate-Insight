@@ -16,7 +16,7 @@ import { PurchaseUpload, PurchaseApproval, CancelPurchaseImport, DownloadPurchas
 import "../materials/catalogue.css";
 import "./purchases.css";
 
-export const metadata: Metadata = { title: "Purchase imports | ProfitPlate Insight" };
+export const metadata: Metadata = { title: "Purchase imports | ProfitPlate Insights" };
 export const instant = false;
 type Params = { organisation?: string; batch?: string; new?: string; remap?: string; page?: string; result?: string };
 

@@ -15,7 +15,7 @@ import { PriceEditor } from "./price-editor";
 import "../catalogue.css";
 import "./prices.css";
 
-export const metadata: Metadata = { title: "Initial material prices | ProfitPlate Insight" };
+export const metadata: Metadata = { title: "Initial material prices | ProfitPlate Insights" };
 export const instant = false;
 type Params = { organisation?: string; q?: string; page?: string; item?: string; import?: string; saved?: string };
 

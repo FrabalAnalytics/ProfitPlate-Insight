@@ -6,7 +6,7 @@ import { getUser } from "@/lib/auth";
 import { AuthShell } from "@/app/components/auth-shell";
 import { AuthForm } from "@/app/components/auth-form";
 
-export const metadata: Metadata = { title: "Create your account | ProfitPlate Insight" };
+export const metadata: Metadata = { title: "Create your account | ProfitPlate Insights" };
 export const instant = false;
 
 export default async function SignupPage() {

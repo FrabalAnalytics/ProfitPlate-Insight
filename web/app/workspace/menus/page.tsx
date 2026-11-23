@@ -21,7 +21,7 @@ import { MenuEditor, MenuPriceEditor, MenuStatusButton } from "./menu-forms";
 import "../materials/catalogue.css";
 import "./menus.css";
 
-export const metadata: Metadata = { title: "Menu & selling prices | ProfitPlate Insight" };
+export const metadata: Metadata = { title: "Menu & selling prices | ProfitPlate Insights" };
 export const instant = false;
 type Params = { organisation?: string; item?: string; version?: string; new?: string; edit?: string; price?: string; saved?: string; q?: string; page?: string; location?: string; channel?: string; date?: string; view?:string; return_channel?:string; status?:string; major?:string; subcategory?:string };
 

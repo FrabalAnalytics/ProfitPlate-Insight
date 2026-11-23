@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { WorkspaceShell } from "@/app/components/workspace-shell";
 import { getPlatformAccess, getAccountRestaurants, requireUser, workspacePath } from "@/lib/auth";
 
-export const metadata: Metadata = { title: "Account access | ProfitPlate Insight" };
+export const metadata: Metadata = { title: "Account access | ProfitPlate Insights" };
 export const instant = false;
 
 export default async function AccountAccessPage({
@@ -40,7 +40,7 @@ export default async function AccountAccessPage({
           {pending ? selected?.name??'Restaurant application submitted' : inactive ? "Workspace access is paused" : needsSetup ? "Workspace access is being set up" : "Access verification is temporarily unavailable"}
         </h2>
         <p>
-          {pending ? "Your restaurant details have been saved for Founder review. After approval, you can invite your Administrator and team, enter or import your data and begin daily operations. You do not need to register again." : inactive ? "Contact your restaurant owner or the platform administrator to restore access. Your restaurant records are retained." : needsSetup
+          {pending ? "Your restaurant details have been saved for system super admin review. After approval, you can invite your Administrator and team, enter or import your data and begin daily operations. You do not need to register again." : inactive ? "Contact your restaurant owner or the platform administrator to restore access. Your restaurant records are retained." : needsSetup
             ? "Your platform administrator needs to complete the account access setup. Once that’s ready, check your access again below."
             : "We couldn’t confirm your permissions right now. Please check your connection and try again in a moment."}
         </p>

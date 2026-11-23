@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { AuthShell } from "@/app/components/auth-shell";
 import { AuthForm } from "@/app/components/auth-form";
 
-export const metadata: Metadata = { title: "Reset your password | ProfitPlate Insight" };
+export const metadata: Metadata = { title: "Reset your password | ProfitPlate Insights" };
 export const instant = false;
 
 export default async function ForgotPasswordPage({ searchParams }: { searchParams: Promise<{ message?: string }> }) {

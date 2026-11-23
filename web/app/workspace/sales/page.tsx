@@ -20,7 +20,7 @@ import "../materials/catalogue.css";
 import "../purchases/purchases.css";
 import "./sales.css";
 
-export const metadata: Metadata = { title: "Sales imports & summary | ProfitPlate Insight" };
+export const metadata: Metadata = { title: "Sales imports & summary | ProfitPlate Insights" };
 export const instant = false;
 type Params = { organisation?: string; batch?: string; new?: string; remap?: string; page?: string; result?: string; from?: string; to?: string; location?: string };
 

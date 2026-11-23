@@ -6,7 +6,7 @@ import {orderStatusLabels} from "@/lib/procurement";
 import {OrderRegister,OrderLinesTable,ReceiptRegister} from "./order-tables";
 import {InvoiceForm} from "../invoice-form";import {IssueOrder,ReceiveOrder,ProcurementPrint} from "./order-forms";
 import "../../materials/catalogue.css";import "../purchases.css";
-export const metadata:Metadata={title:"Purchase Orders | ProfitPlate Insight"};export const instant=false;
+export const metadata:Metadata={title:"Purchase Orders | ProfitPlate Insights"};export const instant=false;
 type Params={organisation?:string;order?:string;new?:string;edit?:string;receive?:string;receipt?:string;page?:string;status?:string;result?:string;preview?:string};
 export default async function OrdersPage({searchParams}:{searchParams:Promise<Params>}) {
  const user=await requireUser(),role=await getPlatformAccess();if(role!=="member")redirect(workspacePath(role));const params=await searchParams;if(params.receipt)redirect(`/workspace/purchases/receipts?${new URLSearchParams(Object.fromEntries(Object.entries(params).filter(([,value])=>value!==undefined) as [string,string][]))}`);const client=await createClient();

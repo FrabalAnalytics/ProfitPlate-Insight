@@ -9,7 +9,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/app/components/ui/button";
 import "./setup.css";
 
-export const metadata: Metadata = { title: "Your workspace | ProfitPlate Insight" };
+export const metadata: Metadata = { title: "Your workspace | ProfitPlate Insights" };
 export const instant = false;
 
 export default async function WorkspacePage({ searchParams }: { searchParams: Promise<{ message?: string; organisation?: string; welcome?: string }> }) {

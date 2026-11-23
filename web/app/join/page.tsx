@@ -11,7 +11,7 @@ import { clearInvitation } from "./actions";
 import { signOut } from "@/app/auth/actions";
 import "../workspace/team/team.css";
 export const instant=false;
-export const metadata:Metadata={title:"Join your restaurant team | ProfitPlate Insight",robots:{index:false,follow:false},referrer:"no-referrer"};
+export const metadata:Metadata={title:"Join your restaurant team | ProfitPlate Insights",robots:{index:false,follow:false},referrer:"no-referrer"};
 export default async function JoinPage() {
  const token=(await cookies()).get(invitationCookie)?.value,user=await getUser();
  const pending=user?await pendingTeamInvitations():{invitations:[],error:null};

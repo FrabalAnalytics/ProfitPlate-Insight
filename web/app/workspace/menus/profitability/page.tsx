@@ -13,7 +13,7 @@ import {type MenuProfitability,type MenuEstimate} from '@/lib/menus';
 import {WorkspaceShell} from '@/app/components/workspace-shell';
 import {DataTable,StatusBadge} from '@/app/components/data-table';
 import '../../materials/catalogue.css';import '../menus.css';
-export const metadata:Metadata={title:'Menu profitability | ProfitPlate Insight'};export const instant=false;
+export const metadata:Metadata={title:'Menu profitability | ProfitPlate Insights'};export const instant=false;
 type Params={organisation?:string;location?:string;channel?:string;date?:string;q?:string;page?:string;status?:string;major?:string;subcategory?:string};
 const states={ALL:'All statuses',AT_RISK:'Needs attention',WITHIN_TARGET:'Within target',INCOMPLETE:'Costing incomplete',TARGET_NOT_SET:'Targets missing'};
 function missing(e:MenuEstimate|null){if(!e)return 'Recipe needed';if(e.recipe_estimate.missing_count)return 'Material prices missing';if(e.price_issue==='CHANNEL_PRICES_DIFFER')return 'Channel prices differ';if(e.price_issue)return e.price_issue==='EXPIRED_SELLING_PRICE'?'Selling price expired':'Selling price unavailable';return 'Costing incomplete';}

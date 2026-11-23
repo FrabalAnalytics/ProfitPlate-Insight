@@ -16,7 +16,7 @@ import {PurchasingFilters,PurchasingViewTabs,PurchasingReportTable} from "./purc
 import "../materials/catalogue.css";
 import "./records.css";
 
-export const metadata:Metadata={title:"Historical reports | ProfitPlate Insight"};
+export const metadata:Metadata={title:"Historical reports | ProfitPlate Insights"};
 export const instant=false;
 export default async function HistoricalReportsPage({searchParams}:{searchParams:Promise<HistoricalParams>}){
  const user=await requireUser(),access=await getPlatformAccess();if(access!=="member")redirect(workspacePath(access));

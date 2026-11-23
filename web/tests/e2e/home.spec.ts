@@ -14,8 +14,8 @@ test("homepage explains availability and its cost example responds to keyboard i
   await expect(page.getByText(/Fictional example. Packaging/)).toBeVisible();
   await page.screenshot({ path: testInfo.outputPath("homepage-desktop.png") });
   await expect(page.locator(".marketing-faq-list details")).toHaveCount(7);
-  await page.getByText("We already use a POS and spreadsheets. Why add ProfitPlate?", {exact:true}).click();
-  await expect(page.getByText(/a live POS connection is not currently included/)).toBeVisible();
+  await page.getByText("We have a POS. Why do we need ProfitPlate Insights?", {exact:true}).click();
+  await expect(page.getByText(/strengthen cost control and accountability/)).toBeVisible();
   await expect(page.locator(".marketing-capabilities article")).toHaveCount(6);
   const stockPreview=page.getByLabel('Illustrative current stock value');
   await expect(stockPreview.getByTestId('stock-preview-total')).toHaveText('NGN 318,000');
@@ -37,7 +37,7 @@ test("homepage explains availability and its cost example responds to keyboard i
   await expect(page.locator('main a[download]')).toHaveCount(0);
   await expect(page.locator('a[href*="profitplate-complete-test-data"]')).toHaveCount(0);
   await page.getByText('My team struggles to record consistently. Will another system help?',{exact:true}).click();
-  await expect(page.getByText(/Teams record waste without an approval queue/)).toBeVisible();
+  await expect(page.getByText(/software supports that discipline/)).toBeVisible();
   const tabs=page.getByRole('tablist',{name:'Explore team workspaces'});await tabs.getByRole('tab',{name:'Kitchen / Bar',exact:true}).click();await expect(page.getByRole('tabpanel')).toContainText('Waste needs no approval.');await expect(page.getByRole('tabpanel')).toContainText('Hello, Ada.');await tabs.getByRole('tab',{name:'Kitchen / Bar',exact:true}).press('ArrowRight');await expect(tabs.getByRole('tab',{name:'Finance',exact:true})).toHaveAttribute('aria-selected','true');await expect(page.getByRole('tabpanel')).toContainText('Management reports');await tabs.getByRole('tab',{name:'Finance',exact:true}).press('Home');await expect(tabs.getByRole('tab',{name:'Owner / CEO',exact:true})).toHaveAttribute('aria-selected','true');
   await expect(page.getByLabel("Illustrative management report")).toContainText("Fictional sample");
   await expect(page.getByLabel("Illustrative management report")).toContainText("Owner workspace");
@@ -45,10 +45,10 @@ test("homepage explains availability and its cost example responds to keyboard i
   await expect(page.getByRole('tabpanel')).toContainText('Missing daily waste reports');
   await expect(page.getByRole('tabpanel')).toContainText('Stock counts awaiting review');
   await page.getByText('Will setup mean retyping all our restaurant data?',{exact:true}).click();
-  await expect(page.getByText(/Use manual entry or reviewed CSV\/Excel imports/)).toBeVisible();
+  await expect(page.getByText(/reduces repetitive entry/)).toBeVisible();
   await page.getByText('Will the margin figures tell me our actual net profit?',{exact:true}).click();
-  await expect(page.getByText(/complete net profit requires all relevant costs/)).toBeVisible();
-  await expect(page.locator('#how-it-works')).toContainText('Founder approval');
+  await expect(page.getByText(/complete net-profit figure needs all relevant business costs/)).toBeVisible();
+  await expect(page.locator('#how-it-works')).toContainText('system super admin reviews your request');
   await page.getByRole("link", { name: "Request workspace access", exact: true }).first().click();
   await expect(page).toHaveURL(/\/signup$/);
 });

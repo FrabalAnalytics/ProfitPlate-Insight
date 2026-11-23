@@ -16,7 +16,7 @@ import "../materials/catalogue.css";
 import "../overview/overview.css";
 import "./reports.css";
 
-export const metadata: Metadata = { title: "Management reports | ProfitPlate Insight" };
+export const metadata: Metadata = { title: "Management reports | ProfitPlate Insights" };
 export const instant = false;
 type Params = { organisation?: string; from?: string; to?: string; location?: string };
 export default async function ReportsPage({ searchParams }: { searchParams: Promise<Params> }) {

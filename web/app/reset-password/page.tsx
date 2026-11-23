@@ -4,7 +4,7 @@ import { AuthShell } from "@/app/components/auth-shell";
 import { AuthForm } from "@/app/components/auth-form";
 import { getUser } from "@/lib/auth";
 
-export const metadata: Metadata = { title: "Choose a new password | ProfitPlate Insight" };
+export const metadata: Metadata = { title: "Choose a new password | ProfitPlate Insights" };
 export const instant = false;
 
 export default async function ResetPasswordPage() {

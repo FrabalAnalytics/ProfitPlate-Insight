@@ -7,7 +7,7 @@ import { WorkspaceShell } from "@/app/components/workspace-shell";
 import { OnboardingForm } from "./setup-form";
 import { normaliseSetup } from "@/lib/onboarding";
 
-export const metadata: Metadata = { title: "Set up your restaurant | ProfitPlate Insight" };
+export const metadata: Metadata = { title: "Set up your restaurant | ProfitPlate Insights" };
 export const instant = false;
 
 export default async function OnboardingPage() {

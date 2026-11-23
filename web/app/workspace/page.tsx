@@ -21,7 +21,7 @@ import type {AttentionPacket} from "@/lib/workspace-attention";
 import { ExecutiveBriefing } from "@/app/components/executive-briefing";
 import "./workspace-home.css";
 
-export const metadata: Metadata = { title: "Your workspace | ProfitPlate Insight" };
+export const metadata: Metadata = { title: "Your workspace | ProfitPlate Insights" };
 export const instant = false;
 
 export default async function WorkspacePage({ searchParams }: { searchParams: Promise<{ organisation?: string; message?: string;from?:string;to?:string;location?:string }> }) {

@@ -15,9 +15,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ProfitPlate Insight | Restaurant Profitability & Executive Intelligence",
+  title: "ProfitPlate Insights | Restaurant Profitability & Executive Intelligence",
   description:
-    "Understand restaurant operating costs, monitor financial performance, identify profit leakages, and make better business decisions with ProfitPlate Insight.",
+    "Understand restaurant operating costs, monitor financial performance, identify profit leakages, and make better business decisions with ProfitPlate Insights.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

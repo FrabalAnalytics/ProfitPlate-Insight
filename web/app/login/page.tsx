@@ -6,7 +6,7 @@ import { AuthShell } from "@/app/components/auth-shell";
 import { AuthForm } from "@/app/components/auth-form";
 import { getUser } from "@/lib/auth";
 
-export const metadata: Metadata = { title: "Sign in | ProfitPlate Insight",description:"Return to your assigned workspace for menu margins, current stock estimates, material plans and daily accountability." };
+export const metadata: Metadata = { title: "Sign in | ProfitPlate Insights",description:"Return to your assigned workspace for menu margins, current stock estimates, material plans and daily accountability." };
 export const instant = false;
 
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ message?: string }> }) {

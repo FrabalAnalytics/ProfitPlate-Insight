@@ -14,7 +14,7 @@ import { CatalogueEditor } from "./catalogue-editor";
 import "./catalogue.css";
 import {UnitCreator,MaterialDeletion} from "./unit-management";
 
-export const metadata: Metadata = { title: "Materials & suppliers | ProfitPlate Insight" };
+export const metadata: Metadata = { title: "Materials & suppliers | ProfitPlate Insights" };
 export const instant = false;
 const pageSize = 25;
 type Params = { organisation?: string; tab?: string; q?: string; page?: string; status?: string; new?: string; edit?: string; item?: string; saved?: string };

@@ -14,7 +14,7 @@ import { RecipeCostPreview } from "./cost-preview";
 import "../materials/catalogue.css";
 import "./recipes.css";
 
-export const metadata: Metadata = { title: "Recipes & scaling | ProfitPlate Insight" };
+export const metadata: Metadata = { title: "Recipes & scaling | ProfitPlate Insights" };
 export const instant = false;
 type Params = { organisation?: string; recipe?: string; version?: string; new?: string; edit?: string; saved?: string; scale?: string; cost_date?: string; q?: string; page?: string; return_to?:string };
 

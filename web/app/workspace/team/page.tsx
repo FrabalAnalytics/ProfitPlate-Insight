@@ -12,7 +12,7 @@ import "../materials/catalogue.css";
 import "../purchases/purchases.css";
 import "./team.css";
 
-export const metadata:Metadata={title:"Users & roles | ProfitPlate Insight"};
+export const metadata:Metadata={title:"Users & roles | ProfitPlate Insights"};
 export const instant=false;
 type Params={organisation?:string;search?:string;page?:string;invite_page?:string;invite?:string};
 export default async function TeamPage({searchParams}:{searchParams:Promise<Params>}) {

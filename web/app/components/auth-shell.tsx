@@ -27,7 +27,7 @@ export function AuthShell({ children, variant = 'standard' }: { children: ReactN
       <section className="auth-main" aria-label="Account access">
         <div className="auth-mobile-brand"><Brand /></div>
         <div className="auth-form-container"><Link className="auth-home-link" href="/"><ArrowLeft size={15} aria-hidden="true" />Back to ProfitPlate</Link>{children}</div>
-        <footer className="auth-footer"><span>ProfitPlate Insight</span><span>{login?'Your assigned workspace opens after sign-in':'Your restaurant workspace'}</span></footer>
+        <footer className="auth-footer"><span>ProfitPlate Insights</span><span>{login?'Your assigned workspace opens after sign-in':'Your restaurant workspace'}</span></footer>
       </section>
     </main>
   );

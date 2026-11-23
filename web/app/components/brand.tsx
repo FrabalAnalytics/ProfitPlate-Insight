@@ -12,9 +12,9 @@ export function PlateMark({ className = "" }: { className?: string }) {
 
 export function Brand({ light = false }: { light?: boolean }) {
   return (
-    <Link href="/" aria-label="ProfitPlate Insight home" className={`brand-lockup ${light ? "brand-lockup-light" : ""}`}>
+    <Link href="/" aria-label="ProfitPlate Insights home" className={`brand-lockup ${light ? "brand-lockup-light" : ""}`}>
       <PlateMark className="brand-mark" />
-      <span>ProfitPlate<span className="brand-subtitle">INSIGHT</span></span>
+      <span>ProfitPlate<span className="brand-subtitle">INSIGHTS</span></span>
     </Link>
   );
 }

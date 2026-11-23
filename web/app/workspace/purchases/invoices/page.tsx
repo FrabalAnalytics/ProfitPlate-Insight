@@ -15,7 +15,7 @@ import { InvoiceMatchingPanel } from "../invoice-matching-panel";
 import "../../materials/catalogue.css";
 import "../purchases.css";
 
-export const metadata: Metadata = { title: "Supplier invoices | ProfitPlate Insight" };
+export const metadata: Metadata = { title: "Supplier invoices | ProfitPlate Insights" };
 export const instant = false;
 type Params = { organisation?: string; purchase?: string; new?: string; correct?: string; page?: string; result?: string; po?: string; po_search?: string };
 function InvoiceSummary({ value, title }: { value: InvoiceValue; title: string }) {

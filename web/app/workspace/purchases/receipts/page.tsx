@@ -3,7 +3,7 @@ import {requireUser,getPlatformAccess,workspacePath} from "@/lib/auth";import {c
 import {WorkspaceShell} from "@/app/components/workspace-shell";import {DataTable,StatusBadge} from "@/app/components/data-table";import {ReceiptDocument} from "../receipt-document";
 import type {PurchaseOrderDetail} from "@/lib/procurement";import {purchasingRpc,type HistoricalReport,type HistoricalOptions} from "@/lib/operational-reports";
 import "../../materials/catalogue.css";import "../purchases.css";import "../../records/records.css";
-export const metadata:Metadata={title:"Goods Received Notes | ProfitPlate Insight"};export const instant=false;
+export const metadata:Metadata={title:"Goods Received Notes | ProfitPlate Insights"};export const instant=false;
 type Params={organisation?:string;order?:string;receipt?:string;from?:string;to?:string;supplier?:string;status?:string;q?:string;page?:string;result?:string};
 export default async function Receipts({searchParams}:{searchParams:Promise<Params>}){
  const user=await requireUser(),access=await getPlatformAccess();if(access!=="member")redirect(workspacePath(access));const p=await searchParams,client=await createClient();const orgs=await client.from("organisations").select("id,name,time_zone").order("name"),org=p.organisation?orgs.data?.find(o=>o.id===p.organisation):orgs.data?.[0];if(!org)redirect("/workspace");

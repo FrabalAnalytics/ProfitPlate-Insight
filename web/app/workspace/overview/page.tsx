@@ -19,7 +19,7 @@ import { SalesTrend,RefreshOverview } from "./overview-chart";
 import "../materials/catalogue.css";
 import "./overview.css";
 
-export const metadata:Metadata={title:"Executive overview | ProfitPlate Insight"};
+export const metadata:Metadata={title:"Executive overview | ProfitPlate Insights"};
 export const instant=false;
 type Params={organisation?:string;from?:string;to?:string;location?:string};
 export default async function OverviewPage({searchParams}:{searchParams:Promise<Params>}) {

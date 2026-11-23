@@ -19,7 +19,7 @@ import "../materials/catalogue.css";
 import "../purchases/purchases.css";
 import "./expenses.css";
 export const instant=false;
-export const metadata:Metadata={title:"Labour & operating expenses | ProfitPlate Insight"};
+export const metadata:Metadata={title:"Labour & operating expenses | ProfitPlate Insights"};
 type Params={organisation?:string;from?:string;to?:string;location?:string;page?:string;history_page?:string;batch?:string;new?:string;result?:string};
 export default async function ExpensesPage({searchParams}:{searchParams:Promise<Params>}) {
  const user=await requireUser(),access=await getPlatformAccess();if(access!=="member")redirect(workspacePath(access));
