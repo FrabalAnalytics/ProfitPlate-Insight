@@ -1,6 +1,7 @@
 import {OperationsWorkspace} from "@/app/components/operations-workspace";
 import {CurrentStockCard} from "@/app/components/current-stock-card";
 import {WeeklyCountStatus,type WeeklyWorkspacePacket} from '@/app/components/weekly-count-status';
+import {ManagementReviewLinks} from '@/app/components/management-review-links';
 import type {WasteWorkspacePacket} from "@/lib/waste-accountability";
 import {pendingTeamInvitations} from "@/lib/team-invitation-server";
 import type { Metadata } from "next";
@@ -52,6 +53,7 @@ export default async function WorkspacePage({ searchParams }: { searchParams: Pr
   const [salesStock,waste,weekly,monthly]=await Promise.all([client.rpc("sales_stock_queue",{p_organisation_id:org.id,p_state:"PENDING",p_page:1}),client.rpc("waste_compliance_workspace",{p_organisation_id:org.id}),client.rpc("weekly_counts_workspace",{p_organisation_id:org.id}),client.rpc("monthly_counts_workspace",{p_organisation_id:org.id})]);
   return <WorkspaceShell {...shell}><div className={executive?"owner-workspace":undefined}>
     <div className="page-heading-row"><div><Greeting className="workspace-greeting">{(()=>{const hour=Number(new Intl.DateTimeFormat("en-GB",{timeZone:org.time_zone,hour:"numeric",hourCycle:"h23"}).format(new Date()));return `${hour<12?"Good morning":hour<18?"Good afternoon":"Good evening"}${membership.data?.display_name?", "+membership.data.display_name:""}.`;})()}</Greeting>{!executive&&<h1 className="workspace-title">{home.title}</h1>}</div>{organisations.data.length > 1 && <form method="get" className="business-switcher"><label htmlFor="organisation">Business</label><select id="organisation" name="organisation" defaultValue={org.id}>{organisations.data.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}</select><Button variant="outline" type="submit">Switch</Button></form>}</div>
+    <ManagementReviewLinks org={org.id} roles={roles.data.map(r=>r.role_code)}/>
     {!!salesStock.data?.pending&&<p className="auth-alert"><Link href={`/workspace/inventory/sales-consumption?organisation=${org.id}`}>{salesStock.data.pending} sales consumption records need attention</Link>. Stock balances are incomplete until these are resolved.</p>}
     {!membership.data?.display_name&&<details className="workspace-access-disclosure"><summary>Set the name shown in your workspace</summary><MemberNameForm organisation={org.id} member={{id:membership.data!.id,display_name:""}}/></details>}
     {params.message === "signout-failed" && <p className="auth-alert" role="alert">We couldn’t sign you out. Please check your connection and try again.</p>}
