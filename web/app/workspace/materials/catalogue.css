@@ -102,3 +102,9 @@
 
 .catalogue-table-wrap tbody tr:hover { background: #f6f8f6; }
 .catalogue-table-wrap td .record-edit { margin-block: -4px; }
+
+/* Compact, accessible disclosure forms for occasional catalogue changes. */
+details.catalogue-editor > summary { cursor: pointer; font-weight: 600; color: var(--foreground); }
+details.catalogue-editor[open] > summary { margin-bottom: 18px; }
+details.catalogue-editor > p { margin-bottom: 16px; line-height: 1.6; color: var(--muted-foreground); }
+#restaurant-units { scroll-margin-top: 100px; }

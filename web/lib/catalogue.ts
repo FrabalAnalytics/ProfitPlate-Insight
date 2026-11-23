@@ -1,5 +1,5 @@
 export type CatalogueKind = "material" | "supplier" | "conversion";
-export type Unit = { id: string; code: string; name: string; dimension: string };
+export type Unit = { id: string; code: string; name: string; dimension: string; canonical_factor?:string|number|null };
 export type Material = { id: string; code: string; name: string; item_type: string; category_id: string | null; base_uom_id: string | null; location_id?:string|null; weekly_count_required?:boolean; requires_processing?:boolean;supply_class?:string; stock_tracked: boolean; is_active: boolean };
 export type Supplier = { id: string; code: string; name: string; email: string | null; phone: string | null; address: string | null; is_active: boolean };
 export const itemTypes = [
@@ -37,5 +37,16 @@ export function validateCatalogue(kind: string, values: Record<string, string>) 
       if (!/^\d{4}-\d{2}-\d{2}$/.test(values.effective_from ?? "") || new Date(`${values.effective_from}T00:00:00Z`).toISOString().slice(0, 10) !== values.effective_from) throw new Error();
     } catch { errors.effective_from = "Choose a valid effective date."; }
   }
+  return errors;
+}
+
+
+export function validateUnit(values: Record<string,string>) {
+  const errors:Record<string,string>={};
+  if(!isUuid(values.organisation_id??""))errors.organisation_id="Choose your restaurant.";
+  if(!/^[A-Z0-9][A-Z0-9_-]{0,39}$/.test((values.code??"").toUpperCase()))errors.code="Use up to 40 letters, numbers, hyphens or underscores.";
+  if(!values.name?.trim()||values.name.length>80)errors.name="Enter a unit name of up to 80 characters.";
+  if(!["MASS","VOLUME","COUNT","PACKAGE"].includes(values.dimension))errors.dimension="Choose a measurement type.";
+  if(values.dimension!=="PACKAGE"&&(!/^(?:0|[1-9]\d{0,13})(?:\.\d{1,6})?$/.test(values.factor??"")||!/[1-9]/.test(values.factor??"")))errors.factor="Enter a positive factor with up to six decimal places.";
   return errors;
 }
