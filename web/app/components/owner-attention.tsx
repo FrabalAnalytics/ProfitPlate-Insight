@@ -16,7 +16,7 @@ export function OwnerAttention({org,briefing,waste,weekly,wasteError,weeklyError
  add('Monthly counts approved - awaiting posting',monthly?.posting_waiting??0,countActionPath(org,true,'APPROVED'));
  add('Weekly counts awaiting review',weekly?.review_waiting??0,countActionPath(org,false,'SUBMITTED'));
  add('Weekly counts approved - awaiting posting',weekly?.posting_waiting??0,countActionPath(org,false,'APPROVED'));
- add('Stock handovers over 24h',briefing.movements.overdue,`/workspace/inventory?organisation=${org}&view=movements&status=FOLLOW_UP`);
+ add('Stock handovers over 24h',briefing.movements.overdue,`/workspace/requisitions?organisation=${org}&status=FOLLOW_UP`);
  add('Sales lines need costs',briefing.summary.missing_lines,`/workspace/overview?organisation=${org}`);
  const nextMonthly=monthly?.rows.filter(r=>r.state==='UPCOMING').sort((a,b)=>a.cutoff.localeCompare(b.cutoff))[0];
  const next=weekly?.rows.filter(r=>r.state==='UPCOMING').sort((a,b)=>a.cutoff.localeCompare(b.cutoff))[0];
