@@ -8,7 +8,7 @@ export function workspaceRolePolicy(roles:Role[]){
  return {admin,executive,stockManager,stockWork,financeOnly:has('finance')&&!has('restaurant_admin','ceo','procurement')&&!stockWork,procurementOnly:has('procurement')&&!has('restaurant_admin','ceo','finance')&&!stockWork,stockOnly:stockWork&&!has('restaurant_admin','ceo','finance','procurement'),canBusinessSetup:admin,canStockSetup:admin||stockManager};
 }
 export function workspaceNavigation(roles: Role[], access: NavigationAccess): NavigationAccess {
- const p=workspaceRolePolicy(roles),nav={...access};
+ const p=workspaceRolePolicy(roles),nav={...access,stockSetup:p.canStockSetup};
  if(p.executive&&roles.every(r=>r.role_code==='ceo'))return {...nav,purchases:false,orders:false,inventory:false,sales:false,expenses:false};
  if(p.financeOnly)return {...nav,team:false,catalogue:false,recipes:false};
  if(p.procurementOnly)return {...nav,overview:false,expenses:false,sales:false,inventory:false,team:false,recipes:false,menus:false};

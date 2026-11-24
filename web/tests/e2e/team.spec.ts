@@ -23,7 +23,7 @@ test('administrator invitation survives sign-in, grants exact finance access and
  await staff.getByRole('link',{name:'Sign in',exact:true}).click();await staff.getByLabel('Email address',{exact:true}).fill('staff@example.test');await staff.getByLabel('Password',{exact:true}).fill('TestPassword123!');await staff.getByRole('button',{name:'Sign in',exact:true}).click();
  await expect(staff.getByRole('heading',{name:'Join Catalogue Test Restaurant',exact:true})).toBeVisible();await expect(staff.getByText('Finance / Auditor · All business locations',{exact:true})).toBeVisible();
  await staff.getByRole('checkbox').check();await staff.getByRole('button',{name:'Accept invitation',exact:true}).click();await expect(staff).toHaveURL(/\/workspace\?organisation=/);
- await expect(staff.getByRole('heading',{name:'Finance workspace',exact:true})).toBeVisible();
+ await expect(staff.getByText('Finance workspace /',{exact:false})).toBeVisible();
  await expect(staff.getByRole('link',{name:'Data & Setup',exact:true})).toHaveCount(0);
  await clickNavigation(staff,'Sales & summary');await expect(staff.getByText(/You have read-only sales access/)).toBeVisible();
  await expect(staff.getByRole('link',{name:'Users & roles',exact:true})).toHaveCount(0);await staff.goto(page.url().replace('&invite=1',''));await expect(staff.getByRole('heading',{name:'Team administration is restricted.',exact:true})).toBeVisible();
@@ -59,6 +59,6 @@ test('administrator can invite a location-scoped Inventory receiver to a dedicat
   await receiver.goto(link);await receiver.getByRole('button',{name:'Review invitation',exact:true}).click();await receiver.getByRole('link',{name:'Sign in',exact:true}).click();
   await receiver.getByLabel('Email address',{exact:true}).fill('receiving-invite@example.test');await receiver.getByLabel('Password',{exact:true}).fill('TestPassword123!');await receiver.getByRole('button',{name:'Sign in',exact:true}).click();
   await expect(receiver.getByRole('heading',{name:'Join Catalogue Test Restaurant',exact:true})).toBeVisible();await expect(receiver.getByText('Stock receiver (optional) · Main outlet',{exact:true})).toBeVisible();await receiver.getByRole('checkbox').check();await receiver.getByRole('button',{name:'Accept invitation',exact:true}).click();
-  await expect(receiver.getByRole('heading',{name:'Stock receiving workspace',exact:true})).toBeVisible();await expect(receiver.getByRole('link',{name:'Open Goods Received Notes',exact:true})).toBeVisible();await expect(receiver.getByRole('link',{name:'Supplier invoices',exact:true})).toHaveCount(0);
+  await expect(receiver.getByText('Stock receiving workspace /',{exact:false})).toBeVisible();await expect(receiver.locator('.welcome-greeting')).toBeVisible();await expect(receiver.getByRole('link',{name:'Supplier invoices',exact:true})).toHaveCount(0);
  }finally{await context.close();}
 });

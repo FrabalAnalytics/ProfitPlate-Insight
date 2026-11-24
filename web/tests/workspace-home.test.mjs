@@ -80,3 +80,12 @@ test('Operations navigation exposes margins without finance entry or team setup'
  assert.equal(nav.menus,true);assert.equal(nav.recipes,true);assert.equal(nav.inventory,true);
  assert.equal(nav.sales,false);assert.equal(nav.expenses,false);assert.equal(nav.team,false);assert.equal(nav.overview,false);
 });
+
+
+test('centre administration navigation follows business-wide stock setup responsibility',()=>{
+ const access={overview:false,expenses:false,sales:false,purchases:false,menus:false,recipes:false,catalogue:false,team:false,inventory:true};
+ assert.equal(workspaceNavigation([role('inventory_manager')],access).stockSetup,true);
+ assert.equal(workspaceNavigation([role('inventory_manager','00000000-0000-0000-0000-000000000001')],access).stockSetup,false);
+ assert.equal(workspaceNavigation([role('finance')],access).stockSetup,false);
+ assert.equal(workspaceNavigation([role('restaurant_admin')],access).stockSetup,true);
+});

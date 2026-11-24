@@ -1,6 +1,6 @@
 import type { SalesSummary } from "./sales-imports";
 export type ReportingContext = {from?:string;to?:string;location?:string};
-export type NavigationAccess = {overview:boolean;expenses:boolean;sales:boolean;purchases:boolean;orders?:boolean;inventory?:boolean;history?:boolean;menus:boolean;recipes:boolean;catalogue:boolean;team:boolean};
+export type NavigationAccess = {overview:boolean;expenses:boolean;sales:boolean;purchases:boolean;orders?:boolean;inventory?:boolean;history?:boolean;stockSetup?:boolean;menus:boolean;recipes:boolean;catalogue:boolean;team:boolean};
 export type Overview = {
  summary:SalesSummary;
  daily:{date:string;lines:number;receipts:number;net_revenue:string|null}[];
