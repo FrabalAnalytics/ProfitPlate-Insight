@@ -1,4 +1,3 @@
-import {openNavigationGroup} from './navigation';
 import {clickNavigation} from './navigation';
 import { test, expect, type Page } from "@playwright/test";
 
@@ -8,7 +7,7 @@ async function login(page: Page, email = "catalogue@example.test") {
  await page.getByLabel("Password", { exact: true }).fill("TestPassword123!");
  await page.getByRole("button", { name: "Sign in", exact: true }).click();
  await expect(page).toHaveURL(/\/workspace$/);
- await expect(await openNavigationGroup(page,"Materials & suppliers")).toBeVisible();
+ await expect(page.locator(".welcome-greeting")).toBeVisible();
 }
 
 test("recipe estimate stays incomplete until packaging is priced, then scales batch and portion costs", async ({ page }, testInfo) => {
@@ -44,11 +43,11 @@ test("recipe estimate stays incomplete until packaging is priced, then scales ba
  await page.getByLabel("Effective from", { exact: true }).fill("2020-01-01");
  await page.getByLabel("Standard batch yield", { exact: true }).fill("12");
  await page.getByLabel("Search component 1", { exact: true }).fill("Costing rice");
- await page.getByLabel("Choose component 1", { exact: true }).selectOption({ label: "Costing rice (COST-RICE)" });
+ await page.getByLabel("Choose component 1", { exact: true }).selectOption({ label: "Costing rice" });
  await page.getByLabel("Quantity 1", { exact: true }).fill("2");
  await page.getByRole("button", { name: "Add component", exact: true }).click();
  await page.getByLabel("Search component 2", { exact: true }).fill("Costing takeaway box");
- await page.getByLabel("Choose component 2", { exact: true }).selectOption({ label: "Costing takeaway box (COST-BOX)" });
+ await page.getByLabel("Choose component 2", { exact: true }).selectOption({ label: "Costing takeaway box" });
  await page.getByLabel("Quantity 2", { exact: true }).fill("12");
  await page.getByRole("button", { name: "Publish recipe version", exact: true }).click();
  await expect(page.getByText("Cost readiness: MISSING", { exact: true })).toBeVisible();
@@ -86,7 +85,7 @@ test("recipe estimate stays incomplete until packaging is priced, then scales ba
 
 test("finance can read estimated recipe costs without recipe-edit permission", async ({ page }) => {
  await login(page, "reader@example.test");
- await page.getByRole("link", { name: "Open recipes", exact: true }).click();
+ await page.goto("/workspace/recipes");
  await page.getByRole("link", { name: "View Costing sample plate", exact: true }).click();
  await expect(page.getByText("Cost readiness: ESTIMATED", { exact: true })).toBeVisible();
  await expect(page.getByRole("link", { name: "Create new version", exact: true })).toHaveCount(0);

@@ -7,7 +7,7 @@ import { historicalSource,historicalStatusLabels,receivingLabels,comparisonLabel
 export function PurchasingFilters({options,supplier,material,user,receiving,type}:{options:HistoricalOptions;supplier?:string;material?:string;user?:string;receiving:string;type:string}){
  return <>
   <div><label htmlFor="history-supplier">Supplier</label><select id="history-supplier" name="supplier" defaultValue={supplier??""}><option value="">All permitted suppliers</option>{options.suppliers?.map(s=><option key={s.id} value={s.id}>{s.name}</option>)}</select></div>
-  <div><label htmlFor="history-material">Material</label><select id="history-material" name="material" defaultValue={material??""}><option value="">All materials</option>{options.materials?.map(m=><option key={m.id} value={m.id}>{m.name} ({m.code})</option>)}</select></div>
+  <div><label htmlFor="history-material">Material</label><select id="history-material" name="material" defaultValue={material??""}><option value="">All materials</option>{options.materials?.map(m=><option key={m.id} value={m.id}>{m.name}</option>)}</select></div>
   <div><label htmlFor="history-user">{type==="PO"?"Ordered by":"Received by"}</label><select id="history-user" name="user" defaultValue={user??""}><option value="">All permitted users</option>{options.users?.map(u=><option key={u.id} value={u.id}>{u.name}</option>)}</select></div>
   {type==="PO"&&<div><label htmlFor="history-receiving">Receiving progress</label><select id="history-receiving" name="receiving" defaultValue={receiving}>{Object.entries(receivingLabels).map(([key,label])=><option key={key} value={key}>{label}</option>)}</select></div>}
  </>;

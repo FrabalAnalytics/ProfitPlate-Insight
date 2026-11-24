@@ -255,6 +255,8 @@ createServer(async (request, response) => {
         material_editability: ["p_organisation_id","p_item_id"],
         delete_unused_material: ["p_organisation_id","p_item_id","p_code"],
         create_catalogue_unit: ["p_organisation_id","p_code","p_name","p_dimension","p_factor"],
+        centre_material_catalogue: ["p_organisation_id","p_site_id"],
+        save_centre_materials: ["p_organisation_id","p_site_id","p_revision","p_request_id","p_items"],
         save_material_setup: ["p_organisation_id","p_value"],
         save_menu_setup: ["p_organisation_id","p_request_id","p_value"],
         publish_recipe_setup: ["p_organisation_id","p_request_id","p_value","p_components"],

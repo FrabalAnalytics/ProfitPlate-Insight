@@ -21,7 +21,7 @@ test("recipe versions, pinned sub-recipes and quantity scaling work together", a
  await page.getByLabel("Effective from",{exact:true}).fill("2026-11-14");
  await page.getByLabel("Standard batch yield",{exact:true}).fill("10");
  await page.getByLabel("Yield unit",{exact:true}).selectOption({label:"Kilogram (KG)"});
- await page.getByLabel("Choose component 1",{exact:true}).selectOption({label:"Ingredient 01 (SAMPLE1)"});
+ await page.getByLabel("Choose component 1",{exact:true}).selectOption({label:"Ingredient 01"});
  await page.getByLabel("Quantity 1",{exact:true}).fill("8");
  await page.getByRole("button",{name:"Publish recipe version",exact:true}).click();
  await expect(page.getByText("Your recipe version has been published. Earlier versions remain unchanged.")).toBeVisible();
@@ -37,7 +37,7 @@ test("recipe versions, pinned sub-recipes and quantity scaling work together", a
  await page.getByLabel("Quantity 1",{exact:true}).fill("1");
  await page.getByRole("button",{name:"Add component",exact:true}).click();
  await page.getByLabel("Search component 2",{exact:true}).fill("Test packaging");
- await page.getByLabel("Choose component 2",{exact:true}).selectOption({label:"Test packaging (TEST-BOX)"});
+ await page.getByLabel("Choose component 2",{exact:true}).selectOption({label:"Test packaging"});
  await page.getByLabel("Quantity 2",{exact:true}).fill("12");
  await page.getByRole("button",{name:"Publish recipe version",exact:true}).click();
  await expect(page.getByRole("rowheader",{name:"Tomato base · v1",exact:true})).toBeVisible();

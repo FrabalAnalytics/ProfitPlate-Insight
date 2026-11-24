@@ -1,0 +1,19 @@
+"use client";
+import {useActionState,useState} from 'react';
+import {DataTable,StatusBadge} from '@/app/components/data-table';
+import {displayQuantity} from '@/lib/recipes';
+import type {CentreCatalogue} from '@/lib/centre-materials';
+import {saveCentreMaterials} from './actions';
+export function CentreMaterialsForm({org,site,packet,token}:{org:string;site:string;packet:CentreCatalogue;token:string}){
+ const [state,action,pending]=useActionState(saveCentreMaterials,{}),[chosen,setChosen]=useState(packet.items.filter(i=>i.assigned).map(i=>i.id)),[search,setSearch]=useState(''),[page,setPage]=useState(1);
+ const matches=packet.items.filter(i=>`${i.name} ${i.code}`.toLowerCase().includes(search.toLowerCase())),visible=matches.slice((page-1)*25,page*25);
+ const toggle=(id:string,checked:boolean)=>setChosen(old=>checked?[...new Set([...old,id])]:old.filter(i=>i!==id));
+ return <form action={action} onReset={e=>e.preventDefault()} className="stock-form"><input type="hidden" name="organisation" value={org}/><input type="hidden" name="site" value={site}/><input type="hidden" name="token" value={token}/><input type="hidden" name="revision" value={packet.revision}/><input type="hidden" name="items" value={JSON.stringify(chosen)}/><fieldset disabled={pending||!packet.active}><legend>Materials allowed at {packet.centre}</legend>
+ {packet.legacy&&<p className="stock-help">This existing centre retains its previous catalogue until you save a reviewed list. Saving limits future selections to the materials you choose below.</p>}
+ <div className="setup-field"><label htmlFor="centre-material-search">Find materials</label><input id="centre-material-search" type="search" value={search} onChange={e=>{setSearch(e.target.value);setPage(1);}} placeholder="Search by name or material code"/></div>
+ <p>{chosen.length} {chosen.length===1?'material':'materials'} selected</p><div className="record-actions"><button type="button" className="inline-link" onClick={()=>setChosen(old=>[...new Set([...old,...matches.filter(i=>i.active||Number(i.held)!==0).map(i=>i.id)])])}>Select all matching materials</button><button type="button" className="inline-link" onClick={()=>setChosen(old=>old.filter(id=>!matches.some(i=>i.id===id&&Number(i.held)===0)))}>Clear matching selections</button></div>
+ <DataTable label="Centre material assignments" columns={[{label:'Allowed'},{label:'Material name'},{label:'Material code'},{label:'Base unit'},{label:'Stock held',numeric:true},{label:'Status'}]} rows={visible.map(i=>({id:i.id,cells:[<input key="allow" type="checkbox" aria-label={`Allow ${i.name}`} checked={chosen.includes(i.id)} disabled={Number(i.held)!==0||!i.active&&!chosen.includes(i.id)} onChange={e=>toggle(i.id,e.target.checked)}/>,i.name,i.code,i.unit??'Not supplied',displayQuantity(i.held),<StatusBadge key="state" tone={i.active?'neutral':'warning'}>{i.active?'Active':'Inactive'}</StatusBadge>]}))} empty="No matching materials. Add materials to the catalogue first."/>
+ <nav className="stock-pagination"><button type="button" disabled={page===1} onClick={()=>setPage(page-1)}>Previous materials</button><span>Page {page} of {Math.max(1,Math.ceil(matches.length/25))}</span><button type="button" disabled={page*25>=matches.length} onClick={()=>setPage(page+1)}>Next materials</button></nav>
+ <p className="stock-help">Assigned materials remain selectable at zero stock. Materials with stock held or unfinished movements/counts must stay assigned. History and stock balances are not changed by saving this list.</p><label className="stock-confirm"><input type="checkbox" name="confirmed" required/>I reviewed the materials allowed at this centre.</label>{state.error&&<p role="alert" className="auth-alert">{state.error}</p>}<button className="secondary-button" disabled={pending}>{pending?'Saving...':'Save centre materials'}</button>
+ </fieldset></form>;
+}
