@@ -37,7 +37,7 @@ test("homepage explains availability and its cost example responds to keyboard i
   await expect(page.locator('main a[download]')).toHaveCount(0);
   await expect(page.locator('a[href*="profitplate-complete-test-data"]')).toHaveCount(0);
   await page.getByText('My team struggles to record consistently. Will another system help?',{exact:true}).click();
-  await expect(page.getByText(/giving you more dependable information/)).toBeVisible();
+  await expect(page.getByText(/missed submissions are brought to managers/)).toBeVisible();
   const tabs=page.getByRole('tablist',{name:'Explore team workspaces'});await tabs.getByRole('tab',{name:'Kitchen / Bar',exact:true}).click();await expect(page.getByRole('tabpanel')).toContainText('Waste needs no approval.');await expect(page.getByRole('tabpanel')).toContainText('Hello, Ada.');await tabs.getByRole('tab',{name:'Kitchen / Bar',exact:true}).press('ArrowRight');await expect(tabs.getByRole('tab',{name:'Finance',exact:true})).toHaveAttribute('aria-selected','true');await expect(page.getByRole('tabpanel')).toContainText('Management reports');await tabs.getByRole('tab',{name:'Finance',exact:true}).press('Home');await expect(tabs.getByRole('tab',{name:'Owner / CEO',exact:true})).toHaveAttribute('aria-selected','true');
   await expect(page.getByLabel("Illustrative management report")).toContainText("Fictional sample");
   await expect(page.getByLabel("Illustrative management report")).toContainText("Owner workspace");
