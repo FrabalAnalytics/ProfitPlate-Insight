@@ -245,6 +245,7 @@ createServer(async (request, response) => {
         expense_period_report: ["p_organisation_id","p_from","p_to","p_location_id","p_page"],
         workspace_navigation_access: ["p_organisation_id"],
         stock_workspace: ["p_organisation_id", "p_location_id", "p_page"],
+        requisition_availability:['p_organisation_id','p_document_id'],
         requisition_workspace:['p_organisation_id','p_location_id','p_page','p_status','p_search','p_document_id','p_queue'],
  stock_workspace_v2: ["p_organisation_id","p_location_id","p_page","p_status","p_search","p_document_id"],
         opening_readiness: ["p_organisation_id","p_page"],

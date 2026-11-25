@@ -59,8 +59,8 @@ export async function actOnStock(_state:StockActionState,form:FormData):Promise<
  try{
   const auth=await access(form);org=auth.org;const client=auth.client;document=String(form.get("document")??"");
   if(!isUuid(document)||form.get("confirmed")!=="on")throw new Error("Confirm the stock decision before saving.");
-  decision=String(form.get("decision")??"");if(!["APPROVE","POST","DISPATCH","RECEIVE","REJECT","DECLINE","RESOLVE","CANCEL"].includes(decision))throw new Error("Choose a stock action.");
-  const result=await client.rpc("stock_document_action",{p_organisation_id:org,p_document_id:document,p_action:decision,p_note:String(form.get("note")??"").trim(),p_received:parsed(form,"received")});checked(result.error);
+  decision=String(form.get("decision")??"");if(!["APPROVE","REVISE_APPROVAL","POST","DISPATCH","RECEIVE","REJECT","DECLINE","RESOLVE","CANCEL"].includes(decision))throw new Error("Choose a stock action.");
+  const result=await client.rpc("stock_document_action",{p_organisation_id:org,p_document_id:document,p_action:decision,p_note:String(form.get("note")??"").trim(),p_received:["APPROVE","REVISE_APPROVAL"].includes(decision)&&form.has("approval_lines")?{revision:Number(form.get("approval_revision")),lines:parsed(form,"approval_lines")}:parsed(form,"received")});checked(result.error);
   revalidatePath("/workspace/requisitions");revalidatePath("/workspace/inventory");revalidatePath("/workspace/inventory/processing");revalidatePath("/workspace/inventory/waste");revalidatePath("/workspace/inventory/waste/daily");revalidatePath("/workspace/inventory/waste/analysis");revalidatePath("/workspace/setup/centres");revalidatePath("/workspace/materials");revalidatePath("/workspace/setup");revalidatePath("/workspace/setup/standards");revalidatePath("/workspace");
  }catch(error){return failure(error);}
  redirect(stockDestination(form,org,document,decision.toLowerCase()));

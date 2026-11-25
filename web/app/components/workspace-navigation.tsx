@@ -38,7 +38,7 @@ export function WorkspaceNavigation({organisation,email,roles,access,pathname,co
   </>)}
   {(access.inventory||stockReports)&&group("Stock & production",pathname.startsWith("/workspace/inventory")||pathname.startsWith("/workspace/requisitions"),<>
    {access.inventory&&!financeOnly&&item("Inventory & movements","/workspace/inventory",Boxes,pathname==="/workspace/inventory")}
-   {access.inventory&&!financeOnly&&item("Requisitions","/workspace/requisitions",ClipboardList,pathname.startsWith("/workspace/requisitions"))}
+   {(access.inventory||roles.includes("ceo"))&&item("Requisitions","/workspace/requisitions",ClipboardList,pathname.startsWith("/workspace/requisitions"))}
    {access.inventory&&roles.some(r=>['restaurant_admin','inventory_manager','inventory','operations','stock_department','kitchen_manager','bar_lead'].includes(r))&&item("Material Plan","/workspace/inventory/plans",ClipboardList,pathname.startsWith("/workspace/inventory/plans"))}
    {access.inventory&&!financeOnly&&item("Material Processing Log","/workspace/inventory/processing",Boxes,pathname.startsWith("/workspace/inventory/processing"))}
    {access.inventory&&item(financeOnly?"Waste across centres":"Waste Log",financeOnly?"/workspace/inventory/waste?kind=WASTE":"/workspace/inventory/waste",Boxes,pathname.startsWith("/workspace/inventory/waste"))}

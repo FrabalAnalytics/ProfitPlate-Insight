@@ -8,3 +8,4 @@ export function unacceptedQuantity(requested:string,accepted:string){
  const remainder=units(requested)-units(accepted),fraction=(remainder%scale).toString().padStart(12,'0').replace(/0+$/,'');
  return `${remainder/scale}${fraction?`.${fraction}`:''}`;
 }
+export type RequisitionAvailability={source:string;checked_at:string;items:{item_id:string;name:string;unit:string;on_hand:string;reserved:string;available:string;reservations:{id:string;reference:string;state:string}[]}[]};
