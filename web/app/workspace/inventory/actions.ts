@@ -36,7 +36,7 @@ function stockDestination(form:FormData,org:string,document:string,result?:strin
  return `${target}?${params}`;
 }
 export async function requestStock(_state:StockActionState,form:FormData):Promise<StockActionState>{
- let org:string,id:string;
+ let org:string,id:string,directOpening=false;
  try{
   const auth=await access(form);org=auth.org;
   const request=String(form.get("request")??"");if(!isUuid(request)||form.get("confirmed")!=="on")throw new Error("Review and confirm the stock request.");
@@ -48,10 +48,11 @@ export async function requestStock(_state:StockActionState,form:FormData):Promis
    document.waste_reason_code=({Spoilage:"SPOILAGE",Expiry:"EXPIRY",Damage:"DAMAGE","Bad production":"BAD_PRODUCTION","Other loss":"OTHER"} as Record<string,string>)[category];
    document.note=document.note?`${category}: ${document.note}`:category;
   }
-  const result=await auth.client.rpc("request_stock_document",{p_organisation_id:org,p_request_id:request,p_document:{...document,...(document.kind==="PRODUCTION"?{processing_waste:parsed(form,"processing_waste"),waste_confirmed:form.get("waste_confirmed")==="on"}:{})},p_lines:parsed(form,"lines")});checked(result.error);id=result.data;
+  directOpening=document.kind==="OPENING"&&form.get("direct_opening")==="on";
+  const result=await auth.client.rpc(directOpening?"record_admin_opening":"request_stock_document",{p_organisation_id:org,p_request_id:request,p_document:{...document,...(document.kind==="PRODUCTION"?{processing_waste:parsed(form,"processing_waste"),waste_confirmed:form.get("waste_confirmed")==="on"}:{})},p_lines:parsed(form,"lines")});checked(result.error);id=result.data;
   revalidatePath("/workspace/requisitions");revalidatePath("/workspace/inventory");revalidatePath("/workspace/inventory/processing");revalidatePath("/workspace/inventory/waste");revalidatePath("/workspace/inventory/waste/daily");revalidatePath("/workspace/inventory/waste/analysis");revalidatePath("/workspace/setup/centres");revalidatePath("/workspace/materials");revalidatePath("/workspace/setup");revalidatePath("/workspace/setup/standards");revalidatePath("/workspace");
  }catch(error){return failure(error);}
- redirect(stockDestination(form,org,id));
+ redirect(stockDestination(form,org,id,directOpening?"posted":undefined));
 }
 export async function actOnStock(_state:StockActionState,form:FormData):Promise<StockActionState>{
  let org:string,document:string,decision:string;

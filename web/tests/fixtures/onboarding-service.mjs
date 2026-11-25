@@ -269,6 +269,8 @@ createServer(async (request, response) => {
         save_stock_member_access: ["p_organisation_id", "p_membership_id", "p_revision", "p_mode", "p_assignments"],
         save_stock_configuration: ["p_organisation_id", "p_kind", "p_value"],
         po_last_purchase_price: ["p_organisation_id","p_item_id","p_uom_id","p_as_of"],
+        record_admin_opening:['p_organisation_id','p_request_id','p_document','p_lines'],
+        record_imported_opening:['p_organisation_id','p_batch_id'],
         request_stock_document: ["p_organisation_id", "p_request_id", "p_document", "p_lines"],
         stock_document_action: ["p_organisation_id", "p_document_id", "p_action", "p_note", "p_received"],
         executive_overview: ["p_organisation_id","p_from","p_to","p_location_id"],
