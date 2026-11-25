@@ -55,11 +55,11 @@ test('configurable stock flows preserve quantities, role scopes and an immutable
    await approvedPost(extra);assert.equal(await balance(warehouse,baseItem),1);
    await denied('select public.request_stock_document($1,$2,$3,$4)',[org,randomUUID(),{kind:'OPENING',destination_id:warehouse,date:'2020-10-02',note:'Duplicate opening'},[{item_id:rice,quantity:'10'}]],'22023');
   });
-  await t.test('department requests use configured routes, source approval and separate receiving',async()=>{
+  await t.test('department requests use configured routes, management approval and separate receiving',async()=>{
    await login(ops);transfer=await request('ISSUE',null,[{item_id:rice,quantity:'20'}],{route_id:route});
    assert.equal((await workspace()).locations.find(s=>s.id===warehouse).read,false);
    await denied('select public.stock_workspace($1,$2,1)',[org,warehouse]);
-   await login(storekeeper);await action(transfer,'APPROVE');await action(transfer,'DISPATCH');
+   await login(finance);await action(transfer,'APPROVE');await login(storekeeper);await action(transfer,'DISPATCH');
    assert.equal(await balance(warehouse,rice),100);
    await denied('select public.stock_document_action($1,$2,$3,$4,$5)',[org,transfer,'RECEIVE','Self receiving',[{item_id:rice,quantity:'20'}]]);
    await login(receiver);
@@ -155,7 +155,7 @@ test('configurable stock flows preserve quantities, role scopes and an immutable
    await login(finance);await action(own,'APPROVE');await login(manager);await action(own,'POST');
    const managerRoute=await configure('ROUTE',{source_id:warehouse,destination_id:kitchen,kind:'TRANSFER',approval_role:'inventory_manager'});
    await login(receiver);const movement=await request('TRANSFER',null,[{item_id:rice,quantity:'1'}],{route_id:managerRoute});
-   await login(manager);await action(movement,'APPROVE');await action(movement,'DISPATCH');
+   await login(finance);await action(movement,'APPROVE');await login(manager);await action(movement,'DISPATCH');
    await denied('select public.stock_document_action($1,$2,$3,$4,$5)',[org,movement,'RECEIVE','Self receiving',[{item_id:rice,quantity:'1'}]]);
    await login(receiver);await action(movement,'RECEIVE',[{item_id:rice,quantity:'1'}]);
    await db.exec('reset role');const membership=await value('select id from public.organisation_memberships where organisation_id=$1 and user_id=$2',[org,manager]);await db.query("update public.organisation_memberships set status='inactive' where id=$1",[membership]);

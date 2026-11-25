@@ -3,7 +3,7 @@ import {ClipboardList,PackageCheck,ArrowRight,ReceiptText} from "lucide-react";
 
 export function InventoryWorkflow(){
  const steps=[
-  {icon:PackageCheck,title:"Confirm what arrived",role:"RECEIPTS & HANDOVERS",text:"The source approves and dispatches. Only receiver-accepted quantities update both centres.",example:"Kitchen accepts 20 KG rice: store −20 / Kitchen +20."},
+  {icon:PackageCheck,title:"Confirm what arrived",role:"RECEIPTS & HANDOVERS",text:"Management approves. Inventory dispatches. Only receiver-accepted quantities update both centres.",example:"Kitchen accepts 20 KG rice: store −20 / Kitchen +20."},
   {icon:ReceiptText,title:"Connect what was sold",role:"YOUR EXISTING POS",text:"Import fulfilled sales. Menu-to-centre mappings record recipe-standard usage on the sales date.",example:"100 plates × 0.1 KG rice = 10 KG standard usage."},
   {icon:ClipboardList,title:"Investigate what remains",role:"WEEKLY & MONTHLY COUNTS",text:"Compare physical stock with the ledger. A different Owner/CEO, Finance or Operations colleague reviews before an adjustment is posted.",example:"Book 10 KG / counted 9.5 KG: investigate the 0.5 KG gap."},
  ];

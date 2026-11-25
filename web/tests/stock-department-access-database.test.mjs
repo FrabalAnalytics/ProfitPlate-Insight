@@ -68,13 +68,13 @@ test('fine-dining stock assignments separate Main Store, Kitchen and Bar without
    const unrelated=await value('select public.request_stock_document($1,$2,$3,$4)',[org,randomUUID(),{kind:'ISSUE',route_id:toKitchen,date:'2020-10-02',note:'Kitchen requisition'},[{item_id:rice,quantity:'9'}]]);issue=unrelated;
    await login(barUser);assert.ok(!(await workspace()).documents.some(d=>d.id===issue));await denied('select public.stock_document_action($1,$2,$3,$4,null)',[org,issue,'APPROVE','Wrong department']);
   });
-  await t.test('route approval and receiving enforce source and destination assignments at action time',async()=>{
+  await t.test('management approval and receiving enforce role and destination assignments at action time',async()=>{
    await login(kitchenUser);assert.equal((await workspace()).documents.find(d=>d.id===issue).actions.approve,undefined);
    await denied('select public.stock_document_action($1,$2,$3,$4,null)',[org,issue,'APPROVE','Cannot approve source']);
    await login(owner);await save(storeMember,1,'ASSIGNED',[grant(store,true,true,false)]);
    await login(storeUser);await denied('select public.stock_document_action($1,$2,$3,$4,null)',[org,issue,'APPROVE','Approval removed']);
    await login(owner);await save(storeMember,2,'ASSIGNED',[grant(store)]);
-   await login(storeUser);await action(issue,'APPROVE');await action(issue,'DISPATCH');
+   await login(storeUser);await denied('select public.stock_document_action($1,$2,$3,$4,null)',[org,issue,'APPROVE','Inventory grants cannot approve requisitions']);await login(owner);await action(issue,'APPROVE');await login(storeUser);await action(issue,'DISPATCH');
    await login(owner);await save(kitchenMember,1,'ASSIGNED',[grant(kitchen,true,false,false)]);
    await login(kitchenUser);assert.equal((await workspace()).documents.find(d=>d.id===issue).actions.receive,undefined);
    await denied('select public.stock_document_action($1,$2,$3,$4,$5)',[org,issue,'RECEIVE','Handling removed',[{item_id:rice,quantity:'9'}]]);

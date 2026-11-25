@@ -62,7 +62,7 @@ test('multi-centre single-output production preserves stock controls and direct 
   front=await centre('FRONT','KITCHEN',frontMember,false);await val("select public.save_stock_member_access($1,$2,0,'ASSIGNED',$3)",[org,frontMember,[{location_id:front,can_request:true,can_handle:false,can_approve:false,can_dispatch:false,can_receive:true}]]);
   for(const [source,item,qty]of [[main,fish,'5'],[kitchen,soup,'10']]){
    await login(owner);const route=await val("select public.save_stock_configuration($1,'ROUTE',$2)",[org,{source_id:source,destination_id:front,kind:'TRANSFER',approval_role:'inventory_manager'}]);
-   await login(outsider);const id=await request({kind:'TRANSFER',route_id:route},[{item_id:item,quantity:qty}]);await login(manager);const before=await balance(source,item);await action(id,'APPROVE');await action(id,'DISPATCH');assert.equal(await balance(source,item),before);assert.equal(await balance(front,item),0);
+   await login(outsider);const id=await request({kind:'TRANSFER',route_id:route},[{item_id:item,quantity:qty}]);await login(manager);const before=await balance(source,item);await login(owner);await action(id,'APPROVE');await login(manager);await action(id,'DISPATCH');assert.equal(await balance(source,item),before);assert.equal(await balance(front,item),0);
    await login(outsider);await action(id,'RECEIVE',[{item_id:item,quantity:qty,reason:''}]);await login(manager);assert.equal(await balance(source,item),before-Number(qty));assert.equal(await balance(front,item),Number(qty));
   }
  });

@@ -15,6 +15,7 @@ test('one Inventory Manager and departments complete acceptance, rejection, retu
  const request=(kind,lines,extra={})=>val('select public.request_stock_document($1,$2,$3,$4)',[org,randomUUID(),{kind,date:today,note:'Department requisition',...extra},lines]);
  const qty=n=>[{item_id:rice,quantity:String(n)}];
  const act=(id,action,received=null)=>val('select public.stock_document_action($1,$2,$3,$4,$5)',[org,id,action,'Checked physical stock and receiver decision',received]);
+ const managementApproval=async id=>{await login(owner);await act(id,'APPROVE');await login(manager);};
  const grants=(site,{request=false,receive=false,dispatch=false}={})=>[{location_id:site,can_request:request,can_receive:receive,can_dispatch:dispatch,can_handle:false,can_approve:false}];
  try{
   await db.exec(`create role anon;create role authenticated;create schema auth;create table auth.users(id uuid primary key,email_confirmed_at timestamptz,email text);create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;grant usage on schema public,auth to authenticated,anon;grant execute on function auth.uid() to authenticated,anon;`);
@@ -27,8 +28,8 @@ test('one Inventory Manager and departments complete acceptance, rejection, retu
   route=await configure('ROUTE',{source_id:main,destination_id:kit,kind:'ISSUE',approval_role:'inventory_manager'});barRoute=await configure('ROUTE',{source_id:main,destination_id:barSite,kind:'ISSUE',approval_role:'inventory_manager'});reverse=await configure('ROUTE',{source_id:kit,destination_id:main,kind:'TRANSFER',approval_role:'inventory_manager'});
   for(const[member,site,cap]of[[members[1],kit,{request:true,receive:true}],[members[2],barSite,{request:true,receive:true}],[members[3],kit,{receive:true}],[members[4],main,{dispatch:true}]])await val("select public.save_stock_member_access($1,$2,0,'ASSIGNED',$3)",[org,member,grants(site,cap)]);receiverMember=members[3];
   const opening=await request('OPENING',qty(100),{destination_id:main});await login(owner);await act(opening,'APPROVE');await login(manager);await act(opening,'POST');
-  await t.test('approval and dispatch stay with the manager and leave both balances unchanged',async()=>{
-   await login(kitchen);first=await request('ISSUE',qty(10),{route_id:route});await login(manager);assert.equal((await alerts()).approval,1);assert.equal(await count('REQUEST_APPROVAL'),1);await act(first,'APPROVE');assert.equal(await count('REQUEST_APPROVAL'),0);assert.equal(await count('READY_DISPATCH'),1);await act(first,'DISPATCH');assert.equal(await count('READY_DISPATCH'),0);assert.equal(await count('DEPARTMENT_CONFIRMATION'),1);
+  await t.test('management approves while Inventory dispatches and both balances remain unchanged',async()=>{
+   await login(kitchen);first=await request('ISSUE',qty(10),{route_id:route});await login(manager);assert.equal((await alerts()).approval,0);assert.equal(await count('REQUEST_APPROVAL'),0);await deny('select public.stock_document_action($1,$2,$3,$4,null)',[org,first,'APPROVE','Inventory cannot approve requisitions']);await login(owner);assert.equal((await alerts()).approval,1);assert.equal(await count('REQUEST_APPROVAL'),1);await act(first,'APPROVE');await login(manager);assert.equal(await count('REQUEST_APPROVAL'),0);assert.equal(await count('READY_DISPATCH'),1);await act(first,'DISPATCH');assert.equal(await count('READY_DISPATCH'),0);assert.equal(await count('DEPARTMENT_CONFIRMATION'),1);
    assert.deepEqual(await balances(),[100,0]);const balance=(await packet()).balances.find(b=>b.location_id===main);assert.equal(Number(balance.reserved),10);assert.equal(Number(balance.available),90);
    await db.exec('reset role');assert.equal(Number(await val('select count(*) from public.stock_ledger where document_id=$1',[first])),0);await login(manager);
    await deny('select public.stock_document_action($1,$2,$3,$4,$5)',[org,first,'RECEIVE','Manager cannot receive for Kitchen',qty(10)]);
@@ -40,24 +41,24 @@ test('one Inventory Manager and departments complete acceptance, rejection, retu
    assert.equal(Number((await packet()).balances.find(b=>b.location_id===main).reserved),2);await act(first,'RESOLVE');assert.equal((await alerts()).follow_up,0);assert.equal((await packet('FOLLOW_UP')).total,0);
   });
   await t.test('departments return excess to Main Store without needing another inventory staff account',async()=>{
-   await login(kitchen);const id=await request('TRANSFER',qty(3),{route_id:reverse});await login(manager);await act(id,'APPROVE');await act(id,'DISPATCH');assert.deepEqual(await balances(),[92,8]);
+   await login(kitchen);const id=await request('TRANSFER',qty(3),{route_id:reverse});await login(manager);await managementApproval(id);await act(id,'DISPATCH');assert.deepEqual(await balances(),[92,8]);
    assert.equal(await count('DEPARTMENT_RETURNS'),1);await act(id,'RECEIVE',qty(3));assert.equal(await count('DEPARTMENT_RETURNS'),0);assert.deepEqual(await balances(),[95,5]);assert.equal((await packet('COMPLETED')).documents.find(d=>d.id===id).state,'RECEIVED');
    await db.exec('reset role');assert.equal((await val("select details from public.audit_events where entity_id=$1 and event_type='STOCK_RECEIVE'",[id])).manager_return,true);await login(manager);
   });
   await t.test('a receiving department can reject the whole transfer without moving stock',async()=>{
-   await login(bar);const id=await request('ISSUE',qty(7),{route_id:barRoute});await login(manager);await act(id,'APPROVE');await act(id,'DISPATCH');await login(bar);await act(id,'REJECT');
+   await login(bar);const id=await request('ISSUE',qty(7),{route_id:barRoute});await login(manager);await managementApproval(id);await act(id,'DISPATCH');await login(bar);await act(id,'REJECT');
    await login(manager);assert.deepEqual(await balances(),[95,5]);assert.equal((await packet('REJECTED')).documents[0].state,'REJECTED');assert.equal((await alerts()).follow_up,1);
    await deny('select public.stock_document_action($1,$2,$3,$4,null)',[org,id,'POST','Cannot post rejected transfer'],'22023');await act(id,'RESOLVE');assert.equal((await alerts()).follow_up,0);
   });
   await t.test('reservations prevent over-allocation and consumption while awaiting receiver confirmation',async()=>{
-   await login(kitchen);const held=await request('ISSUE',qty(80),{route_id:route});await login(bar);const competing=await request('ISSUE',qty(20),{route_id:barRoute});await login(manager);await act(held,'APPROVE');await act(held,'DISPATCH');await act(competing,'APPROVE');
+   await login(kitchen);const held=await request('ISSUE',qty(80),{route_id:route});await login(bar);const competing=await request('ISSUE',qty(20),{route_id:barRoute});await login(manager);await managementApproval(held);await act(held,'DISPATCH');await managementApproval(competing);
    await deny('select public.stock_document_action($1,$2,$3,$4,null)',[org,competing,'DISPATCH','Available stock too low'],'22023');
    const usage=await request('CONSUMPTION',qty(16),{source_id:main});await login(owner);await act(usage,'APPROVE');await login(manager);await deny('select public.stock_document_action($1,$2,$3,$4,null)',[org,usage,'POST','Reserved stock'],'22023');assert.deepEqual(await balances(),[95,5]);
    await login(kitchen);await act(held,'REJECT');await login(manager);await act(held,'RESOLVE');await act(usage,'POST');await act(competing,'CANCEL');assert.deepEqual(await balances(),[79,5]);
   });
   await t.test('optional receiver and dispatcher roles cannot acquire approvals or other process powers',async()=>{
    await login(dispatcher);await deny('select public.save_stock_configuration($1,$2,$3)',[org,'LOCATION',{code:'BAD',name:'Bad',kind:'STORE'}]);await deny('select public.request_stock_document($1,$2,$3,$4)',[org,randomUUID(),{kind:'CONSUMPTION',source_id:main,date:today,note:'Not allowed'},qty(1)]);
-   await login(kitchen);const id=await request('ISSUE',qty(2),{route_id:route});await login(manager);await act(id,'APPROVE');await login(dispatcher);await act(id,'DISPATCH');await deny('select public.stock_document_action($1,$2,$3,$4,$5)',[org,id,'RECEIVE','No receiving authority',qty(2)]);
+   await login(kitchen);const id=await request('ISSUE',qty(2),{route_id:route});await login(manager);await managementApproval(id);await login(dispatcher);await act(id,'DISPATCH');await deny('select public.stock_document_action($1,$2,$3,$4,$5)',[org,id,'RECEIVE','No receiving authority',qty(2)]);
    await login(manager);await val("select public.save_stock_member_access($1,$2,1,'ASSIGNED',$3)",[org,receiverMember,grants(kit,{receive:false})]);
    await login(receiver);await deny('select public.stock_document_action($1,$2,$3,$4,$5)',[org,id,'RECEIVE','Receiving permission revoked',qty(2)]);
    await login(manager);await val("select public.save_stock_member_access($1,$2,2,'ASSIGNED',$3)",[org,receiverMember,grants(kit,{receive:true})]);
@@ -67,8 +68,8 @@ test('one Inventory Manager and departments complete acceptance, rejection, retu
   });
   await t.test('status/search filters apply before pagination and old alerts still open their exact record',async()=>{
    await login(kitchen);for(let i=0;i<16;i++)await request('ISSUE',qty(1),{route_id:route,note:`Pagination cohort ${i}`});await login(manager);
-   const firstPage=await packet('PENDING','Pagination cohort',1),second=await packet('PENDING','Pagination cohort',2);assert.equal(firstPage.total,16);assert.equal(firstPage.documents.length,10);assert.equal(second.documents.length,6);const attention=await val('select public.workspace_attention($1,$2,1)',[org,'REQUEST_APPROVAL']);assert.equal(attention.total,16);assert.equal(attention.records.length,10);assert.equal((await val('select public.workspace_attention($1,$2,2)',[org,'REQUEST_APPROVAL'])).records.length,6);
-   assert.equal((await packet('PENDING','Pagination cohort',2,first)).selected_document.id,first);
+   const firstPage=await packet('PENDING','Pagination cohort',1),second=await packet('PENDING','Pagination cohort',2);assert.equal(firstPage.total,16);assert.equal(firstPage.documents.length,10);assert.equal(second.documents.length,6);await login(owner);const attention=await val('select public.workspace_attention($1,$2,1)',[org,'REQUEST_APPROVAL']);assert.equal(attention.total,16);assert.equal(attention.records.length,10);assert.equal((await val('select public.workspace_attention($1,$2,2)',[org,'REQUEST_APPROVAL'])).records.length,6);
+   await login(manager);assert.equal((await packet('PENDING','Pagination cohort',2,first)).selected_document.id,first);
    await login(bar);assert.equal((await packet('PENDING','Pagination cohort')).total,0);assert.equal((await packet('ALL','',1,first)).selected_document,null);
   });
  }finally{await db.close();}

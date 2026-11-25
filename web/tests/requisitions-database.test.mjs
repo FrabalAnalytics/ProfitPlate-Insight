@@ -23,7 +23,7 @@ test('standalone requisitions keep scoped queues, pagination and receiver-confir
  await val("select public.save_stock_member_access($1,$2,0,'ASSIGNED',$3)",[org,kitchenMember,[{location_id:kit,can_request:true,can_receive:true,can_dispatch:false,can_handle:false,can_approve:false}]]);
  await t.test('requesting needs no on-hand stock; only an independent approver sees approval actions',async()=>{
  await login(kitchen);requestId=await request('ISSUE',5,{route_id:route});let p=await packet();assert.equal(p.total,1);assert.equal(p.queues.APPROVAL,0);await deny(act(requestId,'APPROVE'));
- await login(manager);p=await packet('ALL',1,'APPROVAL');assert.equal(p.total,1);assert.equal(p.queues.APPROVAL,1);await act(requestId,'APPROVE');assert.equal((await packet('ALL',1,'DISPATCH')).total,1);await deny(act(requestId,'DISPATCH'), '22023');
+ await login(manager);p=await packet('ALL',1,'APPROVAL');assert.equal(p.total,0);assert.equal(p.queues.APPROVAL,0);await deny(act(requestId,'APPROVE'));await login(owner);p=await packet('ALL',1,'APPROVAL');assert.equal(p.total,1);assert.equal(p.queues.APPROVAL,1);await act(requestId,'APPROVE');await login(manager);assert.equal((await packet('ALL',1,'DISPATCH')).total,1);await deny(act(requestId,'DISPATCH'), '22023');
  const attention=await val("select public.workspace_attention($1,'READY_DISPATCH',1)",[org]);assert.equal(attention.records[0].path,'/workspace/requisitions');assert.equal(attention.records[0].params.document,requestId);
  });
  await t.test('opening balances stay outside requisitions; dispatch reserves and acceptance posts once',async()=>{
@@ -34,7 +34,7 @@ test('standalone requisitions keep scoped queues, pagination and receiver-confir
  await login(manager);stock=await val('select public.stock_workspace_v2($1)',[org]);assert.equal(Number(stock.balances.find(b=>b.location_id===main).quantity),16);assert.equal(Number(stock.balances.find(b=>b.location_id===kit).quantity),4);
  });
  await t.test('filters and pagination count only requisitions before applying the page limit',async()=>{
- await login(kitchen);for(let i=0;i<12;i++)await request('ISSUE',1,{route_id:route,note:'Pagination request'});await login(manager);
+ await login(kitchen);for(let i=0;i<12;i++)await request('ISSUE',1,{route_id:route,note:'Pagination request'});await login(owner);
  const a=await packet('PENDING',1,'APPROVAL','Pagination'),b=await packet('PENDING',2,'APPROVAL','Pagination');assert.equal(a.total,12);assert.equal(a.documents.length,10);assert.equal(b.documents.length,2);assert.equal(new Set([...a.documents,...b.documents].map(d=>d.id)).size,12);
  assert.equal((await packet('ALL',1,'ALL','missing reference')).total,0);assert.equal((await packet('ALL',1,'ALL','',null,bar)).total,0);await deny(packet('ALL',1,'INVALID'),'22023');await deny(packet('ALL',0),'22023');
  });
