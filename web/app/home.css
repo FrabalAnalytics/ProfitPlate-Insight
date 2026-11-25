@@ -289,3 +289,16 @@
 .marketing-waste-insight{display:flex;gap:11px;background:#f0f5f1;padding:16px;border-radius:8px}.marketing-waste-insight>svg{flex-shrink:0;color:var(--brand)}.marketing-waste-insight p{display:grid;gap:6px;font-size:12px;line-height:1.7}.marketing-waste-insight strong{font-weight:600}.marketing-waste-insight span{font-size:11px;color:var(--muted-foreground)}
 @media(max-width:850px){.marketing-waste-grid{grid-template-columns:minmax(0,1fr);gap:30px}.marketing-waste-copy>p:not(.marketing-eyebrow){max-width:600px}}
 @media(max-width:600px){.marketing-waste-preview{padding:20px}.marketing-waste-preview h3{font-size:22px}.marketing-waste-copy li{font-size:12px}.marketing-waste-preview-top{font-size:8px}}
+
+/* Closing offer: follows the FAQs so the next step has context. */
+.marketing-intro-offer { gap: 52px; padding: 48px; }
+.marketing-offer-copy { flex: 1; min-width: 0; max-width: 650px; }
+.marketing-intro-offer h2 { font-size: clamp(28px, 3.2vw, 40px); line-height: 1.2; font-weight: 600; }
+.marketing-intro-offer .marketing-offer-description { margin-top: 18px; font-size: 14px; line-height: 1.8; color: #d3e1d8; max-width: 560px; }
+.marketing-intro-offer .marketing-offer-start { display: flex; align-items: flex-start; gap: 10px; margin-top: 22px; padding: 14px 16px; background: #ffffff0d; border: 1px solid #ffffff24; border-radius: 8px; font-size: 12px; line-height: 1.7; color: #f0e6c8; max-width: 560px; }
+.marketing-offer-start svg { flex-shrink: 0; margin-top: 2px; }
+.marketing-offer-action { flex: 0 1 250px; display: flex; flex-direction: column; align-items: stretch; gap: 14px; }
+.marketing-offer-action .marketing-button { justify-content: center; white-space: normal; text-align: center; }
+.marketing-intro-offer .marketing-offer-terms { margin: 0; font-size: 11px; line-height: 1.7; color: #c8d9ca; }
+@media (max-width: 900px) { .marketing-intro-offer { padding: 35px; gap: 28px; } .marketing-offer-action { flex: none; width: min(100%, 320px); } }
+@media (max-width: 600px) { .marketing-intro-offer { padding: 28px 23px; } .marketing-intro-offer h2 { font-size: 28px; } .marketing-offer-action { width: 100%; } }
