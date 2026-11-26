@@ -12,6 +12,7 @@ test("homepage explains availability and its cost example responds to keyboard i
   await expect(page.getByTestId("preview-profit")).toHaveText("₦2,650");
   await expect(page.getByTestId("preview-margin")).toHaveText("40.8%");
   await expect(page.getByText(/Fictional example. Packaging/)).toBeVisible();
+  await page.evaluate(() => window.scrollTo(0, 0));
   await page.screenshot({ path: testInfo.outputPath("homepage-desktop.png") });
   await expect(page.locator(".marketing-faq-list details")).toHaveCount(7);
   await page.getByText("We already have a POS. What would we gain?", {exact:true}).click();
