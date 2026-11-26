@@ -19,7 +19,7 @@ test('material plans consolidate versioned recipe targets without changing stock
  main=await centre('MAIN','STORE',managerMember);kitchen=await centre('KITCHEN','KITCHEN',chefMember);await centre('BAR','BAR',chefMember,false);
  await val("select public.save_stock_member_access($1,$2,0,'ASSIGNED',$3)",[org,chefMember,[{location_id:kitchen,can_request:true,can_handle:false,can_approve:false,can_dispatch:false,can_receive:true}]]);
  standard=await val('select public.save_processing_standard($1,$2,$3)',[org,randomUUID(),standardValue()]);
- await login(manager);for(const site of [main,kitchen]){const id=await request({kind:'OPENING',destination_id:site},[{item_id:fish,quantity:'80'}]);await login(owner);await action(id,'APPROVE');await login(manager);await action(id,'POST');}
+ await login(manager);for(const site of [main,kitchen]){const id=await request({kind:'OPENING',destination_id:site},[{item_id:fish,quantity:'80'}]);await login(owner);await action(id,'APPROVE');await action(id,'POST');await login(manager);}
 
 
  let oil,meal,nested;

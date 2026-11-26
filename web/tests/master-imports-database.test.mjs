@@ -45,7 +45,7 @@ test('reviewed master imports preserve stock controls, versions, scopes and retr
    assert.equal(await inspect('select state from public.stock_documents where id=$1',[doc]),'REQUESTED');assert.equal(await inspect('select count(*)::int from public.stock_ledger where organisation_id=$1',[org]),0);
    await deny(value("select public.stock_document_action($1,$2,'APPROVE','Checked',null)",[org,doc]));
    await login(owner);await value("select public.stock_document_action($1,$2,'APPROVE','Verified',null)",[org,doc]);
-   await login(inventory);await value("select public.stock_document_action($1,$2,'POST','Posted',null)",[org,doc]);
+   await login(owner);await value("select public.stock_document_action($1,$2,'POST','Posted',null)",[org,doc]);
    assert.equal(Number(await inspect('select sum(quantity) from public.stock_ledger where organisation_id=$1',[org])),40);await login(owner);
   });
   await t.test('invalid rows, duplicate openings and changed reviews cannot partially save',async()=>{

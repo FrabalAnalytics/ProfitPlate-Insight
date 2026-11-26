@@ -49,7 +49,7 @@ test('dated POS consumption reconciles stock without double depletion', async t 
   const balance=()=>read('select coalesce(sum(quantity),0) from public.stock_ledger where organisation_id=$1 and location_id=$2 and item_id=$3',[org,centre,ingredient]);
   const opening=async(qty,day='2020-01-01')=>{
    await login(procurement);const id=await scalar('select public.request_stock_document($1,$2,$3,$4)',[org,randomUUID(),{kind:'OPENING',destination_id:centre,date:day,note:'Verified opening'},[{item_id:ingredient,quantity:String(qty)}]]);
-   await login(owner);await scalar("select public.stock_document_action($1,$2,'APPROVE','Verified',null)",[org,id]);await login(procurement);await scalar("select public.stock_document_action($1,$2,'POST','Verified',null)",[org,id]);await login(owner);
+   await login(owner);await scalar("select public.stock_document_action($1,$2,'APPROVE','Verified',null)",[org,id]);await login(owner);await scalar("select public.stock_document_action($1,$2,'POST','Verified',null)",[org,id]);await login(owner);
   };
   await opening(100);
   const queue=()=>scalar("select public.sales_stock_queue($1,null,null,null,1,'ALL')",[org]);
@@ -79,9 +79,9 @@ test('dated POS consumption reconciles stock without double depletion', async t 
    let d=await scalar('select public.monthly_count_detail($1,$2)',[org,c]);assert.equal(Number(d.lines[0].book),95);
    await scalar('select public.save_monthly_count($1,$2,0,$3,$4,true,$5,$6,false)',[org,c,randomUUID(),[{item_id:ingredient,physical:'90',note:'Counted'}],'Ada','Physical check']);
    await login(owner);await scalar("select public.weekly_count_action($1,$2,1,$3,'APPROVE','Reviewed')",[org,c,randomUUID()]);
-   await login(procurement);await assert.rejects(scalar("select public.weekly_count_action($1,$2,2,$3,'POST','Posted')",[org,c,randomUUID()]),e=>e.code==='22023'&&/Resolve pending sales consumption/.test(e.message));assert.equal(Number(await balance()),95);
+   await login(owner);await assert.rejects(scalar("select public.weekly_count_action($1,$2,2,$3,'POST','Posted')",[org,c,randomUUID()]),e=>e.code==='22023'&&/Resolve pending sales consumption/.test(e.message));assert.equal(Number(await balance()),95);
    // Remove the deliberately invalid shortage fixture only after verifying the production gate.
-   await db.exec('reset role');await db.query("update private.sales_stock_jobs set state='EXCLUDED',reason='Isolated shortage fixture' where organisation_id=$1 and state='PENDING'",[org]);await login(procurement);
+   await db.exec('reset role');await db.query("update private.sales_stock_jobs set state='EXCLUDED',reason='Isolated shortage fixture' where organisation_id=$1 and state='PENDING'",[org]);await login(owner);
    await scalar("select public.weekly_count_action($1,$2,2,$3,'POST','Posted')",[org,c,randomUUID()]);assert.equal(Number(await balance()),90);
    await login(owner);await post(await stage(csv([row({4:'LATE',7:'2',8:'3000',11:'3000'})])));const job=(await queue()).rows.find(r=>r.transaction_ref==='LATE');assert.equal(job.state,'PENDING');assert.equal(Number(await balance()),90);
    let plan=await scalar('select public.sales_stock_review($1,$2)',[org,job.id]);assert.deepEqual(plan.errors,[]);assert.equal(plan.needs_review,true);assert.equal(plan.can_reconcile,false);
@@ -102,7 +102,7 @@ test('dated POS consumption reconciles stock without double depletion', async t 
    const final=await scalar("select public.publish_recipe_version($1,null,$2,'PLATE','Plate','FINAL','2020-01-01',1,$3,'',$4)",[org,randomUUID(),pcs,[{kind:'RECIPE',target_id:child,quantity:'2',uom_id:pcs}]]);
    const version=await scalar("select public.publish_menu_item_version($1,null,$2,'PLATE','Plate',$3,'Mains',$4,1,'2020-01-01','')",[org,randomUUID(),brand,final]);const dish=await scalar('select menu_item_id from public.menu_item_versions where id=$1',[version]);
    await scalar('select public.save_menu_stock_mapping($1,$2,$3,$4,$5,$6,$7)',[org,randomUUID(),dish,location,centre,'RECIPE','2020-01-01']);
-   await login(procurement);const doc=await scalar('select public.request_stock_document($1,$2,$3,$4)',[org,randomUUID(),{kind:'OPENING',destination_id:centre,date:'2020-01-01',note:'Fixture finished stock'},[{item_id:cut,quantity:'10'},{item_id:finished,quantity:'10'}]]);await login(owner);await scalar("select public.stock_document_action($1,$2,'APPROVE','Verified',null)",[org,doc]);await login(procurement);await scalar("select public.stock_document_action($1,$2,'POST','Posted',null)",[org,doc]);await login(owner);
+   await login(procurement);const doc=await scalar('select public.request_stock_document($1,$2,$3,$4)',[org,randomUUID(),{kind:'OPENING',destination_id:centre,date:'2020-01-01',note:'Fixture finished stock'},[{item_id:cut,quantity:'10'},{item_id:finished,quantity:'10'}]]);await login(owner);await scalar("select public.stock_document_action($1,$2,'APPROVE','Verified',null)",[org,doc]);await login(owner);await scalar("select public.stock_document_action($1,$2,'POST','Posted',null)",[org,doc]);await login(owner);
    await post(await stage(csv([row({4:'STOCKED-CHILD',6:'PLATE',7:'1',8:'1500',11:'1500'})])));
    let job=(await queue()).rows.find(r=>r.transaction_ref==='STOCKED-CHILD');assert.equal(job.state,'POSTED',job.reason);assert.equal(Number(await read('select sum(quantity) from public.stock_ledger where location_id=$1 and item_id=$2',[centre,cut])),8);assert.equal(Number(await balance()),90);
    await scalar("select public.save_stock_configuration($1,'BINDING',$2)",[org,{recipe_version_id:final,item_id:finished}]);

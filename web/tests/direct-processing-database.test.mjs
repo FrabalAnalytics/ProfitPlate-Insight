@@ -21,7 +21,7 @@ test('direct processing is centre-scoped, atomic, named and safe to retry',async
  main=await centre('MAIN','STORE',managerMember);kitchen=await centre('KITCHEN','KITCHEN',chefMember);await centre('BAR','BAR',chefMember,false);
  await val("select public.save_stock_member_access($1,$2,0,'ASSIGNED',$3)",[org,chefMember,[{location_id:kitchen,can_request:true,can_handle:false,can_approve:false,can_dispatch:false,can_receive:true}]]);
  standard=await val('select public.save_processing_standard($1,$2,$3)',[org,randomUUID(),standardValue()]);
- await login(manager);for(const site of [main,kitchen]){const id=await request({kind:'OPENING',destination_id:site},[{item_id:fish,quantity:'80'}]);await login(owner);await action(id,'APPROVE');await login(manager);await action(id,'POST');}
+ await login(manager);for(const site of [main,kitchen]){const id=await request({kind:'OPENING',destination_id:site},[{item_id:fish,quantity:'80'}]);await login(owner);await action(id,'APPROVE');await action(id,'POST');await login(manager);}
  const row=(input='40',output='110',extra={})=>({standard_id:standard,actual_output:output,inputs:[{item_id:fish,quantity:input}],waste:[{item_id:fish,quantity:'4',reason:'Measured trim'}],usable_weight_kg:'36',...extra});
  const value=(rows,extra={})=>({source_id:kitchen,date:today,submitter_name:'Ada',note:'',rows,...extra});
  const submit=(v,id=randomUUID())=>val('select public.submit_material_processing($1,$2,$3)',[org,id,v]);

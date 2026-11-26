@@ -27,7 +27,7 @@ test('standalone requisitions keep scoped queues, pagination and receiver-confir
  const attention=await val("select public.workspace_attention($1,'READY_DISPATCH',1)",[org]);assert.equal(attention.records[0].path,'/workspace/requisitions');assert.equal(attention.records[0].params.document,requestId);
  });
  await t.test('opening balances stay outside requisitions; dispatch reserves and acceptance posts once',async()=>{
- opening=await request('OPENING',20,{destination_id:main});await login(owner);await act(opening,'APPROVE');await login(manager);await act(opening,'POST');await act(requestId,'DISPATCH');assert.equal((await packet()).queues.DISPATCH,0);
+ opening=await request('OPENING',20,{destination_id:main});await login(owner);await act(opening,'APPROVE');await act(opening,'POST');await login(manager);await act(requestId,'DISPATCH');assert.equal((await packet()).queues.DISPATCH,0);
  let stock=await val("select public.stock_workspace_v2($1)",[org]);assert.equal(Number(stock.balances.find(b=>b.location_id===main).quantity),20);assert.equal(Number(stock.balances.find(b=>b.location_id===main).reserved),5);
  assert.equal((await packet('ALL',1,'ALL','',opening)).selected_document,null);
  await login(kitchen);let p=await packet('ALL',1,'ACCEPTANCE');assert.equal(p.total,1);assert.equal(p.queues.ACCEPTANCE,1);await act(requestId,'RECEIVE',[{item_id:material,quantity:'4',reason:'One kg returned to store'}]);p=await packet('INCOMPLETE');assert.equal(p.total,1);assert.equal(p.queues.FOLLOW_UP,1);assert.equal(p.documents[0].state,'PARTIAL');await deny(act(requestId,'RECEIVE',[{item_id:material,quantity:'4'}]),'22023');

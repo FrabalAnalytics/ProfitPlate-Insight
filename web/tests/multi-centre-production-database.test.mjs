@@ -21,7 +21,7 @@ test('multi-centre single-output production preserves stock controls and direct 
  main=await centre('MAIN','STORE',managerMember);kitchen=await centre('KITCHEN','KITCHEN',chefMember);await centre('BAR','BAR',chefMember,false);
  await val("select public.save_stock_member_access($1,$2,0,'ASSIGNED',$3)",[org,chefMember,[{location_id:kitchen,can_request:true,can_handle:false,can_approve:false,can_dispatch:false,can_receive:true}]]);
  standard=await val('select public.save_processing_standard($1,$2,$3)',[org,randomUUID(),standardValue()]);
- await login(manager);for(const site of [main,kitchen]){const id=await request({kind:'OPENING',destination_id:site},[{item_id:fish,quantity:'80'}]);await login(owner);await action(id,'APPROVE');await login(manager);await action(id,'POST');}
+ await login(manager);for(const site of [main,kitchen]){const id=await request({kind:'OPENING',destination_id:site},[{item_id:fish,quantity:'80'}]);await login(owner);await action(id,'APPROVE');await action(id,'POST');await login(manager);}
 
  let oil,soup,multi,front,frontMember;
  const enabled=async(ids,revision)=>(await val('select public.save_processing_centres($1,$2,$3)',[org,ids,revision??(await val('select public.processing_setup($1)',[org])).processing_centres_revision]));
@@ -44,7 +44,7 @@ test('multi-centre single-output production preserves stock controls and direct 
   const saved=(await setup()).standards.find(s=>s.id===multi);assert.equal(saved.inputs.length,2);assert.equal(saved.output_item_id,soup);assert.equal(saved.site_ids.length,2);
   const costs=await val('select public.material_cost_estimates($1,$2,$3)',[org,[soup],today]);assert.equal(Number(costs[soup].unit_cost),205);
   await bad(val('select public.save_material_processing_baseline($1,$2,$3)',[org,randomUUID(),{...value,code:'BAD',inputs:[...value.inputs,{item_id:fish,quantity:'1'}]}]));
-  for(const site of [main,kitchen]){await login(manager);const id=await request({kind:'OPENING',destination_id:site},[{item_id:oil,quantity:'5'}]);await login(owner);await action(id,'APPROVE');await login(manager);await action(id,'POST');}
+  for(const site of [main,kitchen]){await login(manager);const id=await request({kind:'OPENING',destination_id:site},[{item_id:oil,quantity:'5'}]);await login(owner);await action(id,'APPROVE');await action(id,'POST');await login(manager);}
  });
  await t.test('both centres consume actual multi-input quantities and create only their own single output',async()=>{
   await login(manager);const token=randomUUID(),ids=await submit(main,[row()],token);assert.equal(ids.length,1);assert.deepEqual(await submit(main,[row()],token),ids);assert.equal(await balance(main,fish),70);assert.equal(await balance(main,oil),4.4);assert.equal(await balance(main,soup),48);assert.equal(await balance(kitchen,soup),0);

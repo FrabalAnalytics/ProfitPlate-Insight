@@ -49,7 +49,7 @@ test('name-first sales imports preserve menu identities, saved matches and stock
   const balance=()=>read('select coalesce(sum(quantity),0) from public.stock_ledger where organisation_id=$1 and location_id=$2 and item_id=$3',[org,centre,ingredient]);
   const opening=async(qty,day='2020-01-01')=>{
    await login(procurement);const id=await scalar('select public.request_stock_document($1,$2,$3,$4)',[org,randomUUID(),{kind:'OPENING',destination_id:centre,date:day,note:'Verified opening'},[{item_id:ingredient,quantity:String(qty)}]]);
-   await login(owner);await scalar("select public.stock_document_action($1,$2,'APPROVE','Verified',null)",[org,id]);await login(procurement);await scalar("select public.stock_document_action($1,$2,'POST','Verified',null)",[org,id]);await login(owner);
+   await login(owner);await scalar("select public.stock_document_action($1,$2,'APPROVE','Verified',null)",[org,id]);await login(owner);await scalar("select public.stock_document_action($1,$2,'POST','Verified',null)",[org,id]);await login(owner);
   };
   await opening(100);await scalar('select public.save_menu_stock_mapping($1,$2,$3,$4,$5,$6,$7)',[org,randomUUID(),menu,location,centre,'RECIPE','2020-01-01']);
 

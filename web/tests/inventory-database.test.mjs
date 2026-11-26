@@ -16,7 +16,7 @@ test('configurable stock flows preserve quantities, role scopes and an immutable
  const request=async(kind,site,lines,extra={},id=randomUUID())=>{if(kind==='PRODUCTION'){const setup=await value('select public.processing_setup($1)',[org]),standard=setup.standards.find(s=>s.recipe_version_id===extra.recipe_version_id),recipe=(await workspace()).recipes.find(r=>r.id===extra.recipe_version_id);lines=standard.inputs.map(i=>({item_id:i.item_id,quantity:String(Number(i.quantity)*Number(extra.planned_output)/Number(recipe.yield))}));extra={...extra,processing_standard_id:standard.id,variance_reason:'Measured yield result',processing_waste:[],waste_confirmed:true};}return value('select public.request_stock_document($1,$2,$3,$4)',[org,id,{kind,submitter_name:'Stock Test',date:new Date().toISOString().slice(0,10),note:'Checked source record',...(kind==='OPENING'||kind==='GRN'||kind==='DIRECT_RECEIPT'?{destination_id:site}:{source_id:site}),...extra},lines]);};
  const action=(id,choice,received=null)=>value('select public.stock_document_action($1,$2,$3,$4,$5)',[org,id,choice,'Verified physical stock',received]);
  const balance=async(site,item)=>Number((await workspace(site)).balances.find(b=>b.item_id===item)?.quantity??0);
- const approvedPost=async id=>{await login(finance);await action(id,'APPROVE');await login(storekeeper);await action(id,'POST');};
+ const approvedPost=async id=>{await login(finance);await action(id,'APPROVE');const d=(await workspace()).documents.find(d=>d.id===id);await login(['OPENING','COUNT'].includes(d.kind)?owner:storekeeper);await action(id,'POST');await login(storekeeper);};
  try{
   await db.exec(`create role anon;create role authenticated;create schema auth;create table auth.users(id uuid primary key,email_confirmed_at timestamptz,email text);create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;grant usage on schema public,auth to authenticated,anon;grant execute on function auth.uid() to authenticated,anon;`);
   for(const id of[owner,storekeeper,receiver,ops,finance,outsider,manager])await db.query('insert into auth.users values($1,now(),$2)',[id,`${id}@example.test`]);
@@ -48,8 +48,8 @@ test('configurable stock flows preserve quantities, role scopes and an immutable
    const token=randomUUID();opening=await request('OPENING',warehouse,[{item_id:rice,quantity:'100'}],{},token);
    assert.equal(await request('OPENING',warehouse,[{item_id:rice,quantity:'100'}],{},token),opening);
    await denied('select public.stock_document_action($1,$2,$3,$4,null)',[org,opening,'APPROVE','Self approval']);
-   await login(finance);await action(opening,'APPROVE');await denied('select public.stock_document_action($1,$2,$3,$4,null)',[org,opening,'APPROVE','Repeated approval'],'22023');assert.equal(await balance(warehouse,rice),0);await login(storekeeper);await action(opening,'POST');assert.equal(await balance(warehouse,rice),100);
-   await denied('select public.stock_document_action($1,$2,$3,$4,null)',[org,opening,'POST','Retry'],'22023');
+   await login(finance);await action(opening,'APPROVE');await denied('select public.stock_document_action($1,$2,$3,$4,null)',[org,opening,'APPROVE','Repeated approval'],'22023');assert.equal(await balance(warehouse,rice),0);await login(owner);await action(opening,'POST');await login(storekeeper);assert.equal(await balance(warehouse,rice),100);
+   await login(owner);await denied('select public.stock_document_action($1,$2,$3,$4,null)',[org,opening,'POST','Retry'],'22023');await login(storekeeper);
    assert.equal(await balance(warehouse,rice),100);
    const extra=await request('OPENING',warehouse,[{item_id:baseItem,quantity:'1'}]);
    await approvedPost(extra);assert.equal(await balance(warehouse,baseItem),1);
@@ -76,7 +76,7 @@ test('configurable stock flows preserve quantities, role scopes and an immutable
    await login(storekeeper);const count=await request('COUNT',warehouse,[{item_id:rice,quantity:'79'}]);
    id=await request('CONSUMPTION',warehouse,[{item_id:rice,quantity:'1'}]);await approvedPost(id);
    await login(finance);await action(count,'APPROVE');await login(storekeeper);
-   await denied('select public.stock_document_action($1,$2,$3,$4,null)',[org,count,'POST','Stale count'],'22023');
+   await login(owner);await denied('select public.stock_document_action($1,$2,$3,$4,null)',[org,count,'POST','Stale count'],'22023');await login(storekeeper);
    id=await request('COUNT',warehouse,[{item_id:rice,quantity:'78'}]);await approvedPost(id);assert.equal(await balance(warehouse,rice),78);
    await assert.rejects(request('WASTE',warehouse,[{item_id:rice,quantity:'1'}],{date:'2020-10-01'}),e=>e.code==='22023');
   });
@@ -152,7 +152,7 @@ test('configurable stock flows preserve quantities, role scopes and an immutable
    await login(owner);const managerMembership=await value('select id from public.organisation_memberships where organisation_id=$1 and user_id=$2',[org,manager]);await value('select public.save_stock_centre($1,$2)',[org,{id:warehouse,code:'WH',name:'Central warehouse',kind:'WAREHOUSE',responsible:managerMembership,processing_enabled:true}]);await login(storekeeper);const waste=await request('WASTE',warehouse,[{item_id:rice,quantity:'1'}]);
    await login(manager);assert.equal((await workspace()).documents.find(d=>d.id===waste).state,'POSTED');
    const own=await request('COUNT',warehouse,[{item_id:rice,quantity:'57'}]);await denied('select public.stock_document_action($1,$2,$3,$4,null)',[org,own,'APPROVE','Self approval']);
-   await login(finance);await action(own,'APPROVE');await login(manager);await action(own,'POST');
+   await login(finance);await action(own,'APPROVE');await login(owner);await action(own,'POST');await login(manager);
    const managerRoute=await configure('ROUTE',{source_id:warehouse,destination_id:kitchen,kind:'TRANSFER',approval_role:'inventory_manager'});
    await login(receiver);const movement=await request('TRANSFER',null,[{item_id:rice,quantity:'1'}],{route_id:managerRoute});
    await login(finance);await action(movement,'APPROVE');await login(manager);await action(movement,'DISPATCH');

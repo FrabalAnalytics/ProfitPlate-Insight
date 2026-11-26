@@ -59,7 +59,7 @@ test('fine-dining stock assignments separate Main Store, Kitchen and Bar without
   });
   await t.test('department balances, ledger rows and unrelated requests remain isolated',async()=>{
    for(const[user,site,qty]of[[storeUser,store,'100'],[kitchenUser,kitchen,'5'],[barUser,bar,'7']]){
-    await login(user);const id=await request('OPENING',site,qty);await login(owner);await action(id,'APPROVE');await login(user);await action(id,'POST');
+    await login(user);const id=await request('OPENING',site,qty);await login(owner);await action(id,'APPROVE');await action(id,'POST');await login(user);
    }
    await login(kitchenUser);const packet=await workspace();assert.equal(packet.balances.length,1);assert.equal(packet.balances[0].location_id,kitchen);assert.ok(packet.ledger.every(l=>l.location==='Kitchen'));
    assert.ok(packet.documents.every(d=>d.destination_id===kitchen));
