@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import type {CorrectionQueue} from '@/lib/workflow-guidance';
 import {createClient} from '@/lib/supabase/server';
 import {referenceAmount} from '@/lib/reference-prices';
 import {displayPercent} from '@/lib/display';
@@ -22,17 +23,23 @@ export async function WorkspaceWelcome(p:Props){
  const financial=nav.overview&&!operations,valid=validBusinessDate(p.from)&&validBusinessDate(p.to)&&p.from<=p.to&&(!p.location||isUuid(p.location));
  const review=roles.some(r=>reviewRoles.includes(r.role_code));
  const admin=roles.some(r=>r.role_code==='restaurant_admin'&&r.location_id===null)&&!executive;
- const [performance,actions,op,menu,briefing,setup]=await Promise.all([
+ const [performance,actions,op,menu,briefing,setup,corrections]=await Promise.all([
   financial&&valid?client.rpc('executive_overview',{p_organisation_id:org,p_from:p.from,p_to:p.to,p_location_id:p.location||null}):null,
   review?client.rpc('management_actions',{p_organisation_id:org,p_state:'ACTIVE',p_page:1,p_id:null}):null,
   operations?client.rpc('operations_workspace',{p_organisation_id:org}):null,
   executive?client.rpc('owner_menu_attention',{p_organisation_id:org,p_outlet_id:p.location||null}):null,
   executive&&valid?client.rpc('executive_profitability_briefing',{p_organisation_id:org,p_from:p.from,p_to:p.to,p_location_id:p.location||null}):null,
   admin?client.rpc('setup_workspace',{p_organisation_id:org}):null,
+  client.rpc('stock_correction_queue',{p_organisation_id:org,p_state:'ALL',p_page:1}),
  ]);
  const rows=welcomeTasks(org,p.attention,p.waste,p.weekly,p.monthly),issues:string[]=[];
  const path=(route:string,params:Record<string,string>={})=>`${route}?${new URLSearchParams({organisation:org,...params})}`;
  const add=(id:string,label:string,count:number,unit:string,href:string,priority=2,detail='')=>{if(count>0)rows.push({id,label,count,unit,href,priority,detail});};
+ const correctionTasks=corrections?.data as CorrectionQueue|null;
+ if(corrections?.error&&corrections.error.code!=='42501')issues.push('Balance review tasks are unavailable.');
+ add('correction-review','Balance corrections awaiting your review',correctionTasks?.review??0,'records',path('/workspace/inventory/corrections'),1);
+ add('correction-post','Stock balances ready to record',correctionTasks?.post??0,'records',path('/workspace/inventory/corrections'),1);
+ add('correction-wait','Your balances awaiting a colleague',correctionTasks?.waiting??0,'records',path('/workspace/inventory/corrections',{state:'WAITING'}),2);
  if(p.attentionError)issues.push('Some stock or purchasing tasks could not be loaded.');
  if(p.wasteError)issues.push('Waste reporting status is unavailable.');
  if(p.weeklyError)issues.push('Weekly count status is unavailable.');

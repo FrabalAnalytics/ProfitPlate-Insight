@@ -3,7 +3,8 @@ import {test,expect} from '@playwright/test';
 test('setup puts centres before opening-stock imports and keeps shortcuts compact',async({page},info)=>{
  await page.goto('/login');await page.getByLabel('Email address',{exact:true}).fill('catalogue@example.test');await page.getByLabel('Password',{exact:true}).fill('TestPassword123!');await page.getByRole('button',{name:'Sign in',exact:true}).click();await expect(page).toHaveURL(/\/workspace/);
  await page.goto('/workspace/setup');await expect(page.getByRole('heading',{name:'Data & Setup',exact:true})).toBeVisible();
- const journey=page.getByRole('region',{name:'Your setup journey'});
+ await page.getByText('All setup stages',{exact:true}).click();
+ const journey=page.locator('details[aria-label="Your setup journey"]');
  const headings=await journey.getByRole('heading',{level:3}).allTextContents();
  expect(headings.indexOf('Users & roles')).toBeLessThan(headings.indexOf('Stock centres'));
  expect(headings.indexOf('Stock centres')).toBeLessThan(headings.indexOf('Materials, prices & opening stock'));

@@ -22,11 +22,11 @@ export async function reviewMasterImport(state: MasterImportState, form: FormDat
    const result = await client.rpc("post_master_import", { p_organisation_id: org, p_kind: kind, p_location_id: location || null, p_request_id: request, p_rows: JSON.parse(raw), p_preview: JSON.parse(rawPreview) });
    if (result.error) throw new Error(result.error.code === "22023" ? result.error.message : "Import could not be saved. Check your access and database update 057.");
    for (const path of ["/workspace/materials", "/workspace/recipes", "/workspace/setup", "/workspace/menus", "/workspace/menus/profitability", "/workspace/inventory/openings", "/admin"]) revalidatePath(path);
-   return { done: true, message: result.data === 0 ? "This import was already saved. No duplicate records were created." : kind === "MATERIAL" ? "Materials and supplied reference prices saved. Supplied openings are ready for Inventory review; stock has not been posted." : "Recipes published in dependency order. Existing versions and stock balances are unchanged." };
+   return { done: true, message: result.data === 0 ? "This import was already saved. No duplicate records were created." : kind === "MATERIAL" ? "Materials and supplied reference prices saved. Supplied openings are ready for Administrator recording. Stock has not been posted; open Review imported openings to finish." : "Recipes published in dependency order. Existing versions and stock balances are unchanged." };
   }
   const file = form.get("file");
   if (!(file instanceof File)) throw new Error("Choose a CSV or XLSX file.");
-  const rows = parseMasterCsv(await readOnboardingFile(file), kind as "MATERIAL" | "RECIPE");
+  const rows = parseMasterCsv(await readOnboardingFile(file), kind as "MATERIAL" | "RECIPE").map(row=>kind==="MATERIAL"?{...row,_assign_centres:form.get('assign_centres')==='on'?'true':'false'}:row);
   const result = await client.rpc("preview_master_import", { p_organisation_id: org, p_kind: kind, p_location_id: location || null, p_rows: rows });
   if (result.error) throw new Error(result.error.code === "22023" ? result.error.message : "Review is unavailable. Check your setup access and database update 057.");
   return { rows, preview: result.data, location };

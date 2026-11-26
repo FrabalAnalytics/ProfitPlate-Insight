@@ -1,3 +1,5 @@
+import {SetupNextActions} from "./next-actions";
+import {setupAreas,type SetupActions} from "@/lib/workflow-guidance";
 import {DataTable,StatusBadge} from "@/app/components/data-table";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -12,7 +14,7 @@ import "./setup.css";
 export const metadata: Metadata = { title: "Your workspace | ProfitPlate Insights" };
 export const instant = false;
 
-export default async function WorkspacePage({ searchParams }: { searchParams: Promise<{ message?: string; organisation?: string; welcome?: string }> }) {
+export default async function WorkspacePage({ searchParams }: { searchParams: Promise<{ message?: string; organisation?: string; welcome?: string;area?:string;task_page?:string }> }) {
   const user = await requireUser();
   const access = await getPlatformAccess();
   if (access !== "member") redirect(workspacePath(access));
@@ -31,6 +33,8 @@ export default async function WorkspacePage({ searchParams }: { searchParams: Pr
   const { data: brands, error: brandsError } = await supabase.from("brands")
     .select("id,name").eq("organisation_id", organisation.id).order("name");
   const setupResult=await supabase.rpc("setup_workspace",{p_organisation_id:organisation.id});
+  const area=params.area&&params.area in setupAreas?params.area:"ALL",taskPage=Math.max(1,Math.min(100000,Number.parseInt(params.task_page??'1',10)||1));
+  const tasks=await supabase.rpc('setup_next_actions',{p_organisation_id:organisation.id,p_category:area,p_page:taskPage});
   const progress=setupResult.data?.progress as {completed:number;total:number;stages:{name:string;ready:boolean;path:string;detail:string}[]}|undefined;
 
 
@@ -52,7 +56,8 @@ export default async function WorkspacePage({ searchParams }: { searchParams: Pr
     <div className="business-summary-grid"><section className="business-card"><div className="summary-card-heading"><span className="summary-icon"><Building2 size={19} /></span><span>Business profile</span></div><h2>{organisation.name}</h2><p>{organisation.country_code} · {organisation.currency_code}</p><small>Reporting currency</small></section><section className="business-card"><div className="summary-card-heading"><span className="summary-icon"><MapPin size={19} /></span><span>Brands & locations</span></div><h2>{brands?.length ?? "—"} {brands?.length === 1 ? "brand" : "brands"} <span> / </span>{locations?.length ?? "—"} {locations?.length === 1 ? "location" : "locations"}</h2><p>{brands?.map(brand => brand.name).join(", ") || "No brands available"}</p><small>Visible within your account’s access</small></section></div>
     {(locationsError || brandsError) && <p className="auth-alert" role="alert">We couldn’t load all of your setup details. Please refresh to try again.</p>}
     <nav className="setup-tools" aria-label="Setup tools">{tools.map(([label, path]) => <Link key={path} href={`/workspace/setup/${path}?organisation=${organisation.id}`}>{label}<ArrowRight size={15} aria-hidden="true"/></Link>)}</nav>
-    <section className="setup-checklist" aria-label="Your setup journey"><div className="section-heading"><h2>Your setup journey</h2><span>{progress?`${progress.completed} OF ${progress.total} STAGES READY`:"Setup status unavailable"}</span></div>{progress?<ol>{stages.map((stage,i)=><li key={stage.name}><span className={`checklist-dot ${stage.ready?'complete':''}`}>{stage.ready?<Check size={16}/>:i+1}</span><div><h3>{stage.name}</h3><p>{stage.name === "Stock centres" ? "Create centres and assign responsible members before importing opening stock." : stage.detail}</p><Link className="inline-link" href={`${stage.path}?organisation=${organisation.id}`}>Open {stage.name.toLowerCase()} <ArrowRight size={14}/></Link></div><span className={`checklist-state ${stage.ready ? "" : "pending"}`}>{stage.ready?'Ready':'Incomplete'}</span></li>)}</ol>:<p role="alert">Setup progress is unavailable. Refresh or contact platform support.</p>}</section>
+    <SetupNextActions org={organisation.id} packet={tasks.data as SetupActions|null} error={!!tasks.error} area={area} page={taskPage}/>
+    <details className="setup-checklist" aria-label="Your setup journey"><summary>All setup stages</summary><div className="section-heading"><h2>Your setup journey</h2><span>{progress?`${progress.completed} OF ${progress.total} STAGES READY`:"Setup status unavailable"}</span></div>{progress?<ol>{stages.map((stage,i)=><li key={stage.name}><span className={`checklist-dot ${stage.ready?'complete':''}`}>{stage.ready?<Check size={16}/>:i+1}</span><div><h3>{stage.name}</h3><p>{stage.name === "Stock centres" ? "Create centres and assign responsible members before importing opening stock." : stage.detail}</p><Link className="inline-link" href={`${stage.path}?organisation=${organisation.id}`}>Open {stage.name.toLowerCase()} <ArrowRight size={14}/></Link></div><span className={`checklist-state ${stage.ready ? "" : "pending"}`}>{stage.ready?'Ready':'Incomplete'}</span></li>)}</ol>:<p role="alert">Setup progress is unavailable. Refresh or contact platform support.</p>}</details>
 
     <section className="location-section"><div className="section-heading"><h2>Your locations</h2><span>{organisation.currency_code} · LOCAL BUSINESS TIME</span></div><DataTable label="Business locations" columns={[{label:"Location"},{label:"Brand"},{label:"Time zone"},{label:"Address"},{label:"Status"}]} rows={(locations??[]).map(location=>({id:location.id,cells:[location.name,brands?.find(brand=>brand.id===location.brand_id)?.name??"Unassigned",location.timezone,location.address||"Not provided",<StatusBadge key="state" tone={location.is_active?"success":"neutral"}>{location.is_active?"Active":"Inactive"}</StatusBadge>]}))} empty="No locations are available."/></section>
   </WorkspaceShell>;

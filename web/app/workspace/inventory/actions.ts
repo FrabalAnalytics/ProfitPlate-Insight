@@ -52,6 +52,7 @@ export async function requestStock(_state:StockActionState,form:FormData):Promis
   const result=await auth.client.rpc(directOpening?"record_admin_opening":document.kind==="COUNT"&&form.get("stock_correction")==="on"?"request_stock_correction":"request_stock_document",{p_organisation_id:org,p_request_id:request,p_document:{...document,...(document.kind==="PRODUCTION"?{processing_waste:parsed(form,"processing_waste"),waste_confirmed:form.get("waste_confirmed")==="on"}:{})},p_lines:parsed(form,"lines")});checked(result.error);id=result.data;
   revalidatePath("/workspace/requisitions");revalidatePath("/workspace/inventory");revalidatePath("/workspace/inventory/processing");revalidatePath("/workspace/inventory/waste");revalidatePath("/workspace/inventory/waste/daily");revalidatePath("/workspace/inventory/waste/analysis");revalidatePath("/workspace/setup/centres");revalidatePath("/workspace/materials");revalidatePath("/workspace/setup");revalidatePath("/workspace/setup/standards");revalidatePath("/workspace");
  }catch(error){return failure(error);}
+ if(directOpening&&!id)redirect(`/workspace/inventory?${new URLSearchParams({organisation:org,result:"zero"})}`);
  redirect(stockDestination(form,org,id,directOpening?"posted":undefined));
 }
 export async function actOnStock(_state:StockActionState,form:FormData):Promise<StockActionState>{

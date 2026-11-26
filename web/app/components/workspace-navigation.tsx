@@ -42,6 +42,7 @@ export function WorkspaceNavigation({organisation,email,roles,access,pathname,co
    {access.inventory&&roles.some(r=>['restaurant_admin','inventory_manager','inventory','operations','stock_department','kitchen_manager','bar_lead'].includes(r))&&item("Material Plan","/workspace/inventory/plans",ClipboardList,pathname.startsWith("/workspace/inventory/plans"))}
    {access.inventory&&!financeOnly&&item("Material Processing Log","/workspace/inventory/processing",Boxes,pathname.startsWith("/workspace/inventory/processing"))}
    {access.inventory&&item(financeOnly?"Waste across centres":"Waste Log",financeOnly?"/workspace/inventory/waste?kind=WASTE":"/workspace/inventory/waste",Boxes,pathname.startsWith("/workspace/inventory/waste"))}
+   {roles.some(r=>['ceo','finance','restaurant_admin','operations'].includes(r))&&item('Balance reviews','/workspace/inventory/corrections',ClipboardList,pathname.startsWith('/workspace/inventory/corrections'))}
    {stockReports&&item("Current stock value","/workspace/inventory/value",Boxes,pathname.startsWith("/workspace/inventory/value"))}
    {stockReports&&item("Stock movement statement","/workspace/inventory/statements",Boxes,pathname.startsWith("/workspace/inventory/statements"))}
    {stockReports&&item("Weekly stock counts","/workspace/inventory/counts",ClipboardList,pathname.startsWith("/workspace/inventory/counts")&&!monthlyView)}
@@ -56,6 +57,7 @@ export function WorkspaceNavigation({organisation,email,roles,access,pathname,co
    {(access.overview||roles.includes('operations'))&&item(roles.includes('operations')&&!roles.includes('ceo')?"Operational overview":"Business performance","/workspace/performance",LayoutDashboard,pathname.startsWith("/workspace/performance"))}
    {access.overview&&<Link href={`/workspace/overview?${contextQuery(organisation,context)}`} aria-current={pathname.startsWith("/workspace/overview")?"page":undefined} title="Executive overview" onClick={onNavigate}><LayoutDashboard size={18}/><span>Executive overview</span></Link>}
    {roles.some(r=>reviewRoles.includes(r))&&<>{item("Management Review","/workspace/reviews",LayoutDashboard,pathname==="/workspace/reviews"||pathname.startsWith("/workspace/reviews/history"))}{item("Action register","/workspace/reviews/actions",ClipboardList,pathname.startsWith("/workspace/reviews/actions"))}</>}
+   {roles.some(r=>['ceo','finance','restaurant_admin','operations'].includes(r))&&item('Monthly close','/workspace/reviews/close',ClipboardList,pathname.startsWith('/workspace/reviews/close'))}
    {access.overview&&<Link href={`/workspace/reports?${contextQuery(organisation,context)}`} title="Management reports" aria-current={pathname.startsWith("/workspace/reports")?"page":undefined} onClick={onNavigate}><FileSpreadsheet size={18}/><span>Management reports</span></Link>}
    {access.history&&item("Historical reports","/workspace/records",FileSpreadsheet,pathname.startsWith("/workspace/records"))}
   </>)}
