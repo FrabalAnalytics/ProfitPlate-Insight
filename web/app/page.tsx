@@ -10,16 +10,16 @@ import {InventoryWorkflow} from "./components/inventory-workflow";
 import "./home.css";
 
 export const metadata: Metadata = {
-  title: "ProfitPlate Insights | Restaurant margins, stock control & accountability",
-  description: "Connect menu margins, imported POS sales and stock by centre. Build accountability with daily waste reporting, weekly and monthly counts, and independent review.",
+  title: "ProfitPlate Insights | Food cost visibility, margins & accountability",
+  description: "See the food costs a basic costing sheet can miss. Connect sub-recipes, processing yields and updated prices with waste and stock accountability to protect restaurant margins.",
 };
 
 const capabilities = [
-  { icon: UtensilsCrossed, number: "01", title: "Spot dishes that need a review", text: "See which dishes protect your margin and which need a pricing or portion review before they erode profit.", detail: "Menu profitability" },
-  { icon: LayoutDashboard, number: "02", title: "Connect sales to the stock used", text: "Understand what recorded sales should have used, then investigate stock gaps with a clearer basis for accountability.", detail: "Sales-linked stock consumption" },
-  { icon: ClipboardList, number: "03", title: "Plan before the kitchen starts", text: "Give the kitchen a clearer view of what it needs before work starts. Reduce last-minute shortages and spot production losses.", detail: "Material plans & production" },
-  { icon: PackageCheck, number: "04", title: "Catch purchase cost pressure", text: "See where supplier price changes threaten margins, with the evidence you need to review purchases and respond.", detail: "Purchasing & price tracking" },
-  { icon: Users, number: "05", title: "Make waste reporting a habit", text: "Make losses visible, identify recurring causes and give managers a clear starting point for reducing avoidable waste.", detail: "Daily waste & analysis" },
+  { icon: UtensilsCrossed, number: "01", title: "Cost the whole dish", text: "Bring sauces, marinades and sub-recipes into the cost per plate. See which dishes need a price or portion review before hidden ingredient costs erode the margin.", detail: "Menu profitability" },
+  { icon: LayoutDashboard, number: "02", title: "Connect sales to the stock used", text: "Compare what fulfilled sales should have used with stock movements and physical counts. Investigate the gap between recipe standards and day-to-day usage.", detail: "Sales-linked stock consumption" },
+  { icon: ClipboardList, number: "03", title: "Know what your prep should yield", text: "Cost usable portions from your processing baseline, then compare actual output. Plan the materials you need and see where production falls short.", detail: "Material plans & production" },
+  { icon: PackageCheck, number: "04", title: "Catch purchase cost pressure", text: "A profitable dish on an old price sheet may be under pressure today. Updated material costs help you see which menu margins need another look.", detail: "Purchasing & price tracking" },
+  { icon: Users, number: "05", title: "See the waste behind the margin", text: "Spoilage, expiry and bad production do not appear in a standard recipe. Make recorded losses and recurring causes visible, with a named person to follow up.", detail: "Daily waste & analysis" },
   { icon: ShieldCheck, number: "06", title: "Turn stock gaps into action", text: "Find differences between recorded stock and what is on the shelves, so managers can investigate and put corrective action in place.", detail: "Weekly & monthly stock counts" },
 ];
 const questions = [
@@ -28,7 +28,7 @@ const questions = [
   ["Will setup mean retyping all our restaurant data?", "No, you can bulk import your existing material, recipe and menu records, including known purchase prices, opening stock and selling prices, without retyping them manually. Add any missing details later."],
   ["My team struggles to record consistently. Will another system help?", "Yes, by making accountability part of the daily routine. Each centre has a named owner, with clear responsibilities for each role. Daily waste reporting sets an explicit expectation, and missed submissions are brought to managers' attention for follow-up, helping your team build consistent habits."],
   ["Will it find theft?", "No. It highlights stock gaps and who is responsible for following them up; it does not prove theft. Unexplained differences need investigation, not accusation."],
-  ["Will the margin figures tell me our actual net profit?", "No. Menu margins show what each dish contributes before other business costs. They help you spot pricing and cost pressure, but they are estimates, not your final net profit."],
+  ["Will the margin figures tell me our actual net profit?", "No. Sub-recipes, processing yields and updated prices give you a clearer ingredient and packaging cost per plate. Waste and stock differences help you investigate actual usage. Recipe margins are estimates, not your final net profit; labour and overhead remain separate."],
   ["Who can see our figures or change our restaurant records?", "Your figures are kept separate from other restaurants. You control which colleagues can view or change your records, and can revoke their access without losing your restaurant's history."],
 ];
 
@@ -38,17 +38,17 @@ export default function Home() {
     <HomeHeader />
     <main id="main-content">
       <section className="marketing-hero marketing-container">
-        <div className="marketing-hero-copy"><p className="marketing-eyebrow"><span /> FOR RESTAURANT OWNERS & OPERATIONS MANAGERS</p><h1>Protect your<br />restaurant margins.<br /><span>Keep every centre accountable.</span></h1><p className="marketing-hero-description">Rising purchase prices. Unreported waste. Stock you cannot explain.</p><p className="marketing-hero-context">See which menus are under pressure, how sales use stock and where your team needs to act.</p><div className="marketing-hero-actions"><Link className="marketing-button" href="/signup">Request workspace access <ArrowUpRight size={17} /></Link><a className="marketing-text-link" href="#product">Explore the product <ArrowRight size={16} /></a></div><p className="marketing-availability"><Check size={14} /> Built for one outlet or a restaurant group.</p></div>
+        <div className="marketing-hero-copy"><p className="marketing-eyebrow"><span /> FOR RESTAURANT OWNERS & OPERATIONS MANAGERS</p><h1>Know the cost<br />behind every plate.<br /><span>Protect your restaurant margins.</span></h1><p className="marketing-hero-description">Your costing sheet can look right and still miss what food is costing you.</p><p className="marketing-hero-context">Bring sub-recipes, processing yields and updated prices into view. See where waste and stock gaps put the margin you expect under pressure.</p><div className="marketing-hero-actions"><Link className="marketing-button" href="/signup">Request workspace access <ArrowUpRight size={17} /></Link><a className="marketing-text-link" href="#product">Explore the product <ArrowRight size={16} /></a></div><p className="marketing-availability"><Check size={14} /> Built for one outlet or a restaurant group.</p></div>
         <div className="marketing-hero-preview"><CostPreview /><p className="marketing-preview-caption"><Sparkles size={14} /> Try it: see what an ingredient cost change means for one plate.</p></div>
       </section>
 
       <section className="marketing-clarity marketing-container" aria-label="Three questions ProfitPlate helps you answer">{[
-        ["01", "Margins in view", "See menu costs and pricing exceptions."],
+        ["01", "More complete food costs", "Look beyond an ingredient list and an old price sheet."],
         ["02", "Stock with context", "Trace stock value, dated usage and physical differences."],
         ["03", "Clear next actions", "Follow reporting gaps and accountable handovers."],
       ].map(([number,title,text])=><div key={number}><span>{number}</span><div><h2>{title}</h2><p>{text}</p></div></div>)}</section>
 
-      <section id="product" className="marketing-section marketing-container"><div className="marketing-section-heading"><div><p className="marketing-eyebrow">A CLEARER BASIS FOR EVERY DECISION</p><h2>Turn daily records into useful decisions.</h2></div><p>See the cost, the context and the next step.</p></div><div className="marketing-capabilities">{capabilities.map(({ icon: Icon, number, title, text, detail }) => <article key={number}><div className="capability-top"><Icon size={25} strokeWidth={1.5} /><span>{detail}</span></div><h3>{title}</h3><p>{text}</p></article>)}</div></section>
+      <section id="product" className="marketing-section marketing-container"><div className="marketing-section-heading"><div><p className="marketing-eyebrow">A CLEARER BASIS FOR EVERY DECISION</p><h2>A costing sheet can look right.<br />Still miss what matters.</h2></div><p>Uncosted prep, ignored yields and old prices can make a dish look more profitable than it is.</p></div><div className="marketing-capabilities">{capabilities.map(({ icon: Icon, number, title, text, detail }) => <article key={number}><div className="capability-top"><Icon size={25} strokeWidth={1.5} /><span>{detail}</span></div><h3>{title}</h3><p>{text}</p></article>)}</div><p className="marketing-cost-basis">Recipe estimates cover ingredients and packaging. Waste, production and stock-count reports help explain differences in actual usage; labour and overhead remain separate.</p></section>
 
       <section id="stock-value" className="marketing-section marketing-container marketing-value-grid"><div className="marketing-value-copy"><p className="marketing-eyebrow">FROM BUSINESS TOTAL TO ONE MATERIAL</p><h2>Know the value on your shelves.</h2><p>See what your posted stock is worth at current reference estimates. Start with the business total, then open Main Store, Kitchen or Bar.</p><ul><li><Check size={16}/>Responsible centre managers see their own stock value.</li><li><Check size={16}/>Unpriced materials stay flagged, rather than valued at zero.</li><li><Check size={16}/>Weekly and monthly counts expose gaps between records and shelves.</li></ul><p className="marketing-value-prompt">Try the example: select a centre to see the calculation.</p></div><StockValuePreview/></section>
 
