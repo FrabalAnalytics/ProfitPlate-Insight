@@ -36,7 +36,7 @@ export function ReportContent({ rows, overview, costs, currency, overviewHref, c
   return <>
 
     <StandardCostRatios summary={overview.summary} costs={costs}/>
-    <section id="report-summary" className="management-summary" aria-labelledby="report-summary-heading"><div className="overview-section-heading"><h2 id="report-summary-heading">Performance at a glance</h2><Link className="record-edit management-no-print" href={overviewHref}>Open Executive overview <ArrowRight size={14} aria-hidden="true"/></Link></div>
+    <section id="report-summary" className="management-summary" aria-labelledby="report-summary-heading"><div className="overview-section-heading"><h2 id="report-summary-heading">Performance at a glance</h2><Link className="record-edit management-no-print" href={overviewHref}>Open Sales & margin detail <ArrowRight size={14} aria-hidden="true"/></Link></div>
       <div className="management-metrics">{metrics.map(name => {
         const row = rows.find(item => item.section === "Performance" && item.metric === name)!;
         const percent = rows.find(item => item.section === "Performance" && item.metric === ratio[name]);

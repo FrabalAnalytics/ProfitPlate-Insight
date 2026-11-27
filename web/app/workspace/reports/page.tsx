@@ -16,7 +16,7 @@ import "../materials/catalogue.css";
 import "../overview/overview.css";
 import "./reports.css";
 
-export const metadata: Metadata = { title: "Management reports | ProfitPlate Insights" };
+export const metadata: Metadata = { title: "Financial report | ProfitPlate Insights" };
 export const instant = false;
 type Params = { organisation?: string; from?: string; to?: string; location?: string };
 export default async function ReportsPage({ searchParams }: { searchParams: Promise<Params> }) {
@@ -30,7 +30,7 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
   const parts = new Intl.DateTimeFormat("en", { timeZone: org.time_zone, year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(new Date());
   const today = ["year", "month", "day"].map(key => parts.find(part => part.type === key)?.value).join("-");
   const from = params.from ?? `${today.slice(0, 7)}-01`, to = params.to ?? today, location = params.location ?? "", context = { from, to, location };
-  const shell = { email: user.email, restaurantName: org.name, organisationId: org.id, sectionLabel: "Management reports", reportingContext: context };
+  const shell = { email: user.email, restaurantName: org.name, organisationId: org.id, sectionLabel: "Financial report", reportingContext: context };
   const permission = await client.rpc("sales_import_access", { p_organisation_id: org.id });
   if (permission.error || permission.data?.read !== true) return <WorkspaceShell {...shell}><h1 className="workspace-title">Management report access is restricted.</h1><p className="workspace-description">An organisation-wide CEO, Finance member or Restaurant Administrator can review financial reports. Check your access or try again shortly.</p></WorkspaceShell>;
   const locationsResult = await client.from("locations").select("id,name,is_active").eq("organisation_id", org.id).order("name");

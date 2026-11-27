@@ -6,7 +6,7 @@ async function login(page:Page,email='catalogue@example.test') {
  await page.goto('/login');await page.getByLabel('Email address',{exact:true}).fill(email);await page.getByLabel('Password',{exact:true}).fill('TestPassword123!');await page.getByRole('button',{name:'Sign in',exact:true}).click();await expect(page).toHaveURL(/\/workspace/);
 }
 async function openReport(page:Page,from=day) {
- const link=await openNavigationGroup(page,'Management reports');const url=new URL((await link.getAttribute('href'))!,page.url());url.searchParams.set('from',from);url.searchParams.set('to',from);await page.goto(url.href);await expect(page.getByRole('heading',{name:'Executive management report',exact:true})).toBeVisible();
+ const link=await openNavigationGroup(page,'Financial report');const url=new URL((await link.getAttribute('href'))!,page.url());url.searchParams.set('from',from);url.searchParams.set('to',from);await page.goto(url.href);await expect(page.getByRole('heading',{name:'Executive management report',exact:true})).toBeVisible();
 }
 const metric=(page:Page,name:string)=>page.getByRole('main').locator('.management-metrics article').filter({has:page.getByText(name,{exact:true})});
 async function download(page:Page,path:string) {
@@ -108,7 +108,7 @@ test('Business performance uses the report cost ratios for the selected period a
  const expected=await Promise.all(labels.map(label=>ratios.getByRole('article',{name:label,exact:true}).locator('strong').innerText()));
  expect(expected.every(value=>value!=='Unavailable')).toBe(true);
  const url=new URL(page.url());url.pathname='/workspace/performance';await page.goto(url.href);
- for(const [index,label]of labels.entries())await expect(ratios.getByRole('article',{name:label,exact:true}).locator('strong')).toHaveText(expected[index]);
+ for(const [index,label]of labels.entries()){const card=ratios.getByRole('article',{name:label,exact:true});await expect(card.locator('strong')).toHaveText(expected[index]);await expect(card).toContainText('out of every 100 in net sales');}
  await page.setViewportSize({width:375,height:812});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.screenshot({path:testInfo.outputPath('business-performance-cost-ratios-mobile.png'),fullPage:true});
  url.searchParams.set('from','2010-01-01');url.searchParams.set('to','2010-01-01');await page.goto(url.href);
  for(const label of labels)await expect(ratios.getByRole('article',{name:label,exact:true}).locator('strong')).toHaveText('Unavailable');

@@ -16,7 +16,7 @@ import {PurchasingFilters,PurchasingViewTabs,PurchasingReportTable} from "./purc
 import "../materials/catalogue.css";
 import "./records.css";
 
-export const metadata:Metadata={title:"Historical reports | ProfitPlate Insights"};
+export const metadata:Metadata={title:"Operational reports | ProfitPlate Insights"};
 export const instant=false;
 export default async function HistoricalReportsPage({searchParams}:{searchParams:Promise<HistoricalParams>}){
  const user=await requireUser(),access=await getPlatformAccess();if(access!=="member")redirect(workspacePath(access));
@@ -24,11 +24,11 @@ export default async function HistoricalReportsPage({searchParams}:{searchParams
  const orgs=await client.from("organisations").select("id,name,time_zone").order("name").order("id");
  const org=p.organisation?orgs.data?.find(o=>o.id===p.organisation):orgs.data?.[0];
  if(!org)return <WorkspaceShell email={user.email}><h1 className="workspace-title">This business is unavailable.</h1><Link href="/workspace">Return to workspace</Link></WorkspaceShell>;
- const shell={email:user.email,restaurantName:org.name,organisationId:org.id,sectionLabel:"Historical reports"};
+ const shell={email:user.email,restaurantName:org.name,organisationId:org.id,sectionLabel:"Operational reports"};
  const optionsResult=await client.rpc("operational_report_options",{p_organisation_id:org.id,p_type:p.type??null});
  let options=optionsResult.data as HistoricalOptions|null;
  if(options&&isPurchasingReport(options.selected)){const extra=await client.rpc("purchasing_report_options",{p_organisation_id:org.id,p_type:options.selected});if(extra.error)options=null;else options=extra.data as HistoricalOptions;}
- if(optionsResult.error||!options)return <WorkspaceShell {...shell}><h1 className="workspace-title">Historical reports</h1><p className="auth-alert" role="alert">{optionsResult.error?.code==="42501"?"This report is unavailable for your assigned roles. Ask your restaurant administrator to check your access.":"Historical reports could not be loaded. Refresh or ask your restaurant administrator to finish reporting setup."}</p><Link href={`/workspace/records?organisation=${org.id}`}>Return to available reports</Link></WorkspaceShell>;
+ if(optionsResult.error||!options)return <WorkspaceShell {...shell}><h1 className="workspace-title">Operational reports</h1><p className="auth-alert" role="alert">{optionsResult.error?.code==="42501"?"This report is unavailable for your assigned roles. Ask your restaurant administrator to check your access.":"Operational reports could not be loaded. Refresh or ask your restaurant administrator to finish reporting setup."}</p><Link href={`/workspace/records?organisation=${org.id}`}>Return to available reports</Link></WorkspaceShell>;
  if(options.selected==="WASTE"&&options.waste_own_centres&&!p.site&&options.stock_locations.length)p.site=options.stock_locations[0].id;
  const parts=new Intl.DateTimeFormat("en",{timeZone:org.time_zone,year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date());
  const today=["year","month","day"].map(key=>parts.find(part=>part.type===key)?.value).join("-");
@@ -64,7 +64,7 @@ export default async function HistoricalReportsPage({searchParams}:{searchParams
  ];
  const lastMonth=new Date(`${today.slice(0,7)}-01T00:00:00Z`);lastMonth.setUTCDate(0);const lastEnd=lastMonth.toISOString().slice(0,10),lastStart=`${lastEnd.slice(0,7)}-01`;
  return <WorkspaceShell {...shell}><div className="historical-report">
-  <div className="page-heading-row"><div><p className="eyebrow form-eyebrow">YOUR RECORDS / HISTORY</p><h1 className="workspace-title">Historical reports</h1></div></div>
+  <div className="page-heading-row"><div><p className="eyebrow form-eyebrow">YOUR RECORDS / HISTORY</p><h1 className="workspace-title">Operational reports</h1></div></div>
   {options.types.includes('WASTE')&&<p className="stock-help"><Link className="inline-link" href={`/workspace/inventory/waste?organisation=${org.id}&kind=WASTE&from=${from}&to=${to}`}>Processing & other waste</Link>{type==='WASTE'?' / Separate waste movements below. Open the combined log for processing loss.':''}</p>}
   {purchasing&&<PurchasingViewTabs type={type} view={view} comparison={options.comparison===true} href={href}/>}
   <form method="get" className="history-filter"><input type="hidden" name="organisation" value={org.id}/>{purchasing&&<input type="hidden" name="view" value={view}/>}<div className="history-wide"><label htmlFor="history-type">Report</label><HistoricalTypeSelect key={type} types={options.types} selected={type}/></div><div><label htmlFor="history-from">From date</label><input id="history-from" type="date" name="from" defaultValue={from} max={today} required/></div><div><label htmlFor="history-to">Through date</label><input id="history-to" type="date" name="to" defaultValue={to} max={today} required/></div><div><label htmlFor="history-outlet">Outlet</label><select id="history-outlet" name="outlet" defaultValue={p.outlet??""}><option value="">All permitted outlets</option>{options.outlets.map(o=><option key={o.id} value={o.id}>{o.name}{o.active?"":" (inactive)"}</option>)}</select></div>

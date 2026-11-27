@@ -36,13 +36,13 @@ test('combined roles retain both task groups and executive reporting comes first
  const combined=workspaceHome([role('finance'),role('procurement')],all);
  assert.ok(combined.tasks.some(task=>task.action==='Record supplier invoice'));
  assert.ok(combined.tasks.some(task=>task.action==='Review supplier invoices'));
- assert.equal(workspaceHome([role('restaurant_admin'),role('ceo')],all).tasks[0].path,'/workspace/overview');
+ assert.equal(workspaceHome([role('restaurant_admin'),role('ceo')],all).tasks[0].path,'/workspace/performance');
 });
 
 test('CEO home prioritises financial decisions even with other operational roles assigned',()=>{
  const home=workspaceHome([role('ceo'),role('restaurant_admin'),role('inventory_manager'),role('procurement')],{...all,inventory:true,orders:true});
  assert.match(home.description,/what changed/);
- assert.deepEqual(home.tasks.map(task=>task.path),['/workspace/overview','/workspace/reports']);
+ assert.deepEqual(home.tasks.map(task=>task.path),['/workspace/performance','/workspace/reviews']);
 });
 test('location-scoped roles never create organisation-wide purchasing or finance shortcuts',()=>{
  const home=workspaceHome([role('finance','outlet'),role('procurement','outlet')],{...all,overview:false,expenses:false,purchases:false,team:false});

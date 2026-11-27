@@ -7,6 +7,7 @@ import { PanelLeftClose, PanelLeftOpen, Menu, X, Settings2, LayoutDashboard, Log
 import { Brand } from "./brand";
 import { Button } from "./ui/button";
 import { type NavigationAccess,type ReportingContext } from "@/lib/overview";
+import {ReportNavigation} from "./report-navigation";
 import {WorkspaceNavigation} from "./workspace-navigation";
 import { signOut } from "@/app/auth/actions";
 
@@ -55,6 +56,6 @@ export function WorkspaceShellClient({ email, founder = false, sectionLabel, res
       </nav>
       <div className="sidebar-bottom"><p>Know your costs.<br />Understand your margins.<br />Make better decisions.</p><button className="collapse-button" onClick={() => setCollapsed(!collapsed)} aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"} aria-expanded={!collapsed}>{collapsed ? <PanelLeftOpen size={18} /> : <><PanelLeftClose size={18} /><span>Collapse sidebar</span></>}</button></div>
     </aside>
-    <div className="app-content" inert={mobileOpen ? true : undefined}><header className="app-topbar"><button ref={opener} className="mobile-menu icon-button" onClick={() => setMobileOpen(true)} aria-label="Open navigation" aria-expanded={mobileOpen}><Menu size={20} /></button><div><span className="topbar-title">{title}</span><span className="topbar-subtitle">{founder ? "System super admin workspace" : restaurantName ?? "ProfitPlate Insights"}</span></div><div className="topbar-account"><span className="account-avatar" aria-hidden="true">{email?.slice(0, 1).toUpperCase() ?? "U"}</span><span className="topbar-email">{email}</span><form action={signOut}><Button variant="ghost" aria-label="Sign out"><LogOut size={16} /><span>Sign out</span></Button></form></div></header><main className="workspace-main">{children}</main><footer className="workspace-footer"><span>ProfitPlate Insights</span><span>Your business. A clearer picture.</span></footer></div>
+    <div className="app-content" inert={mobileOpen ? true : undefined}><header className="app-topbar"><button ref={opener} className="mobile-menu icon-button" onClick={() => setMobileOpen(true)} aria-label="Open navigation" aria-expanded={mobileOpen}><Menu size={20} /></button><div><span className="topbar-title">{title}</span><span className="topbar-subtitle">{founder ? "System super admin workspace" : restaurantName ?? "ProfitPlate Insights"}</span></div><div className="topbar-account"><span className="account-avatar" aria-hidden="true">{email?.slice(0, 1).toUpperCase() ?? "U"}</span><span className="topbar-email">{email}</span><form action={signOut}><Button variant="ghost" aria-label="Sign out"><LogOut size={16} /><span>Sign out</span></Button></form></div></header><main className="workspace-main">{organisationId&&!founder&&<ReportNavigation organisation={organisationId} pathname={pathname} roles={roleCodes} access={navigation} context={reportingContext}/>} {children}</main><footer className="workspace-footer"><span>ProfitPlate Insights</span><span>Your business. A clearer picture.</span></footer></div>
   </div>;
 }
