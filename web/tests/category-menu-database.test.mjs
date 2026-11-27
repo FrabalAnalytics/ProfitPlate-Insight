@@ -58,5 +58,16 @@ test('category-first menus use one row, standard pricing and reviewed imports',a
  await t.test('fresh onboarding saves chosen Food/Drink subcategories, with standard pricing and no forced channel choices',async()=>{
   const fresh=randomUUID();await db.exec('reset role');await db.query('insert into auth.users values($1,now(),$2)',[fresh,'new-category@example.test']);await login(fresh);await value("select public.save_restaurant_setup('Category Restaurant','QSR','NG','NGN','Brand','Outlet','Africa/Lagos','',3)");await value("select public.save_setup_calendar(1,0,'23:30')");await value('select public.save_setup_sales_channels($1)',[[{code:'STANDARD',name:'Standard selling price',is_active:true}]]);await deny(value('select public.complete_restaurant_setup_with_categories()'),'22023');await value('select public.save_setup_menu_categories($1)',[cats]);const id=await value('select public.complete_restaurant_setup_with_categories()');assert.equal((await value('select public.menu_categories($1)',[id])).categories.length,3);assert.deepEqual((await value('select public.sales_channels($1)',[id])).channels.map(c=>c.code),['STANDARD']);assert.equal(await value('select public.complete_restaurant_setup_with_categories()'),id);
  });
+ await t.test('gross margin sorting is numeric across all pages, keeps missing margins last and preserves filters',async()=>{
+  await login(owner);
+  for(let n=0;n<30;n++)await value('select public.save_menu_entry($1,$2,$3)',[org,randomUUID(),entry('SORT-'+n,'Sort menu '+String(n).padStart(2,'0'),'FOOD','Mains',String(n<2?500:1500+n*100))]);
+  await db.exec('reset role');await db.query("insert into public.menu_items(organisation_id,brand_id,code,name,primary_category,subcategory) values($1,$2,'SORT-UNKNOWN','Sort menu A unknown','FOOD','Mains')",[org,brand]);await login(owner);
+  const sorted=(sort='GROSS_DESC',page=1)=>value("select public.selling_menu_profitability_sorted($1,$2,'STANDARD',$3,'Sort menu',$4,'ALL','FOOD','Mains',$5)",[org,location,today,page,sort]);
+  const first=await sorted(),second=await sorted('GROSS_DESC',2),all=[...first.rows,...second.rows],numbers=all.filter(r=>r.estimate?.food_margin_percent!=null).map(r=>Number(r.estimate.food_margin_percent));
+  assert.equal(first.total,31);assert.equal(first.rows.length,25);assert.equal(second.rows.length,6);assert.equal(new Set(all.map(r=>r.id)).size,31);assert.deepEqual(numbers,[...numbers].sort((a,b)=>b-a));assert.equal(all.at(-1).estimate,null);
+  const ascending=[...(await sorted('GROSS_ASC')).rows,...(await sorted('GROSS_ASC',2)).rows],low=ascending.filter(r=>r.estimate?.food_margin_percent!=null).map(r=>Number(r.estimate.food_margin_percent));assert.deepEqual(low,[...low].sort((a,b)=>a-b));assert.ok(low[0]<0);assert.equal(ascending.at(-1).estimate,null);assert.deepEqual((await sorted()).rows.map(r=>r.id),first.rows.map(r=>r.id));
+  assert.deepEqual((await sorted('GROSS_ASC')).summary,first.summary);const normal=await value("select public.selling_menu_profitability($1,$2,'STANDARD',$3,'Sort menu',1,'ALL','FOOD','Mains')",[org,location,today]);assert.deepEqual((await sorted('PRIORITY')).rows.map(r=>r.id),normal.rows.map(r=>r.id));
+  await deny(sorted('bad'),'22023');await login(inventory);await deny(sorted());await login(other);await deny(sorted());await login(owner);
+ });
  }finally{await db.close();}
 });

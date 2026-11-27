@@ -60,3 +60,5 @@
 .menu-profitability-toolbar>input[type="search"],.menu-profitability-toolbar>select{border:1px solid var(--border);border-radius:8px;min-height:44px;padding:10px 14px;background:white;color:var(--foreground);font:inherit;font-size:14px}.menu-profitability-toolbar>input[type="search"]:focus,.menu-profitability-toolbar>select:focus{outline:2px solid var(--brand);outline-offset:2px}
 
 .menu-setup-actions{display:flex;gap:18px;flex-wrap:wrap;margin:12px 0}.menu-profitability-register .data-table .record-status{white-space:nowrap}
+
+.profitability-sort{display:flex;align-items:center;gap:8px;max-width:100%}.profitability-sort label{font-size:12px;color:var(--muted-foreground);white-space:nowrap}.profitability-sort select{border:1px solid var(--border);border-radius:8px;min-height:44px;padding:10px 12px;background:white;color:var(--foreground);font:inherit;font-size:14px;max-width:100%}@media(max-width:600px){.profitability-sort{width:100%}.profitability-sort select{min-width:0;flex:1}}
