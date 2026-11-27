@@ -1,0 +1,13 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import ts from 'typescript';
+const {outputText}=ts.transpileModule(await readFile(new URL('../lib/production-readiness.ts',import.meta.url),'utf8'),{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}});
+const {productionReadiness}=await import('data:text/javascript;base64,'+Buffer.from(outputText).toString('base64'));
+const standard={id:'baseline',recipe_version_id:'egusi-recipe',site_ids:['kitchen'],output_item_id:'soup',output_name:'Egusi soup',inputs:[{item_id:'seeds',name:'Egusi seeds'},{item_id:'oil',name:'Palm oil'}]};
+const packet=(ids=['seeds','oil','soup'])=>({items:ids.map(id=>({id,centre_ids:['kitchen']})),processing:{standards:[standard]}});
+test('multi-ingredient linked recipe is selectable when its baseline and every SKU are assigned',()=>{assert.equal(productionReadiness(packet(),'kitchen').ready[0].output_name,'Egusi soup');assert.equal(productionReadiness(packet(),'bar').ready.length,0);});
+test('missing ingredients and output are explained instead of silently dropping the recipe',()=>{const result=productionReadiness(packet(['seeds']),'kitchen');assert.equal(result.ready.length,0);assert.deepEqual(result.blocked[0].missing,['Palm oil','Egusi soup']);});
+test('catalogue assignment, not positive balance, determines visibility',()=>{const p=packet();p.balances=[];assert.equal(productionReadiness(p,'kitchen').ready.length,1);});
+test('a linked output without a production baseline is not represented as ready',()=>{const p=packet();p.processing.standards=[];assert.equal(productionReadiness(p,'kitchen').ready.length,0);});
+test('an ineligible newer revision never falls back to an older recipe baseline',()=>{const p=packet();p.processing.standards=[{...standard,id:'new',inputs:[{item_id:'salt',name:'Salt'}]},standard];assert.equal(productionReadiness(p,'kitchen').ready.length,0);assert.deepEqual(productionReadiness(p,'kitchen').blocked[0].missing,['Salt']);});
