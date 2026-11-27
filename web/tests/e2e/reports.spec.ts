@@ -97,3 +97,19 @@ test('weekly and monthly reviews show standard ratios in live, CSV, saved and pr
   await page.setViewportSize({width:390,height:844});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await ratios.screenshot({path:info.outputPath(`${period}-cost-ratios-mobile.png`)});await page.setViewportSize({width:1440,height:1000});
  }
 });
+
+
+test('Business performance uses the report cost ratios for the selected period and outlet',async({page,request},testInfo)=>{
+ await login(page);await openReport(page);
+ const fixture='http://127.0.0.1:54398',session=await(await request.post(`${fixture}/auth/v1/token`,{data:{email:'catalogue@example.test',password:'TestPassword123!'}})).json();
+ const reviewed=await request.post(`${fixture}/rest/v1/rpc/review_expense_coverage`,{headers:{Authorization:`Bearer ${session.access_token}`},data:{p_organisation_id:new URL(page.url()).searchParams.get('organisation'),p_from:day,p_to:day,p_location_id:null,p_kind:'LABOUR',p_confirmed:true}});expect(reviewed.ok()).toBe(true);await page.reload();
+ const ratios=page.getByRole('region',{name:'Standard cost ratios',exact:true});
+ const labels=['Food cost %','Labour cost %','Prime cost %'];
+ const expected=await Promise.all(labels.map(label=>ratios.getByRole('article',{name:label,exact:true}).locator('strong').innerText()));
+ expect(expected.every(value=>value!=='Unavailable')).toBe(true);
+ const url=new URL(page.url());url.pathname='/workspace/performance';await page.goto(url.href);
+ for(const [index,label]of labels.entries())await expect(ratios.getByRole('article',{name:label,exact:true}).locator('strong')).toHaveText(expected[index]);
+ await page.setViewportSize({width:375,height:812});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.screenshot({path:testInfo.outputPath('business-performance-cost-ratios-mobile.png'),fullPage:true});
+ url.searchParams.set('from','2010-01-01');url.searchParams.set('to','2010-01-01');await page.goto(url.href);
+ for(const label of labels)await expect(ratios.getByRole('article',{name:label,exact:true}).locator('strong')).toHaveText('Unavailable');
+});

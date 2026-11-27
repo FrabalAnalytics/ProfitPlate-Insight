@@ -12,7 +12,7 @@ test('CEO sees profitability changes and accountable exceptions with source link
  const org=new URL(page.url()).searchParams.get('organisation')!;
  await page.goto(`/workspace/performance?organisation=${org}&from=2020-08-11&to=2020-08-11`);
  const metrics=page.getByRole('region',{name:'CEO performance metrics'});
- await expect(metrics).toContainText('NGN 3,000.00');await expect(metrics).toContainText('60%');await expect(metrics).toContainText('+15 pp');await expect(metrics).toContainText('-15 pp');await expect(metrics).toContainText('NGN 1,200.00');
+ await expect(metrics).toContainText('NGN 3,000.00');await expect(page.getByRole('region',{name:'Standard cost ratios'}).getByRole('article',{name:'Food cost %',exact:true}).locator('strong')).toHaveText('60%');await expect(metrics).toContainText('+15 pp');await expect(metrics).toContainText('-15 pp');await expect(metrics).toContainText('NGN 1,200.00');
  await page.getByRole('heading',{name:'Menu margin watch',exact:true}).click();await expect(page.getByRole('table',{name:'Menu margin watch'})).toContainText('Sales test dish');await expect(page.getByRole('table',{name:'Menu margin watch'})).toContainText('Main outlet');
  await expect(page.getByRole('link',{name:'Record supplier invoice',exact:true})).toHaveCount(0);await expect(page.getByRole('link',{name:'Record expense',exact:true})).toHaveCount(0);
  await page.getByRole('button',{name:'Refresh briefing',exact:true}).click();await expect(metrics).toContainText('NGN 3,000.00');
