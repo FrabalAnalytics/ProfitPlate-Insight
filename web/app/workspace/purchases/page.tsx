@@ -76,7 +76,7 @@ export default async function PurchasesPage({ searchParams }: { searchParams: Pr
       id: String(row.row), date: row.source.Purchase_Date, reference: `${row.source.Purchase_Ref} / ${row.source.Line_Ref}`,
       item: row.prepared?.item_name ?? row.source.Item_Code,
       context: row.prepared ? `${row.prepared.supplier_name} · ${row.prepared.location_name}` : `${row.source.Supplier_Code} · ${row.source.Location_Code}`,
-      quantity: `${row.source.Quantity} ${row.source.Purchase_UOM}`,
+      quantity: `${displayQuantity(row.source.Quantity)} ${row.source.Purchase_UOM}`,
       amount: row.prepared ? referenceAmount(row.prepared.invoice_amount,row.prepared.currency_code) : "Unresolved",
       status: row.state === "READY" ? batch.state === "POSTED" ? "Recorded" : "Ready" : row.state === "DUPLICATE" ? "Already recorded" : "Needs correction",
       attention: row.state === "REJECTED",

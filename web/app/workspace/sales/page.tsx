@@ -88,7 +88,7 @@ export default async function SalesPage({ searchParams }: { searchParams: Promis
      id: String(row.row), date: row.source.Sale_Date, reference: `${row.source.Transaction_Ref} / ${row.source.Line_Ref}`,
      item: row.prepared?.menu_name ?? row.source.Menu_Name ?? row.source.Menu_Code,
      context: row.prepared ? `${row.prepared.location_name} · Saved menu version ${row.prepared.menu_version}` : row.source.Location_Code,
-     quantity: row.source.Quantity,
+     quantity: displayQuantity(row.source.Quantity),
      amount: row.prepared ? referenceAmount(row.prepared.net_revenue, row.prepared.currency_code) : "Unresolved",
      status: row.state === "READY" ? batch.state === "POSTED" ? "Recorded" : "Ready" : row.state === "DUPLICATE" ? "Already recorded" : "Needs correction",
      attention: row.state === "REJECTED" || row.warnings.length > 0,

@@ -8,7 +8,21 @@ export type RecipePacket = {
  cost_state: "MISSING";
 };
 export const positiveDecimal = (text: string) => /^(?:0|[1-9]\d{0,13})(?:\.\d{1,6})?$/.test(text) && /[1-9]/.test(text);
-export const displayQuantity = (value: string | number) => String(value).replace(/(\.\d*?)0+$/, "$1").replace(/\.$/, "");
+/** Display only: round exact decimal strings to at most three places, never source records. */
+export function displayQuantity(value:string|number):string{
+ const text=String(value),match=/^([+-]?)(\d+)(?:\.(\d*))?(?:e([+-]?\d+))?$/i.exec(text);
+ if(!match)return typeof value==='number'?'Unavailable':text;
+ const [,sign,whole,fraction='',power='0']=match,exponent=Number(power);
+ if(!Number.isSafeInteger(exponent)||Math.abs(exponent)>1000)return 'Unavailable';
+ const digits=whole+fraction,point=whole.length+exponent;
+ const integer=point<=0?'0':point>=digits.length?digits+'0'.repeat(point-digits.length):digits.slice(0,point);
+ const decimals=point<=0?'0'.repeat(-point)+digits:point>=digits.length?'':digits.slice(point);
+ let scaled=BigInt(integer)*BigInt(1000)+BigInt(decimals.padEnd(3,'0').slice(0,3));
+ if((decimals[3]??'0')>='5')scaled+=BigInt(1);
+ if(scaled===BigInt(0)&&/[1-9]/.test(digits))return sign==='-'?'>-0.001':'<0.001';
+ const tail=(scaled%BigInt(1000)).toString().padStart(3,'0').replace(/0+$/,'');
+ return `${sign==='-'&&scaled>BigInt(0)?'-':''}${scaled/BigInt(1000)}${tail?'.'+tail:''}`;
+}
 export function validBusinessDate(value: string) {
  try { return /^\d{4}-\d{2}-\d{2}$/.test(value) && new Date(`${value}T00:00:00Z`).toISOString().slice(0, 10) === value; }
  catch { return false; }
