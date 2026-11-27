@@ -4,7 +4,7 @@ import {readFile} from 'node:fs/promises';
 import ts from 'typescript';
 const source=await readFile(new URL('../lib/management-report.ts',import.meta.url),'utf8');
 const {outputText}=ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.ESNext}});
-const {managementReportRows,managementReportCsv,costPercent,savedManagementReportRows}=await import(`data:text/javascript;base64,${Buffer.from(outputText).toString('base64')}`);
+const {managementReportRows,managementReportCsv,costPercent,savedManagementReportRows,standardCostRatios}=await import(`data:text/javascript;base64,${Buffer.from(outputText).toString('base64')}`);
 const context={organisation:'Demo',organisationId:'org-id',from:'2020-05-15',to:'2020-05-15',location:'All business locations + central costs',locationId:'',currency:'NGN',timeZone:'Africa/Lagos',generatedAt:'2020-05-15T12:00:00Z'};
 const overview={refreshed_at:context.generatedAt,summary:{lines:2,receipts:2,quantity:'3',priced_lines:2,missing_lines:0,net_revenue:'4350.000000',estimated_food_cost:'2700.000000',estimated_food_margin:'1650.000000',food_margin_percent:'37.931034',menus:[],missing:[]},daily:[{date:context.from,lines:2,receipts:2,net_revenue:'4350.000000'}],outlets:[],channels:[]};
 const costs={refreshed_at:context.generatedAt,labour_entries:1,operating_entries:1,labour_amount:'600.000000',operating_amount:'100.000000',central_amount:'100.000000',labour_coverage:{valid:true},operating_coverage:{valid:true},estimated_prime_cost:'3300.000000',prime_cost_percent:'75.862069',labour_cost_percent:'13.793103',excluded_central_entries:0,legacy_entries:0,daily_allocated_entries:1};
@@ -51,4 +51,22 @@ test('cost percentages use exact decimals and retain missing and zero-revenue st
  assert.equal(costPercent('0','4350'),'0.000000');assert.equal(costPercent('1','-3'),'-33.333333');
  assert.equal(costPercent('99999999999999.999999','99999999999999.999999'),'100.000000');
  assert.equal(costPercent('1','200000000'),'0.000001');
+});
+
+
+test('standard ratios share the report scope and retain exact server percentages',()=>{
+ const values=standardCostRatios(overview.summary,costs);assert.deepEqual(values.map(r=>r.label),['Food cost %','Labour cost %','Prime cost %']);assert.deepEqual(values.map(r=>r.value),['62.068966','13.793103','75.862069']);assert.deepEqual(values.map(r=>r.status),['ESTIMATED','REVIEWED','ESTIMATED']);assert.match(values[2].formula,/food cost.*labour cost.*net sales/);
+ const long={...overview.summary,net_revenue:'0.24691357802469135780',estimated_food_cost:'0.12345678901234567890'};assert.equal(standardCostRatios(long,null)[0].value,'50.000000');
+});
+test('missing food or labour cannot produce a reassuring partial prime cost',()=>{
+ let values=standardCostRatios({...overview.summary,missing_lines:1},costs);assert.equal(values[0].value,null);assert.equal(values[1].value,'13.793103');assert.equal(values[2].value,null);
+ values=standardCostRatios(overview.summary,{...costs,labour_coverage:{valid:false}});assert.equal(values[0].value,'62.068966');assert.equal(values[1].value,null);assert.equal(values[2].value,null);assert.match(values[1].note,/Review labour completeness/);
+ const zero={...costs,labour_amount:'0.000000',labour_entries:0,labour_cost_percent:'0.000000',prime_cost_percent:'62.068966'};assert.equal(standardCostRatios(overview.summary,zero)[1].value,'0.000000');assert.equal(standardCostRatios(overview.summary,zero)[2].value,'62.068966');
+});
+test('zero and negative sales suppress ratios, including stale stored percentages',()=>{
+ for(const net_revenue of ['0','0.000000','-1.000000'])assert.ok(standardCostRatios({...overview.summary,net_revenue},costs).every(r=>r.value===null));assert.ok(standardCostRatios({...overview.summary,lines:0},costs).every(r=>r.value===null));
+});
+test('separately refreshed sales and expenses cannot mix denominators or food bases',()=>{
+ const source={...costs,sales:{...overview.summary,net_revenue:'4000.000000'}};let values=standardCostRatios(overview.summary,source);assert.equal(values[0].value,'62.068966');assert.equal(values[1].value,null);assert.equal(values[2].value,null);assert.match(values[1].note,/align sales and labour/);
+ values=standardCostRatios(overview.summary,{...costs,sales:{...overview.summary,net_revenue:'4350.00000000',estimated_food_cost:'2700.00000000000'}});assert.equal(values[2].value,'75.862069');values=standardCostRatios(overview.summary,{...costs,sales:{...overview.summary,estimated_food_cost:'2600'}});assert.equal(values[1].value,'13.793103');assert.equal(values[2].value,null);
 });

@@ -1,7 +1,8 @@
+import {StandardCostRatios} from "@/app/components/standard-cost-ratios";
 import {DataTable} from "@/app/components/data-table";
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, ChevronDown, TriangleAlert, Percent, UtensilsCrossed, Layers3, ReceiptText, TrendingUp, Users, Wallet, type LucideIcon } from "lucide-react";
+import { ArrowRight, CheckCircle2, ChevronDown, TriangleAlert, UtensilsCrossed, Layers3, ReceiptText, TrendingUp, Users, Wallet, type LucideIcon } from "lucide-react";
 import { expenseMoney, type ExpenseReport } from "@/lib/expenses";
 import type { Overview } from "@/lib/overview";
 import { displayPercent } from "@/lib/display";
@@ -34,14 +35,14 @@ export function ReportContent({ rows, overview, costs, currency, overviewHref, c
   const money = (value: string | null) => value === null ? "Unavailable" : expenseMoney(value, currency);
   return <>
 
+    <StandardCostRatios summary={overview.summary} costs={costs}/>
     <section id="report-summary" className="management-summary" aria-labelledby="report-summary-heading"><div className="overview-section-heading"><h2 id="report-summary-heading">Performance at a glance</h2><Link className="record-edit management-no-print" href={overviewHref}>Open Executive overview <ArrowRight size={14} aria-hidden="true"/></Link></div>
       <div className="management-metrics">{metrics.map(name => {
         const row = rows.find(item => item.section === "Performance" && item.metric === name)!;
         const percent = rows.find(item => item.section === "Performance" && item.metric === ratio[name]);
         const Icon = metricIcons[name];
-        const ratioLabel = name === "Estimated food cost" ? "Food cost %" : name === "Estimated prime cost" ? "Prime cost %" : null;
-        const note = percent?.value !== null && percent?.value !== undefined ? `${displayPercent(percent.value)}% of recorded net sales` : name === "Recorded net sales" ? `${overview.summary.receipts} receipts · ${displayQuantity(overview.summary.quantity)} menu units` : name === "Estimated food cost" ? `${overview.summary.priced_lines} of ${overview.summary.lines} sales lines costed` : name === "Estimated prime cost" ? "Reference food-cost estimate + reviewed labour" : name === "Recorded operating expenses" ? "Separate from prime cost" : name === "Recorded labour" ? "Coverage applies to this exact selection" : "Ingredient & direct packaging estimate";
-        return <article key={name} className={name === "Estimated prime cost" ? "management-prime" : ""}><div><span className="management-metric-label"><Icon size={15} aria-hidden="true"/>{name}</span><span className={`management-state ${caution(row.status) ? "management-caution" : ""}`}>{stateLabel(row.status)}</span></div><strong>{displayValue(row, currency)}</strong>{ratioLabel && <div className="management-ratio"><span><Percent size={14} aria-hidden="true"/>{ratioLabel}</span><b>{percent?.value != null ? `${displayPercent(percent.value)}%` : "Unavailable"}</b></div>}<small>{ratioLabel ? name === "Estimated food cost" ? `${overview.summary.priced_lines} of ${overview.summary.lines} sales lines costed · % of recorded net sales` : "Reference food-cost estimate + reviewed labour · % of recorded net sales" : note}</small></article>;
+        const note = name === "Recorded net sales" ? `${overview.summary.receipts} receipts / ${displayQuantity(overview.summary.quantity)} menu units` : name === "Estimated food cost" ? `${overview.summary.priced_lines} of ${overview.summary.lines} sales lines costed` : name === "Estimated prime cost" ? "Reference food-cost estimate + reviewed labour" : name === "Recorded operating expenses" ? "Separate from prime cost" : name === "Recorded labour" ? "Coverage applies to this exact selection" : percent?.value != null ? `${displayPercent(percent.value)}% gross profit margin` : "Ingredient & direct packaging estimate";
+        return <article key={name} className={name === "Estimated prime cost" ? "management-prime" : ""}><div><span className="management-metric-label"><Icon size={15} aria-hidden="true"/>{name}</span><span className={`management-state ${caution(row.status) ? "management-caution" : ""}`}>{stateLabel(row.status)}</span></div><strong>{displayValue(row, currency)}</strong><small>{note}</small></article>;
       })}</div>
     </section>
     <div className={`management-review-strip ${needsReview || missing ? "management-review-attention" : ""}`}>

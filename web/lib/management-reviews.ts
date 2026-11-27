@@ -1,3 +1,4 @@
+import {standardCostRatios} from './management-report';
 import type {ExecutiveBriefing} from './executive-briefing';
 import type {Overview} from './overview';
 import type {ExpenseReport} from './expenses';
@@ -27,6 +28,7 @@ export function reviewExportRows(p:ReviewPack){
  const rows:unknown[][]=[['ProfitPlate Insights',`${reviewLabel(c.period)} management review`],['Period',c.from,c.to],['Comparison',c.previous_from,c.previous_to],['Scope',p.access.centres.find(s=>s.id===c.site_id)?.name??p.access.outlets.find(o=>o.id===c.outlet_id)?.name??'All permitted locations'],['Outlet ID',c.outlet_id??'All permitted'],['Centre ID',c.site_id??'All permitted'],['Timezone',c.time_zone],['Generated at',c.generated_at],['Basis','Recorded evidence; reference-cost estimates; not accounting net profit'],[],['Area','Metric','Selected period','Previous period','Basis']];
  const add=(area:string,metric:string,value:unknown,prior:unknown,basis='Recorded evidence')=>rows.push([area,metric,value??'Unavailable',prior??'Unavailable',basis]);
  if(p.financial){const a=p.financial.summary,b=p.financial_previous;add('Sales','Net sales',a.lines?a.net_revenue:null,b?.lines?b.net_revenue:null);add('Margins','Estimated food contribution',a.lines?a.estimated_food_margin:null,b?.lines?b.estimated_food_margin:null,'Ingredient and packaging basis; excludes unconnected costs');add('Margins','Estimated gross profit margin %',a.lines?a.food_margin_percent:null,b?.lines?b.food_margin_percent:null);}
+ if(['WEEKLY','MONTHLY'].includes(c.period)&&p.access.financial&&!c.site_id){const prior=standardCostRatios(p.financial_previous,null);for(const ratio of standardCostRatios(p.financial?.summary,p.expenses))add('Cost ratios',ratio.label,ratio.value,ratio.id==='food'?prior[0].value:null,`${ratio.formula}; ${ratio.status.toLowerCase()}. ${ratio.note}`);}
  for(const row of p.overview?.daily??[])add('Daily sales',row.date,row.lines?row.net_revenue:null,null,'No recorded rows do not confirm zero trading');
  if(cur.waste.centres>0){
   add('Waste','Recorded loss entries',cur.waste.entries,previous.waste.entries,'Entries, not quantities across different units');add('Waste','Known estimated loss value',cur.waste.known_value,previous.waste.known_value,'Unpriced entries excluded; missing reports are not zero waste');add('Compliance','Waste centre-days complete',cur.waste.coverage.complete,previous.waste.coverage.complete);add('Compliance','Waste centre-days expected',cur.waste.coverage.expected,previous.waste.coverage.expected);
