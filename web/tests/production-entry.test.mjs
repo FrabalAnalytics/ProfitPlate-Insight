@@ -1,0 +1,8 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';import {readFile} from 'node:fs/promises';import ts from 'typescript';
+const {outputText}=ts.transpileModule(await readFile(new URL('../lib/production-entry.ts',import.meta.url),'utf8'),{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}});const {productionPlan}=await import('data:text/javascript;base64,'+Buffer.from(outputText).toString('base64'));
+const s={primary_item_id:'seeds',primary_quantity:'7.95',expected_output:'37.8',inputs:[{item_id:'seeds',quantity:'7.95'},{item_id:'oil',quantity:'3.8'}]};
+test('half and double batches scale every ingredient and expected output',()=>{const half=productionPlan(s,'BATCHES','0.5');assert.equal(half.expected,18.9);assert.equal(half.inputs[0].quantity,'3.975');assert.equal(half.inputs[1].quantity,'1.9');assert.equal(productionPlan(s,'BATCHES','2').expected,75.6);});
+test('target output scales from the stock output unit',()=>{const p=productionPlan(s,'TARGET','18.9');assert.equal(p.expected,18.9);assert.equal(p.inputs[0].planned,'3.975');});
+test('actual ingredient edits never rewrite a batch or target plan',()=>{const p=productionPlan(s,'BATCHES','1',{seeds:'9',oil:'4'});assert.equal(p.expected,37.8);assert.equal(p.inputs[0].planned,'7.95');assert.equal(p.inputs[0].quantity,'9');});
+test('main-input entry retains its original scaling behaviour',()=>{const p=productionPlan(s,'INPUT','15.9');assert.equal(p.expected,75.6);assert.equal(p.inputs[1].quantity,'7.6');});
+test('empty, zero, negative and non-finite plans cannot submit',()=>{for(const q of ['', '0','-1','NaN','Infinity','1e50'])assert.equal(productionPlan(s,'BATCHES',q).valid,false);assert.equal(productionPlan(undefined,'BATCHES','1').valid,false);});
