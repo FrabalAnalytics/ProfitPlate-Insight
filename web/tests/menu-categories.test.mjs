@@ -1,0 +1,13 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import ts from 'typescript';
+const {outputText}=ts.transpileModule(await readFile(new URL('../lib/menu-categories.ts',import.meta.url),'utf8'),{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}});
+const {parseMenuCategories,majorLabel,categoryMajors}=await import('data:text/javascript;base64,'+Buffer.from(outputText).toString('base64'));
+const row={major:'PASTRY',major_name:'Pastry',cost_basis:'FOOD',target_percent:'25.5',name:'Cakes',is_active:true};
+test('custom headings carry an explicit reporting family independently of their names',()=>{const rows=parseMenuCategories(JSON.stringify([row,{major:'PACKAGING',major_name:'Packaging',cost_basis:'NON_FOOD',name:'Boxes',is_active:true}]));assert.equal(rows[0].cost_basis,'FOOD');assert.equal(rows[1].cost_basis,'NON_FOOD');assert.equal(rows[1].target_percent,null);assert.equal(majorLabel('PASTRY',rows),'Pastry');});
+test('legacy Food/Drink category drafts remain usable',()=>{const rows=parseMenuCategories(JSON.stringify([{major:'DRINK',name:'Juices',is_active:true}]));assert.equal(rows[0].major_name,'Drink');assert.equal(rows[0].cost_basis,'DRINK');});
+test('duplicate headings, inconsistent reporting settings and reserved filter codes are rejected',()=>{for(const rows of[[row,{...row,major:'BAKERY'}],[row,{...row,name:'Bread',cost_basis:'NON_FOOD'}],[{...row,major:'ALL'}],[row,{...row,name:' cakes '}]])assert.throws(()=>parseMenuCategories(JSON.stringify(rows)));});
+test('targets and category limits reject malformed or excessive values',()=>{for(const target of ['101','-1','abc','3.1234567'])assert.throws(()=>parseMenuCategories(JSON.stringify([{...row,target_percent:target}])));assert.throws(()=>parseMenuCategories(JSON.stringify(Array.from({length:31},(_,i)=>({...row,major:'CAT'+i,major_name:'Category '+i})))));});
+test('one main heading is shown for several subcategories and its activation reflects usable children',()=>{const rows=[{...row,is_active:false},{...row,name:'Bread',is_active:true}];assert.deepEqual(categoryMajors(rows),[{code:'PASTRY',name:'Pastry',active:true}]);});
+test('empty draft categories can be saved but cannot finish onboarding',()=>{assert.deepEqual(parseMenuCategories('[]',true),[]);assert.throws(()=>parseMenuCategories('[]'));});

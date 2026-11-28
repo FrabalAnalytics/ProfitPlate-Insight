@@ -40,9 +40,13 @@ export type SalesBatch = { id: string; filename: string; source_hash: string; st
 export type SalesHistory = { total: number; batches: { id: string; filename: string; state: SalesBatch["state"]; created_at: string; ready: number; rejected: number; duplicates: number }[] };
 export const salesStateLabel = (state: SalesBatch["state"]) => ({ INVALID: "Needs correction", REVIEW: "Ready for review", POSTED: "Recorded", CANCELLED: "Cancelled" })[state];
 export type SalesSummary = {
+ categories?:SalesCategory[];subcategories?:SalesCategory[];category_trend?:{date:string;code:string;name:string;net_revenue:string}[];
+ cost_families?:{basis:string;lines:number;priced_lines:number;net_revenue:string;estimated_cost:string|null;cost_percent:string|null}[];
+ food_cost_basis?:'FOOD_BEVERAGE'|'LEGACY_ALL_MENUS'|'UNCLASSIFIED';food_beverage_sales?:string|null;food_beverage_cost?:string|null;legacy_category_lines?:number;
  currency_code: string; lines: number; receipts: number; priced_lines: number; missing_lines: number; quantity: string;
  net_revenue: string; tax: string; discounts: string; customer_total: string; known_subtotal: string | null;
  estimated_food_cost: string | null; estimated_food_margin: string | null; food_margin_percent: string | null;
  menus: { menu_item_id: string; code: string; name: string; lines: number; priced_lines: number; quantity: string; net_revenue: string; estimated_food_cost: string | null; estimated_food_margin: string | null }[];
  missing: { menu_version_id: string; menu_item_id: string; menu_name: string; sale_date: string; reason: string }[];
 };
+export type SalesCategory={code:string;name:string;subcategory?:string;cost_basis:string;lines:number;priced_lines:number;net_revenue:string;share_percent:string|null;estimated_cost:string|null;estimated_contribution:string|null;cost_percent:string|null};

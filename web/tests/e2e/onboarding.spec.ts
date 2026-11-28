@@ -25,7 +25,7 @@ test("owner saves, resumes and completes restaurant setup", async ({ page }, tes
   await page.getByLabel("Reporting week starts").selectOption("3");
   await page.getByLabel("Physical count day").selectOption("2");
   await page.getByLabel("Physical count cutoff time").fill("23:30");
-  await page.getByRole("button",{name:"Add subcategory",exact:true}).click();
+  await page.getByRole("button",{name:"Add main category",exact:true}).click();await page.getByLabel('Main category name 1',{exact:true}).fill('Food');await page.getByLabel('Reporting treatment 1',{exact:true}).selectOption('FOOD');
   await page.getByLabel("Subcategory 1",{exact:true}).fill("Mains");
   await page.getByLabel("Address (optional)").fill("12 Example Street, Lekki");
   await page.getByRole("button", { name: "Save for later" }).click();
@@ -42,6 +42,7 @@ test("owner saves, resumes and completes restaurant setup", async ({ page }, tes
   await expect(page.getByText("Your restaurant workspace is ready. Welcome to ProfitPlate.")).toBeVisible();
   await expect(page.getByRole("heading", { name: "Tangibles Test Restaurant", exact: true })).toBeVisible();
   await expect(page.getByRole("table", { name: "Business locations" }).getByRole("rowheader", { name: "Lekki Outlet", exact: true })).toBeVisible();
+  await page.getByText("All setup stages",{exact:true}).click();
   await expect(page.getByText("3 OF 9 STAGES READY")).toBeVisible();
   await page.screenshot({ path: testInfo.outputPath("workspace-desktop.png"), fullPage: true });
   await page.getByRole("button", { name: "Collapse sidebar" }).click();

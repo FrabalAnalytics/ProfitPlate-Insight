@@ -81,6 +81,7 @@ await asUser(catalogueOwner, async tx => {
     if(priced){
       const brand=(await tx.query("select id from public.brands where organisation_id=$1 limit 1",[org])).rows[0].id;
       await tx.query("select public.publish_menu_item_version($1,null,$2,'SALES-MENU','Sales test dish',$3,'Mains',$4,1,'2020-01-01','Fictional sales fixture')",[org,crypto.randomUUID(),brand,recipeId]);
+      await tx.query("select public.save_setup_profile($1,'MENU',(select id from public.menu_items where organisation_id=$1 and code='SALES-MENU'),null,'FOOD','Mains')",[org]);
       const prices=[{material_code:code,quantity:"1",unit_code:"KG",total_price:"900",price_date:"2020-01-01",source_note:"Fictional menu cost fixture"}];
       const prepared=(await tx.query("select public.preview_material_reference_prices($1,$2::jsonb) as data",[org,JSON.stringify(prices)])).rows[0].data;
       await tx.query("select public.save_material_reference_prices($1,$2,'MANUAL',$3::jsonb,$4::jsonb)",[org,crypto.randomUUID(),JSON.stringify(prices),JSON.stringify(prepared)]);

@@ -1,0 +1,13 @@
+SELLING MENU IMPORT
+
+The four example rows illustrate different main categories. Replace or remove them before uploading.
+
+1. Create your main categories and subcategories in Data & Setup > Menu categories.
+2. Choose Food, Beverage or Non-food reporting treatment for each main category. Pastry can use Food; separately sold packaging uses Non-food.
+3. In major_category, enter the configured category name or its import code. Use its active subcategory in subcategory.
+4. Use real menu and recipe codes, quantities, prices and effective dates. One outlet per reviewed import batch.
+5. Review every proposed creation/update before confirming. The file does not create categories automatically.
+
+Packaging included in a dish remains a recipe cost. Add a Packaging selling-menu row only when the customer is separately charged for it. In that case, put its material in the packaging menu recipe and remove it from the meal recipe so cost and consumption are recorded once.
+
+CSV and XLSX contain equivalent columns and example values.

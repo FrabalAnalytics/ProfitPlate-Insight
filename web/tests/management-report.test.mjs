@@ -70,3 +70,14 @@ test('separately refreshed sales and expenses cannot mix denominators or food ba
  const source={...costs,sales:{...overview.summary,net_revenue:'4000.000000'}};let values=standardCostRatios(overview.summary,source);assert.equal(values[0].value,'62.068966');assert.equal(values[1].value,null);assert.equal(values[2].value,null);assert.match(values[1].note,/align sales and labour/);
  values=standardCostRatios(overview.summary,{...costs,sales:{...overview.summary,net_revenue:'4350.00000000',estimated_food_cost:'2700.00000000000'}});assert.equal(values[2].value,'75.862069');values=standardCostRatios(overview.summary,{...costs,sales:{...overview.summary,estimated_food_cost:'2600'}});assert.equal(values[1].value,'13.793103');assert.equal(values[2].value,null);
 });
+
+test('non-food retail sales and costs stay separate from food/beverage ratios',()=>{
+ const summary={...overview.summary,lines:4,missing_lines:0,net_revenue:'2150',estimated_food_cost:'430',food_beverage_sales:'2000',food_beverage_cost:'400'};
+ const expenses={...costs,sales:summary,labour_cost_percent:costPercent('100','2150'),prime_cost_percent:costPercent('500','2150')};
+ assert.deepEqual(standardCostRatios(summary,expenses).map(r=>r.value),['20.000000','4.651163','23.255814']);
+ const missingRetail={...summary,missing_lines:1,estimated_food_cost:null};
+ assert.equal(standardCostRatios(missingRetail,{...expenses,sales:missingRetail})[0].value,'20.000000');
+ const unknown={...summary,food_beverage_sales:null,food_beverage_cost:null};
+ assert.equal(standardCostRatios(unknown,{...expenses,sales:unknown})[0].value,null);
+ assert.equal(standardCostRatios(unknown,{...expenses,sales:unknown})[2].value,null);
+});

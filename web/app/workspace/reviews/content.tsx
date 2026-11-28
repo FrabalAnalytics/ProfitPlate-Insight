@@ -1,3 +1,4 @@
+import {SalesCategoryAnalysis} from "@/app/components/sales-category-analysis";
 import Link from 'next/link';
 import {StandardCostRatios} from '@/app/components/standard-cost-ratios';
 import type {ReactNode} from 'react';
@@ -24,6 +25,7 @@ export function ReviewContent({org,p,saved}:{org:string;p:ReviewPack;saved:boole
  {c.days!==c.previous_days&&<p className="review-basis">The comparison contains {c.previous_days} calendar days; this selection contains {c.days}. Month lengths differ.</p>}
  {p.warnings.map((warning,i)=><p key={i} role="alert" className="auth-alert">{warning}</p>)}
  {['WEEKLY','MONTHLY'].includes(c.period)&&p.access.financial&&!c.site_id&&<StandardCostRatios summary={summary} costs={p.expenses}/>}
+ {p.access.financial&&!c.site_id&&<SalesCategoryAnalysis key={`${c.from}:${c.to}:${c.outlet_id}`} summary={summary} previous={previous} period={`${c.from} to ${c.to}`}/>}
  <section className="review-grid" aria-label="Management review summary">
  {p.access.financial&&!c.site_id&&<><Card label="Recorded net sales" value={summary?.lines?money(summary.net_revenue):summary?'No sales recorded':'Unavailable'} note={`Previous: ${previous?.lines?money(previous.net_revenue):'No comparable records'}`}/><Card label="Est. contribution margin" value={summary?.lines?money(summary.estimated_food_margin):'Unavailable'} note={`Gross profit margin: ${summary?.lines?percent(summary.food_margin_percent):'Unavailable'} · of net sales remains before labour and operating costs`}/>{c.period==='DAILY'&&<Card label="Food cost %" value={p.financial&&summary?.lines?percent(p.financial.food_cost_percent):'Unavailable'} note={summary?.missing_lines?`${summary.missing_lines} sales lines need usable costs`:'Share of net sales used by estimated ingredients and packaging'}/>}</>}
  {p.stock_now&&<Card label={saved?'Estimated stock value at save time':'Estimated stock value now'} value={p.stock_now.materials&&p.stock_now.unpriced===p.stock_now.materials?'Unpriced':money(p.stock_now.known_value)} note={`${p.stock_now.centre_count} ${p.stock_now.centre_count===1?'centre':'centres'} / ${p.stock_now.unpriced} unpriced balances excluded / ${at(p.stock_now.as_of)}`} link={<Link href={q('/workspace/inventory/value',c.outlet_id?{outlet:c.outlet_id}:{})}>Centre breakdown →</Link>}/>}

@@ -42,17 +42,20 @@ export function standardCostRatios(summary:Overview['summary']|null|undefined,co
   const salesProblem=!hasSales?'No sales recorded for this selection.':!positiveRevenue?'Positive recorded net sales are required.':null;
   const canonical=(value:string)=>value.replace(/(\.\d*?)0+$/,'$1').replace(/\.$/,'').replace(/^0+(?=\d)/,'');
   const mismatched=!!costs?.sales&&hasSales&&(costs.sales.lines!==summary.lines||canonical(costs.sales.net_revenue)!==canonical(revenue));
-  const foodMissing=!summary||summary.missing_lines>0||summary.estimated_food_cost==null;
-  const food=salesProblem||foodMissing?null:costPercent(summary!.estimated_food_cost,revenue);
+  const categoryBasis=!!summary&&Object.hasOwn(summary,'food_beverage_cost');
+  const foodAmount=categoryBasis?summary!.food_beverage_cost??null:summary?.estimated_food_cost??null;
+  const foodRevenue=categoryBasis?summary!.food_beverage_sales??'':revenue;
+  const foodMissing=!summary||foodAmount==null||(!categoryBasis&&summary.missing_lines>0);
+  const food=salesProblem||foodMissing||!/^\d+(?:\.\d+)?$/.test(foodRevenue)||!/[1-9]/.test(foodRevenue)?null:costPercent(foodAmount,foodRevenue);
   const labourProblem=salesProblem??(!costs?'Labour records are unavailable.':!costs.labour_coverage.valid?'Review labour completeness for this exact period and outlet.':costs.sales_error||mismatched?'Refresh the report to align sales and labour inputs.':costs.labour_cost_percent==null?'Labour percentage is unavailable for this selection.':null);
   const labour=labourProblem?null:costs!.labour_cost_percent;
   const foodMismatch=!!costs?.sales&&summary?.estimated_food_cost!=null&&costs.sales.estimated_food_cost!=null&&canonical(costs.sales.estimated_food_cost)!==canonical(summary.estimated_food_cost);
   const primeProblem=salesProblem??(foodMissing?'Complete recipe costs before calculating prime cost.':labourProblem??(foodMismatch?'Refresh the report to align food and labour inputs.':costs?.prime_cost_percent==null?'Prime cost percentage is unavailable for this selection.':null));
   const prime=primeProblem?null:costs!.prime_cost_percent;
   return [
-    {id:'food',label:'Food cost %',value:food,status:food==null?'UNAVAILABLE':'ESTIMATED',note:salesProblem??(foodMissing?'Complete missing recipe costs to calculate this ratio.':'Recipe ingredient and direct packaging estimate.'),formula:'Estimated food cost ÷ recorded net sales × 100'},
+    {id:'food',label:'Food cost %',value:food,status:food==null?'UNAVAILABLE':'ESTIMATED',note:salesProblem??(categoryBasis&&summary?.food_cost_basis==='LEGACY_ALL_MENUS'?'Legacy recipe-cost basis across all menu sales; main-category treatment is not established.':categoryBasis?'Food and beverage recipe costs / food and beverage net sales. Separately sold non-food items are excluded.':foodMissing?'Complete missing recipe costs to calculate this ratio.':'Recipe ingredient and direct packaging estimate.'),formula:categoryBasis&&summary?.food_cost_basis!=='LEGACY_ALL_MENUS'?'Estimated food and beverage cost / food and beverage net sales times 100':'Estimated food cost ÷ recorded net sales × 100'},
     {id:'labour',label:'Labour cost %',value:labour,status:labour==null?'UNAVAILABLE':'REVIEWED',note:labourProblem??'Recognised labour with reviewed coverage for this selection.',formula:'Recognised labour cost ÷ recorded net sales × 100'},
-    {id:'prime',label:'Prime cost %',value:prime,status:prime==null?'UNAVAILABLE':'ESTIMATED',note:primeProblem??'Estimated food cost plus reviewed labour; operating expenses excluded.',formula:'(Estimated food cost + recognised labour cost) ÷ recorded net sales × 100'},
+    {id:'prime',label:'Prime cost %',value:prime,status:prime==null?'UNAVAILABLE':'ESTIMATED',note:primeProblem??(categoryBasis?'Food and beverage recipe costs plus reviewed labour / all net sales; non-food item costs and operating expenses excluded.':'Estimated food cost plus reviewed labour; operating expenses excluded.'),formula:'(Estimated food cost + recognised labour cost) ÷ recorded net sales × 100'},
   ];
 }
 
@@ -76,6 +79,7 @@ export function managementReportRows(context: ManagementReportContext, overview:
   add("Performance", "Estimated prime cost percent", ratios[2].value, "%", ratios[2].status, ratios[2].formula+'; '+ratios[2].note);
   add("Coverage", "Recorded receipts", String(s.receipts), "receipts", "RECORDED");
   add("Coverage", "Recorded menu units", s.quantity, "units", "RECORDED");
+  for(const row of s.categories??[]){add("Category sales",row.name+" / Net sales",row.net_revenue,context.currency,"RECORDED","Original sale classification; selected period and outlet.");add("Category sales",row.name+" / Sales share",row.share_percent,"%","RECORDED","Category net sales divided by all period net sales.");add("Category sales",row.name+" / Estimated contribution",row.estimated_contribution,context.currency,row.estimated_contribution==null?"MISSING":"ESTIMATED","Net sales less estimated recipe costs; excludes labour and operating costs.");}
   add("Coverage", "Missing food-cost lines", String(s.missing_lines), "lines", s.missing_lines ? "MISSING" : "RECORDED");
   add("Coverage", "Days with recorded sales", String(overview.daily.filter(day => day.lines > 0).length), "days", "RECORDED", `${overview.daily.length} days selected. Days without records do not confirm zero trading.`);
   add("Coverage", "Labour coverage", costs ? costs.labour_coverage.valid ? "Reviewed" : "Needs review" : null, "", costs?.labour_coverage.valid ? "REVIEWED" : "NEEDS_REVIEW");

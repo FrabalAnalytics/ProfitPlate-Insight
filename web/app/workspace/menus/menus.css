@@ -62,3 +62,5 @@
 .menu-setup-actions{display:flex;gap:18px;flex-wrap:wrap;margin:12px 0}.menu-profitability-register .data-table .record-status{white-space:nowrap}
 
 .profitability-sort{display:flex;align-items:center;gap:8px;max-width:100%}.profitability-sort label{font-size:12px;color:var(--muted-foreground);white-space:nowrap}.profitability-sort select{border:1px solid var(--border);border-radius:8px;min-height:44px;padding:10px 12px;background:white;color:var(--foreground);font:inherit;font-size:14px;max-width:100%}@media(max-width:600px){.profitability-sort{width:100%}.profitability-sort select{min-width:0;flex:1}}
+
+.menu-category-main{border:1px solid var(--border);border-radius:10px;padding:18px;margin:16px 0}.menu-category-main legend{font-weight:600;padding:0 8px}.menu-category-setup h3{margin:22px 0 12px}.menu-category-main>small{display:block;color:var(--muted-foreground);margin-bottom:12px}
