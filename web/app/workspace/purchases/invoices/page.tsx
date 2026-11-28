@@ -49,7 +49,7 @@ export default async function InvoicesPage({ searchParams }: { searchParams: Pro
   const [suppliers, locations, items, units, orders] = await Promise.all([
    client.from("suppliers").select("id,name").eq("organisation_id", org.id).eq("is_active", true).order("name").limit(1000),
    client.from("locations").select("id,name").eq("organisation_id", org.id).eq("is_active", true).order("name").limit(1000),
-   client.from("items").select("id,name,base_uom_id").eq("organisation_id", org.id).eq("is_active", true).order("name").limit(1000),
+   client.from("items").select("id,name,code,item_type,base_uom_id").eq("organisation_id", org.id).eq("is_active", true).order("name").limit(1000),
    client.from("units_of_measure").select("id,name,code").eq("organisation_id", org.id).order("name").limit(1000),
    client.rpc("purchase_order_choices", { p_organisation_id: org.id, p_search: params.po_search ?? "", p_selected: params.po && isUuid(params.po) ? params.po : null }),
   ]);
